@@ -43,5 +43,16 @@ const metadataAccount = toMetadataAccount(rawAccount);
 
 ## 待做/延伸
 
-- [ ] 用 Helius RPC + Python 实现同款（getAccountInfo + PDA 推导），给 Python 脚本加 token metadata 读取
+- [x] ~~用 Helius RPC + Python 实现同款~~（2026-08-08 完成：`scripts/token_metadata.py`，实测 SOL/USDC 都读到）
 - [ ] 批量扫描：给定 token 列表 → 拉 metadata → 比对 name/symbol 是否与预期一致（防同名假币）
+
+## 2026-08-08 Python 实现实测记录
+
+- **PDA 推导必须用官方库**：先自实现 base58+sha256+on-curve 检查，推导出 `4tgHLm...`（错误）；官方 solana-py `Pubkey.find_program_address` 得出 `5x38Kp...`（正确，账户存在 908 字节）
+  - 教训：PDA 的 bump 检查是 **ed25519 曲线点验证**，不是简单的 `h[0] < 0xF0`——自研轮子不可靠，用官方实现
+- 实测输出：
+  - USDC: name=USD Coin, symbol=USDC, metadata_account=`5x38Kp4hvdomTCnCrAny4UtMUt5rQBdB6px2K1Ui45Wq`（与 Rust solana-sdk 权威一致 ✅）
+  - SOL: name=Wrapped SOL, symbol=SOL（uri 空，原生 SOL 无 uri，符合预期）
+- 字符串字段有 `\x00` 固定长度填充 → 用 `split("\x00")[0]` 截断
+- 依赖：solana-py（solders）`uv pip install --python <venv> solana`
+- JS 版（Metaplex toMetadataAccount）↔ Python 版（solders PDA + 手动解析）双实现完成
