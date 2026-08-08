@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>链上套利实战手册_20260806</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+<style>body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:auto;padding:30px;line-height:1.8;color:#333}
+h1{color:#1a73e8;border-bottom:3px solid #1a73e8;padding-bottom:8px}
+h2{border-bottom:1px solid #ddd;padding-bottom:5px;margin-top:28px;color:#1a73e8}
+h3{color:#333;margin-top:20px}
+table{border-collapse:collapse;margin:12px 0;width:100%}
+th,td{border:1px solid #ddd;padding:8px 12px;font-size:14px}
+th{background:#f0f4ff}
+blockquote{border-left:4px solid #ff9800;margin:10px 0;padding:8px 14px;background:#fff8e6}
+code{background:#f5f5f5;padding:2px 6px;border-radius:4px}
+pre{background:#f5f5f5;padding:12px;border-radius:6px;overflow-x:auto}
+strong{color:#c62828}
+img{max-width:100%;border-radius:6px}
+a{color:#1a73e8}
+hr{border:none;border-top:1px solid #eee;margin:24px 0}
+/* ===== 移动端适配（2026-08-06）===== */
+img, svg{max-width:100% !important;height:auto !important}
+.figure{text-align:center;margin:20px 0}
+.figure svg,.figure img{max-width:100%;height:auto;box-shadow:0 2px 8px rgba(0,0,0,.1);border-radius:8px}
+@media (max-width:640px){
+  body{padding:14px;font-size:15px;line-height:1.7}
+  h1{font-size:22px} h2{font-size:18px} h3{font-size:16px}
+  table{font-size:12px;display:block;overflow-x:auto;white-space:nowrap}
+  pre{font-size:12px}
+  blockquote{padding:6px 10px}
+}</style></head>
+<body>
+<h1 id="链上套利实战手册">📖 链上套利实战手册</h1>
+<blockquote>
+<p><strong>素材来源</strong>：链上套利残酷共学打卡交流群 2026-08-05 深度讨论（667 条消息提炼） <strong>生成</strong>：2026-08-06 ｜ 版本 v1.0 <strong>定位</strong>：从群聊真实经验出发的实战手册——黑话、细节、流程、风险全收录</p>
+</blockquote>
+<hr />
+<h2 id="前言为什么写这本手册">前言：为什么写这本手册</h2>
+<p>群里 104 人一天聊了 667 条消息，内容横跨 LP 无常损失、MEV 竞争、币股套利、打新保底……信息量极大但碎片化。本手册把这些真实讨论整理成体系：<strong>每个结论都有群友原话背书，每条流程都可照着做</strong>。知识不稀缺，稀缺的是方向——这本手册就是方向。</p>
+<hr />
+<h1 id="第一章-套利世界观">第一章 套利世界观</h1>
+<h2 id="套利的本质">1.1 套利的本质</h2>
+<blockquote>
+<p>“套利的本质是在低风险的情况下赚取收益吧，风险是第一位” —— ingram</p>
+</blockquote>
+<p>套利 = 同一资产在不同市场/形态间的<strong>价差</strong>，低买高卖赚差价。关键认知：</p>
+<ul>
+<li><strong>无风险套利很少</strong>（成员177）；套利也有风险，只是<strong>敞口大小不一样</strong>（海雅慕容）</li>
+<li>套利是”一条腿 + 另一条腿”（Marlboro）：把 LP 当一条腿，找到另一条腿才叫套利，<strong>单腿都是在赌方向</strong></li>
+<li>有风险的套利和合约没区别（人生海海）——要区分”套利”和”赌博”</li>
+</ul>
+<h2 id="套利全景分类">1.2 套利全景分类</h2>
+<figure>
+<div class="figure"><svg style="width:100%;height:auto;max-width:760px" xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="Microsoft YaHei, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="24" y="38" font-size="20" font-weight="bold" fill="#1a73e8">图1 · 套利全景分类（群聊主线整理）</text>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5f6368"/></marker></defs><rect x="280" y="40" width="200" height="52" rx="8" fill="#1a73e8" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="62.0" text-anchor="middle" font-size="17" font-weight="bold" fill="#fff">链上套利全景</text><line x1="340" y1="92" x2="125" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="50" y="140" width="170" height="58" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="135.0" y="165.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1a73e8">CEX-CEX</text><text x="135.0" y="185.0" text-anchor="middle" font-size="11" fill="#5f6368">跨所搬砖/价差</text><line x1="340" y1="92" x2="305" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="230" y="140" width="170" height="58" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="315.0" y="165.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1a73e8">CEX-DEX</text><text x="315.0" y="185.0" text-anchor="middle" font-size="11" fill="#5f6368">价差发现+搬砖</text><line x1="340" y1="92" x2="485" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="410" y="140" width="170" height="58" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="495.0" y="165.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#ff9800">链上 MEV</text><text x="495.0" y="185.0" text-anchor="middle" font-size="11" fill="#5f6368">三明治/backrun</text><line x1="340" y1="92" x2="665" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="590" y="140" width="170" height="58" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="675.0" y="165.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1a73e8">跨链套利</text><text x="675.0" y="185.0" text-anchor="middle" font-size="11" fill="#5f6368">桥差价/聚合器</text><rect x="50" y="250" width="170" height="54" rx="8" fill="#f8f9fa" stroke="#1a73e8" stroke-width="1.2"/><text x="135.0" y="273.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#5f6368">同币不同所</text><text x="135.0" y="293.0" text-anchor="middle" font-size="11" fill="#5f6368">低门槛/公共RPC够用</text><rect x="230" y="250" width="170" height="54" rx="8" fill="#f8f9fa" stroke="#1a73e8" stroke-width="1.2"/><text x="315.0" y="273.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#5f6368">链上链下联动</text><text x="315.0" y="293.0" text-anchor="middle" font-size="11" fill="#5f6368">先跑通再增强基建</text><rect x="410" y="250" width="170" height="54" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="495.0" y="273.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">竞争白热化</text><text x="495.0" y="293.0" text-anchor="middle" font-size="11" fill="#5f6368">贿赂95%起步</text><rect x="590" y="250" width="170" height="54" rx="8" fill="#f8f9fa" stroke="#1a73e8" stroke-width="1.2"/><text x="675.0" y="273.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#5f6368">无flashswap</text><text x="675.0" y="293.0" text-anchor="middle" font-size="11" fill="#5f6368">需桥流动性</text><rect x="160" y="340" width="440" height="48" rx="8" fill="#f1f3f4" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="360.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#5f6368">其他：打新/保底/韩所溢价 · 资费套利 · 币股RWA(Bstock) · 空投撸毛</text>
+</svg></div><figcaption aria-hidden="true">图1 · 套利全景分类</figcaption>
+</figure>
+<table>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>玩法</th>
+<th>门槛</th>
+<th>群友评价</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CEX-CEX</td>
+<td>跨所搬砖，同币不同所价差</td>
+<td>⭐ 低（公共RPC够）</td>
+<td>价差从万五卷到万十一</td>
+</tr>
+<tr class="even">
+<td>CEX-DEX</td>
+<td>链上链下价差发现+搬砖</td>
+<td>⭐⭐ 中</td>
+<td>“先跑通再增强基建”</td>
+</tr>
+<tr class="odd">
+<td>链上 MEV</td>
+<td>三明治/backrun</td>
+<td>⭐⭐⭐⭐⭐ 极高</td>
+<td>贿赂95%起步，做不过</td>
+</tr>
+<tr class="even">
+<td>跨链套利</td>
+<td>桥差价/聚合器路径</td>
+<td>⭐⭐⭐ 高</td>
+<td>跨链没法 flashswap</td>
+</tr>
+<tr class="odd">
+<td>资费套利</td>
+<td>资金费率差</td>
+<td>⭐ 低</td>
+<td>“简单可操作（赚钱另说）”</td>
+</tr>
+<tr class="even">
+<td>币股 RWA</td>
+<td>Bstock/Ondo 价差</td>
+<td>⭐⭐ 中</td>
+<td>“1w4 撸 30u，风险巨大”</td>
+</tr>
+<tr class="odd">
+<td>打新/保底</td>
+<td>韩所溢价+项目保底</td>
+<td>⭐⭐ 中</td>
+<td>“亏也不会亏很多”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="五大幻觉paxon-思维模型">1.3 五大幻觉（Paxon 思维模型）</h2>
+<blockquote>
+<p>“幻觉价差、成本低估、规模错觉、模拟盘陷阱、执行失控” —— Paxon</p>
+</blockquote>
+<ul>
+<li><strong>幻觉价差</strong>：看着有价差，实际成交时没了</li>
+<li><strong>成本低估</strong>：手续费/滑点/资金成本吃光利润</li>
+<li><strong>规模错觉</strong>：回测小规模 OK，上规模被价格冲击打穿</li>
+<li><strong>模拟盘陷阱</strong>：模拟盘盈利 ≠ 实盘（滑点/成交/卡单）</li>
+<li><strong>执行失控</strong>：策略对但执行出错（订单失败/gas不够/卡单）</li>
+</ul>
+<p><strong>成本-规模是 U 形关系</strong>：太小被固定成本吃掉，太大被价格冲击和容量吃掉——<strong>中间最优</strong>（Paxon）。</p>
+<hr />
+<h1 id="第二章-入门三件套新手必做">第二章 入门三件套（新手必做）</h1>
+<h2 id="资金费套利最推荐入门">2.1 资金费套利（最推荐入门）</h2>
+<figure>
+<div class="figure"><svg style="width:100%;height:auto;max-width:760px" xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="Microsoft YaHei, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="24" y="38" font-size="20" font-weight="bold" fill="#1a73e8">图2 · 资金费套利流程（新手最推荐入门）</text>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5f6368"/></marker></defs><rect x="60" y="120" width="150" height="66" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="135.0" y="149.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a73e8">① 观察费率</text><text x="135.0" y="169.0" text-anchor="middle" font-size="11" fill="#5f6368">永续资金费率极端
+(正/负)</text><line x1="210" y1="153" x2="232" y2="153" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="220" y="120" width="150" height="66" rx="8" fill="#e6f4ea" stroke="#1a73e8" stroke-width="1.2"/><text x="295.0" y="149.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#188038">② 现货买入</text><text x="295.0" y="169.0" text-anchor="middle" font-size="11" fill="#5f6368">同所统一账户
+买入现货</text><line x1="370" y1="153" x2="392" y2="153" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="380" y="120" width="150" height="66" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="455.0" y="149.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a73e8">③ 合约对冲</text><text x="455.0" y="169.0" text-anchor="middle" font-size="11" fill="#5f6368">合约反向开仓
+锁定方向</text><line x1="530" y1="153" x2="552" y2="153" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="540" y="120" width="150" height="66" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="615.0" y="149.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#ff9800">④ 吃资金费</text><text x="615.0" y="169.0" text-anchor="middle" font-size="11" fill="#5f6368">每8小时结算
+收/付费率</text><rect x="220" y="260" width="320" height="62" rx="8" fill="#f1f3f4" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="287.0" text-anchor="middle" font-size="15" font-weight="bold" fill="#5f6368">收益 = 资金费率 × 仓位 − 手续费 − 滑点</text><line x1="295" y1="186" x2="295" y2="260" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="220" y="350" width="320" height="50" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="371.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">⚠ 前提：统一账户 · 正资金费少见 · 小资金不够手续费</text>
+</svg></div><figcaption aria-hidden="true">图2 · 资金费套利流程</figcaption>
+</figure>
+<p><strong>原理</strong>：永续合约按资金费率多空结算，费率极端时：现货买入 + 合约反向开仓 → 锁定方向吃费率。</p>
+<ul>
+<li>前提：<strong>统一账户</strong>（同所现货+合约自动对冲）——蝈蝈</li>
+<li>“正资金费太少见了”（hm910705）——机会不多但机制简单</li>
+<li>没发币的 DEX 可以做（ONDO 等）（王生）</li>
+</ul>
+<h2 id="cex-dex-价差发现-mvp第一个练手项目">2.2 CEX-DEX 价差发现 MVP（第一个练手项目）</h2>
+<blockquote>
+<p>“建议都给自己定个目标，比如做个 cex-dex 价差发现和自动搬砖的 mvp 版本，这应该算比较简单的了” —— Shen</p>
+</blockquote>
+<p><strong>做法</strong>： 1. 币安 API + DEX 报价（Uniswap/OKX DEX API）拉价格 2. 计算价差，超过阈值告警 3. 先做”发现”不做”执行”，跑通再加自动下单</p>
+<p><strong>要点</strong>：链上链下价差消失快——监控要快；“写脚本，先写个监控，写了用了就知道了”（王生）。</p>
+<h2 id="小资金-lp-与无常损失">2.3 小资金 LP 与无常损失</h2>
+<blockquote>
+<p>“回测了一下，LP是这个逻辑吧” —— 飞天小蟑螂</p>
+</blockquote>
+<ul>
+<li>LP 本质是<strong>做多</strong>（王生），套保意义不大</li>
+<li>牛市 LP 划算（去年 BSC 牛市很爽），熊市”一不小心就接盘”（高致林泉）</li>
+<li>风险控制：<strong>监控大额撤池</strong>（跑路信号）+ <strong>跑得快</strong>（王生）</li>
+<li>JLP 是少数能套保的 LP（海雅慕容）；普通 LP”赚的基本是机器人的钱”</li>
+<li>练手：博饼/Uni 组个 LP 理解无常损失（风一阵）</li>
+</ul>
+<hr />
+<h1 id="第三章-基建与工具">第三章 基建与工具</h1>
+<h2 id="节点rpc-选择">3.1 节点/RPC 选择</h2>
+<blockquote>
+<p>“你们都是理论强的一批，做一做就知道了，我都是用的公用 RPC” —— 海雅慕容</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>场景</th>
+<th>用什么</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CEX-CEX / CEX-DEX 套利</td>
+<td><strong>公共 RPC 够用</strong>（傻子爱思考）</td>
+</tr>
+<tr class="even">
+<td>链上抢跑（MEV 类）</td>
+<td>私有节点/自建（捡到一个橙子）</td>
+</tr>
+<tr class="odd">
+<td>实时性要求高的</td>
+<td>慢一步 = 机会没了（cfanboy）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>原则</strong>：先跑通，再考虑增强基建（傻子爱思考）。</p>
+<h2 id="监控系统群里共识的第一个需求">3.2 监控系统（群里共识的第一个需求）</h2>
+<blockquote>
+<p>“我们的第一个需求应该是，能监控和识别出市场的异动信号” —— qq124670461</p>
+</blockquote>
+<ul>
+<li>LP <strong>大额撤池监控</strong>（跑路信号）——王生实战经验</li>
+<li>链上异动/大额交易监控</li>
+<li>王生的跨所差价脚本踩坑：“单是订单成交问题就已经让我头疼了”</li>
+</ul>
+<h2 id="桥聚合器li.fi-与-crossex">3.3 桥聚合器：LI.FI 与 CrossEx</h2>
+<ul>
+<li><strong>LI.FI</strong>（jingwentian）：聚合多池流动性，<strong>链下计算最优执行路径</strong>（相当于链下预言机）；价格好不好看索引广度和路径算法；Bruce 当天写了教程（x.com/brucexu_eth）</li>
+<li><strong>CrossEx</strong>（Gate 产品）（零下/蝈蝈）：跨所资费套利+合约价差产品化；底层 = Gate 垫钱在不同交易所下单，内部算法算爆仓价</li>
+<li>对比：kyber 吃正向滑点（海雅慕容）；“多转一遍就慢很多，只能搞对实时性要求低的市场”（ingram）</li>
+</ul>
+<hr />
+<h1 id="第四章-进阶玩法">第四章 进阶玩法</h1>
+<h2 id="跨所搬砖">4.1 跨所搬砖</h2>
+<figure>
+<div class="figure"><svg style="width:100%;height:auto;max-width:760px" xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="Microsoft YaHei, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="24" y="38" font-size="20" font-weight="bold" fill="#1a73e8">图3 · CEX-CEX 跨所搬砖流程</text>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5f6368"/></marker></defs><rect x="60" y="110" width="150" height="60" rx="8" fill="两所同币报价
+阈值触发" stroke="#1a73e8" stroke-width="1.2"/><text x="135.0" y="136.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#e8f0fe">① 监控价差</text><text x="135.0" y="156.0" text-anchor="middle" font-size="11" fill="#5f6368">#1a73e8</text><rect x="230" y="110" width="150" height="60" rx="8" fill="低价的交易所
+市价/限价单" stroke="#1a73e8" stroke-width="1.2"/><text x="305.0" y="136.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#e6f4ea">② 所A买入</text><text x="305.0" y="156.0" text-anchor="middle" font-size="11" fill="#5f6368">#188038</text><rect x="400" y="110" width="150" height="60" rx="8" fill="高价的交易所
+立即卖出" stroke="#1a73e8" stroke-width="1.2"/><text x="475.0" y="136.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff8e6">③ 所B卖出</text><text x="475.0" y="156.0" text-anchor="middle" font-size="11" fill="#5f6368">#ff9800</text><rect x="570" y="110" width="150" height="60" rx="8" fill="扣手续费/滑点
+差价>成本才做" stroke="#1a73e8" stroke-width="1.2"/><text x="645.0" y="136.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#e8f0fe">④ 结算利润</text><text x="645.0" y="156.0" text-anchor="middle" font-size="11" fill="#5f6368">#1a73e8</text><line x1="220" y1="140" x2="242" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><line x1="390" y1="140" x2="412" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><line x1="560" y1="140" x2="582" y2="140" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="160" y="250" width="440" height="58" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="275.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#c62828">现实：价差从万五卷到万十一 · 订单成交是最大坑 · 卡单风险</text><line x1="310" y1="170" x2="310" y2="250" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="160" y="330" width="440" height="52" rx="8" fill="#f1f3f4" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="352.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#5f6368">进阶：监控撤池/异动信号 → 自动执行 → 私有节点提速</text>
+</svg></div><figcaption aria-hidden="true">图3 · 跨所搬砖流程</figcaption>
+</figure>
+<ul>
+<li>价差衰减：从万五吃到，卷到<strong>万十一</strong>才能赚（so far）</li>
+<li>最大坑：<strong>订单成交问题</strong>（王生）</li>
+<li>卡单风险：trump 那天 OK 卡了 150 万刀卡了半天（人生海海）</li>
+<li>“套利还得要大本金，小资金套的都不够给手续费的”（Sky610577219）</li>
+</ul>
+<h2 id="打新保底韩所溢价">4.2 打新/保底/韩所溢价</h2>
+<ul>
+<li>Squid 上韩所 + 打新价保底：“就算亏也不会亏很多”（王生）——注意是<strong>少亏</strong>不是不亏</li>
+<li>打新保底本质是”赌 dex 发币空投”（hm910705）</li>
+</ul>
+<h2 id="币股套利rwa-新方向">4.3 币股套利（RWA 新方向）</h2>
+<blockquote>
+<p>“这么多发行方都和股票锚定，感觉和稳定币套利思路应该很像” —— 为欢几何</p>
+</blockquote>
+<ul>
+<li>币安 Web3 API 支持 <strong>Bstock/Ondo/Xstock</strong>，Bstock 和主站 <strong>1:1 互换</strong></li>
+<li>空间：价差套利；风险：“1w4 撸 30u 风险感觉巨大”（零下）</li>
+<li>X 时间线被 bStocks 刷屏——关注度高但收益/风险比存疑</li>
+</ul>
+<hr />
+<h1 id="第五章-mev-深水区了解卷度谨慎进入">第五章 MEV 深水区（了解卷度，谨慎进入）</h1>
+<h2 id="三明治攻击原理">5.1 三明治攻击原理</h2>
+<p>大额交易进 mempool → bot 先买（frontrun）→ 大额推高价格 → bot 卖（backrun），吃中间价差。</p>
+<h2 id="现状白热化">5.2 现状：白热化</h2>
+<ul>
+<li>“主网贿赂已经 95% 起步了，做下来根本做不过”（捡到一个橙子）</li>
+<li>“主网的三明治已经是 ae13 的模样了”（0xPrint）</li>
+<li>“公共 mempool 被 builder 和 mev bot 把持的死死的，私有排序器又是黑盒”（jingwentian）</li>
+<li>原子（atomic）套利很卷，贿赂比例高（xzone818）</li>
+<li>Sol 出现大量订单流 bot，验证者下场”抢饭吃”（Ss）</li>
+</ul>
+<h2 id="差异化思路">5.3 差异化思路</h2>
+<ul>
+<li>正面竞争打不过 → <strong>打差异化</strong>（jingwentian）</li>
+<li>学习可以：flashbots（SigmaOPC）、复刻大佬 bot 吃尾气（Shen）</li>
+<li>参考项目：mev-flashbot-sandwich-rs（ㅤㅤ的半成品，可交流）</li>
+</ul>
+<hr />
+<h1 id="第六章-心法与纪律">第六章 心法与纪律</h1>
+<h2 id="手操-vs-自动化">6.1 手操 vs 自动化</h2>
+<blockquote>
+<p>“手操也能赚的时候反而赚的多，等有时间搞自动了反而赚的少” —— Shen</p>
+</blockquote>
+<ul>
+<li>行情好时手操来得及；顶级选手有专业看板/自动系统（　　　　　　）</li>
+<li>低延迟竞争 → 必须自动化；慢一步 = 算出来时别人已套完（cfanboy）</li>
+</ul>
+<h2 id="学习路线">6.2 学习路线</h2>
+<figure>
+<div class="figure"><svg style="width:100%;height:auto;max-width:760px" xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="Microsoft YaHei, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="24" y="38" font-size="20" font-weight="bold" fill="#1a73e8">图4 · 学习路线（对应手册四阶段）</text>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5f6368"/></marker></defs><rect x="280" y="40" width="200" height="50" rx="8" fill="#1a73e8" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="61.0" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff">链上套利学习路线</text><rect x="60" y="140" width="220" height="70" rx="8" fill="#e6f4ea" stroke="#1a73e8" stroke-width="1.2"/><text x="170.0" y="171.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#188038">新手期</text><text x="170.0" y="191.0" text-anchor="middle" font-size="11" fill="#5f6368">AI打卡 · 概念扫盲
+用AI定学习路径</text><rect x="60" y="260" width="220" height="70" rx="8" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.2"/><text x="170.0" y="291.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a73e8">练手期</text><text x="170.0" y="311.0" text-anchor="middle" font-size="11" fill="#5f6368">资费套利(模拟)
+CEX-DEX价差发现MVP
+小资金组LP</text><rect x="60" y="380" width="220" height="70" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="170.0" y="411.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#ff9800">进阶期</text><text x="170.0" y="431.0" text-anchor="middle" font-size="11" fill="#5f6368">跨所搬砖脚本
+监控系统(撤池/异动)
+LI.FI/桥聚合</text><rect x="480" y="140" width="220" height="70" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="590.0" y="171.0" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">高阶期</text><text x="590.0" y="191.0" text-anchor="middle" font-size="11" fill="#5f6368">flashbots/私有通道
+MEV逆向/吃尾气
+排序器/mempool</text><line x1="170" y1="190" x2="170" y2="210" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><line x1="170" y1="310" x2="170" y2="330" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><line x1="280" y1="175" x2="480" y2="175" stroke="#5f6368" stroke-width="1.5" marker-end="url(#arr)"/><rect x="60" y="470" width="640" height="0" rx="8" fill="#fff" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="466.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff"></text>
+</svg></div><figcaption aria-hidden="true">图4 · 学习路线</figcaption>
+</figure>
+<ul>
+<li>新手用 AI 当教练：让 AI 制定计划/拆解学习路径（何乐）；“新手问题 ai 基本都能解决了，不能把群友当大模型”（Jay）</li>
+<li>知识不稀缺，稀缺的是<strong>方向</strong>（haole）</li>
+<li>啃代码只是第一步；以前没开源的算法更痛苦（xzone818）</li>
+<li>共学建议：每天聚焦一个点，群策群力（qq124670461）；找个案例一起跑赛马共享源码（wxid_6muovuyues8122）</li>
+</ul>
+<h2 id="风险纪律">6.3 风险纪律</h2>
+<figure>
+<div class="figure"><svg style="width:100%;height:auto;max-width:760px" xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="Microsoft YaHei, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="24" y="38" font-size="20" font-weight="bold" fill="#1a73e8">图5 · 风险地图（群友原话整理）</text>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5f6368"/></marker></defs><rect x="280" y="40" width="200" height="50" rx="8" fill="#c62828" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="61.0" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff">套利风险地图</text><rect x="60" y="140" width="200" height="66" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="160.0" y="169.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">五大幻觉</text><text x="160.0" y="189.0" text-anchor="middle" font-size="11" fill="#5f6368">幻觉价差/成本低估
+规模错觉/模拟盘陷阱/执行失控</text><rect x="280" y="140" width="200" height="66" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="169.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">市场风险</text><text x="380.0" y="189.0" text-anchor="middle" font-size="11" fill="#5f6368">插针爆掉/价差收敛
+卡单(OK卡150万刀案例)</text><rect x="500" y="140" width="200" height="66" rx="8" fill="#fdecea" stroke="#1a73e8" stroke-width="1.2"/><text x="600.0" y="169.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">执行风险</text><text x="600.0" y="189.0" text-anchor="middle" font-size="11" fill="#5f6368">订单成交失败
+gas不够/网络延迟</text><rect x="60" y="300" width="200" height="66" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="160.0" y="329.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#ff9800">容量风险</text><text x="160.0" y="349.0" text-anchor="middle" font-size="11" fill="#5f6368">机会容量小
+大资金吃价格冲击</text><rect x="280" y="300" width="200" height="66" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="380.0" y="329.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#ff9800">本金门槛</text><text x="380.0" y="349.0" text-anchor="middle" font-size="11" fill="#5f6368">小资金不够手续费
+套利要大本金</text><rect x="500" y="300" width="200" height="66" rx="8" fill="#fff8e6" stroke="#ff9800" stroke-width="1.2"/><text x="600.0" y="329.0" text-anchor="middle" font-size="12" font-weight="bold" fill="#ff9800">竞争风险</text><text x="600.0" y="349.0" text-anchor="middle" font-size="11" fill="#5f6368">顶级taker吃走利润
+贿赂95%起步</text><rect x="160" y="395" width="440" height="0" rx="8" fill="#fff" stroke="#1a73e8" stroke-width="1.2"/><text x="380.0" y="391.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff"></text>
+</svg></div><figcaption aria-hidden="true">图5 · 风险地图</figcaption>
+</figure>
+<ol type="1">
+<li><strong>敞口管理</strong>：套利也有风险，敞口大小自己控制（海雅慕容）</li>
+<li><strong>卡单预案</strong>：大行情时交易所可能卡单（人生海海案例）</li>
+<li><strong>跑路信号</strong>：监控大额撤池（王生）</li>
+<li><strong>容量意识</strong>：机会容量小就小仓位（q97531x：“就投入了 1000u”）</li>
+<li><strong>不梭哈</strong>：0xsun 梭哈是赌，不是套利（Marlboro 反例）</li>
+</ol>
+<hr />
+<h1 id="附录-a-黑话词典36-条">附录 A · 黑话词典（36 条）</h1>
+<table>
+<thead>
+<tr class="header">
+<th>黑话</th>
+<th>大白话</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LP</td>
+<td>流动性池，注入两种代币赚手续费</td>
+</tr>
+<tr class="even">
+<td>无常损失</td>
+<td>币价波动导致 LP 比直接持有亏的部分</td>
+</tr>
+<tr class="odd">
+<td>JLP</td>
+<td>Jupiter 的 LP 代币（带套保属性）</td>
+</tr>
+<tr class="even">
+<td>套保</td>
+<td>对冲保值，另一条腿抵消风险</td>
+</tr>
+<tr class="odd">
+<td>打新价</td>
+<td>项目发行申购价，比二级便宜</td>
+</tr>
+<tr class="even">
+<td>保底</td>
+<td>项目方承诺兜底价</td>
+</tr>
+<tr class="odd">
+<td>韩所</td>
+<td>韩国交易所（上币常有溢价）</td>
+</tr>
+<tr class="even">
+<td>资金费套利</td>
+<td>永续多空费率差异，现货+合约对冲吃费率</td>
+</tr>
+<tr class="odd">
+<td>统一账户</td>
+<td>同所现货+合约持仓，自动对冲</td>
+</tr>
+<tr class="even">
+<td>跨所差价</td>
+<td>同币不同所价差，搬砖</td>
+</tr>
+<tr class="odd">
+<td>万五/万十一</td>
+<td>万分之五/万分之十一的价差</td>
+</tr>
+<tr class="even">
+<td>MEV</td>
+<td>验证者通过交易排序赚的钱</td>
+</tr>
+<tr class="odd">
+<td>三明治攻击</td>
+<td>大额交易前后插队买/卖吃价差</td>
+</tr>
+<tr class="even">
+<td>backrun/frontrun</td>
+<td>跟在大额交易后面/前面插队</td>
+</tr>
+<tr class="odd">
+<td>mempool</td>
+<td>交易等待打包的公共池</td>
+</tr>
+<tr class="even">
+<td>builder</td>
+<td>区块构建者，决定打包顺序</td>
+</tr>
+<tr class="odd">
+<td>排序器</td>
+<td>L2 交易排序器（私有=黑盒）</td>
+</tr>
+<tr class="even">
+<td>taker</td>
+<td>吃单方</td>
+</tr>
+<tr class="odd">
+<td>flashbots</td>
+<td>MEV 私有通道基础设施</td>
+</tr>
+<tr class="even">
+<td>Bstock</td>
+<td>币安股票代币</td>
+</tr>
+<tr class="odd">
+<td>Ondo/Xstock</td>
+<td>RWA 股票代币</td>
+</tr>
+<tr class="even">
+<td>RWA</td>
+<td>现实世界资产代币化</td>
+</tr>
+<tr class="odd">
+<td>Squid</td>
+<td>跨链流动性协议</td>
+</tr>
+<tr class="even">
+<td>撸</td>
+<td>刷收益/空投</td>
+</tr>
+<tr class="odd">
+<td>A8/A9</td>
+<td>资产千万/亿级</td>
+</tr>
+<tr class="even">
+<td>卡单</td>
+<td>交易所下单被卡</td>
+</tr>
+<tr class="odd">
+<td>插针</td>
+<td>价格瞬间剧烈波动</td>
+</tr>
+<tr class="even">
+<td>撤池</td>
+<td>LP 撤出资金池（跑路信号）</td>
+</tr>
+<tr class="odd">
+<td>公用 RPC/私有节点</td>
+<td>链上查询节点（公用慢/私有快）</td>
+</tr>
+<tr class="even">
+<td>gas 不够</td>
+<td>链上手续费不足交易失败</td>
+</tr>
+<tr class="odd">
+<td>敞口</td>
+<td>风险暴露程度</td>
+</tr>
+<tr class="even">
+<td>收敛</td>
+<td>价差回归</td>
+</tr>
+<tr class="odd">
+<td>赛马</td>
+<td>多策略同时跑比拼</td>
+</tr>
+<tr class="even">
+<td>尾气</td>
+<td>大佬吃肉剩下的利润</td>
+</tr>
+<tr class="odd">
+<td>偷撸</td>
+<td>悄悄做不分享的策略</td>
+</tr>
+<tr class="even">
+<td>马太效应</td>
+<td>强者愈强，头部通吃</td>
+</tr>
+</tbody>
+</table>
+<h1 id="附录-b-工具与项目清单">附录 B · 工具与项目清单</h1>
+<table>
+<thead>
+<tr class="header">
+<th>工具</th>
+<th>用途</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>arbitrage-playbook</td>
+<td>套利思路 issue 库（w3player）</td>
+<td>hm910705</td>
+</tr>
+<tr class="even">
+<td>LI.FI</td>
+<td>桥聚合器（链下最优路径）</td>
+<td>jingwentian/Bruce</td>
+</tr>
+<tr class="odd">
+<td>CrossEx</td>
+<td>Gate 跨所资费套利产品</td>
+<td>零下/蝈蝈</td>
+</tr>
+<tr class="even">
+<td>mev-flashbot-sandwich-rs</td>
+<td>三明治监控半成品</td>
+<td>ㅤㅤ</td>
+</tr>
+<tr class="odd">
+<td>wx-cli</td>
+<td>微信自动化（AI 打卡）</td>
+<td>成员186</td>
+</tr>
+<tr class="even">
+<td>币安 Web3 API</td>
+<td>Bstock/Ondo/Xstock 交易</td>
+<td>为欢几何</td>
+</tr>
+</tbody>
+</table>
+<h1 id="附录-c-大佬与信息来源">附录 C · 大佬与信息来源</h1>
+<table>
+<thead>
+<tr class="header">
+<th>人物</th>
+<th>可学内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bruce（群主）</td>
+<td>每日分享（LI.FI 教程）、共学组织</td>
+</tr>
+<tr class="even">
+<td>IronC</td>
+<td>套利程序实战（X 帖子）</td>
+</tr>
+<tr class="odd">
+<td>yourquantguy</td>
+<td>X 上分享套利思路</td>
+</tr>
+<tr class="even">
+<td>海雅慕容</td>
+<td>跨链案例、公用 RPC 实战</td>
+</tr>
+<tr class="odd">
+<td>王生</td>
+<td>LP 撤池监控、跨所脚本踩坑</td>
+</tr>
+<tr class="even">
+<td>hm910705</td>
+<td>方法论、arbitrage-playbook</td>
+</tr>
+<tr class="odd">
+<td>Shen</td>
+<td>CEX-DEX MVP 方向</td>
+</tr>
+<tr class="even">
+<td>jingwentian</td>
+<td>LI.FI 原理、mempool 竞争</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>本手册由群聊真实讨论提炼而成，内容基于 2026-08-05 群聊记录。投资有风险，套利需谨慎。</em></p>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoonPub Preview</title>
+</head>
+<body style="margin:0;background:#f6f7f9;padding:24px 12px;">
+<main style="box-sizing: border-box; max-width: 720px; margin: 0 auto; background:#fff; padding:28px 24px; box-shadow:0 12px 36px rgba(15,23,42,0.08);">
+<section style="font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; font-size: 15px; line-height: 1.9; letter-spacing: 0.05em; color: #333; background: #fff; padding: 0 4px;">
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cover</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:900px;height:500px;overflow:hidden;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',serif}
+.cover{width:900px;height:500px;background:#1c1c1e;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:80px 90px 70px}
+.cover::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#c9a96e,#e8d5b7,#c9a96e)}
+.cover::after{content:'';position:absolute;top:3px;left:40px;right:40px;height:1px;background:rgba(201,169,110,0.3)}
+.book-icon{position:absolute;top:50px;right:80px;width:120px;height:160px;border:2px solid rgba(201,169,110,0.3);border-radius:2px 8px 8px 2px;background:linear-gradient(135deg,rgba(201,169,110,0.08),rgba(201,169,110,0.02))}
+.book-icon::after{content:'';position:absolute;left:8px;top:0;bottom:0;width:1px;background:rgba(201,169,110,0.15)}
+.book-spine{position:absolute;top:40px;right:195px;width:6px;height:170px;background:linear-gradient(180deg,rgba(201,169,110,0.2),rgba(201,169,110,0.05));border-radius:1px}
+.tag{font-size:11px;font-weight:600;letter-spacing:4px;color:#c9a96e;text-transform:uppercase;margin-bottom:24px}
+.title{font-size:40px;font-weight:900;line-height:1.25;color:#f5f0e8;margin-bottom:14px;letter-spacing:1px;max-width:620px}
+.subtitle{font-size:16px;color:#a09580;line-height:1.8;margin-bottom:30px;max-width:540px;font-style:italic}
+.meta{display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px}
+.author{font-size:14px;color:#8a8070;letter-spacing:1px}
+.dot{color:#c9a96e;margin:0 6px}
+</style>
+</head>
+<body><div class="cover"><div class="book-icon"></div><div class="book-spine"></div><div class="tag">READING NOTES</div><h1 class="title">共学 D3：Solana 第一笔真实 swap 全流程（Jupiter API + mainnet）</h1><p class="subtitle">Jupiter API 旧端点已下线，新 API 只路由 mainnet。今天完成了第一笔真实链上 swap：0.01 SOL 走 4 池多跳路由，Gas 仅 0.0000086 SOL，并踩到一个「客户端自报成功 ≠ 链上可查」的坑。</p><div class="meta"><span class="author">Paxon Qiao</span></div></div></body>
+</html>
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">共学 D3：Solana 第一笔真实 swap 全流程</h2>
+
+<section style="margin: 1.9em 0; padding: 18px 20px 18px 24px; background: #f8f8f8; border: 1px solid #e5e7eb; border-left: 4px solid #2c2c2c; border-radius: 0 8px 8px 0; box-shadow: 0 2px 8px rgba(15,23,42,0.05); color: #888; font-size: 15px; line-height: 1.9; letter-spacing: 0.08em;">链上套利残酷共学 · 第 3 天
+2026-08-07</section>
+
+<section style="margin: 2.2em 0; text-align:center;"><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section><span style="display:inline-block;width:6px;height:6px;border:1px solid #2c2c2c;border-radius:50%;margin:0 10px;vertical-align:middle;background:#fff;"></span><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section></section>
+
+<p style="margin: 0 0 1.55em; color: #555; font-size: 16px; line-height: 2.05; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify;">计划里 D3 是"第一笔 devnet swap"，最后变成了 mainnet 真实小额 swap——中间踩了三个坑，每个都值得记下来。</p>
+
+<section style="margin: 2.2em 0; text-align:center;"><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section><span style="display:inline-block;width:6px;height:6px;border:1px solid #2c2c2c;border-radius:50%;margin:0 10px;vertical-align:middle;background:#fff;"></span><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section></section>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">坑一：Jupiter 旧 API 已下线/被墙</h2>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">按计划先探测 Jupiter API 连通性。<code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">quote-api.jup.ag</code> 的 v6/v7 端点<strong style="color: #1a1a1a;">超时无响应</strong>——DNS 正常，但连接不通（中国网络被墙）。</p>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">现行 API 是：</p>
+
+<section style="margin:20px 0;">
+<section style="display:inline-block;background:#2c2c2c;color:#fff;font-weight:bold;font-size:12px;padding:6px 12px;letter-spacing:1px;border-radius:6px 6px 0 0;">CODE</section>
+<section style="background:#f5f5f5;border:1px solid #e5e7eb;border-radius:0 6px 6px 6px;padding:16px;font-family:SF Mono,Menlo,Consolas,monospace;font-size:13px;line-height:1.75;color:#555;overflow-x:auto;">
+<pre style="margin:0;">https://api.jup.ag/swap/v1/quote   （Metis 路由引擎报价）
+https://api.jup.ag/swap/v2/build   （Router 路径，返回 raw instructions）</pre>
+</section></section>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">而且从中国网络直连依然超时，<strong style="color: #1a1a1a;">必须走本机 Clash 代理 <code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">127.0.0.1:7890</code></strong> 才能访问。</p>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">坑二：Jupiter 只路由 mainnet，devnet 无池</h2>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">quote 成功后想发 devnet swap——结果发现 <strong style="color: #1a1a1a;">Jupiter Swap API 只索引 MAINNET 流动性</strong>。devnet 上 program 和 USDC mint 都在，但 Metis 路由引擎不索引 devnet 的池子，无池可路由。</p>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">结论：devnet 上没有现成池子，想练 devnet 得自己用 Raydium SDK 建测试池（工程量不小，留给后续）。</p>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;"><strong style="color: #1a1a1a;">决定：改走 mainnet 极小金额真实 swap</strong>——0.01 SOL（约 0.73 美元），风险可忽略。</p>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">执行记录：quote → build → 签名 → 广播</h2>
+
+<section style="margin: 18px 0 22px; padding: 4px 0;">
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;min-width:22px;height:22px;padding:0 4px;background:#2c2c2c;color:#fff;border-radius:999px;text-align:center;line-height:22px;font-size:12px;font-weight:bold;">1</span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">quote</strong>：0.01 SOL → 0.73 USDC（minOut 0.72，slippage 1%）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;min-width:22px;height:22px;padding:0 4px;background:#2c2c2c;color:#fff;border-radius:999px;text-align:center;line-height:22px;font-size:12px;font-weight:bold;">2</span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">build</strong>：拿到 computeBudget + 4 条 setup + swapInstruction（JUP6Lk...）+ 4 张 lookup table</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;min-width:22px;height:22px;padding:0 4px;background:#2c2c2c;color:#fff;border-radius:999px;text-align:center;line-height:22px;font-size:12px;font-weight:bold;">3</span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">组装</strong>：<code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">@solana/web3.js</code> 组装 v0 transaction，本地 <code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">id.json</code> 签名（私钥不出本机）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;min-width:22px;height:22px;padding:0 4px;background:#2c2c2c;color:#fff;border-radius:999px;text-align:center;line-height:22px;font-size:12px;font-weight:bold;">4</span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">广播</strong>：发送到 mainnet Helius RPC → confirmed</td></tr>
+</table></section>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">链上验证（二值判据）</h2>
+
+<section style="margin: 18px 0 22px; padding: 4px 0;">
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">tx</strong>: <code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">27QRepQ1pewa8Y2YUfWEZJ5EGGiaaRRWgLko3Y4AxLFpvpiwj9PCVWQhkAZq6zze8giqxEtNck1QRNa7fQQ6Jid5</code></td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">Solscan</strong>: <a href="https://solscan.io/tx/27QRepQ1pewa8Y2YUfWEZJ5EGGiaaRRWgLko3Y4AxLFpvpiwj9PCVWQhkAZq6zze8giqxEtNck1QRNa7fQQ6Jid5" style="color:#2c2c2c;font-weight:bold;text-decoration:none;border-bottom:1px solid #f3f4f6;word-break:break-all;">https://solscan.io/tx/27QRepQ1pewa8Y2YUfWEZJ5EGGiaaRRWgLko3Y4AxLFpvpiwj9PCVWQhkAZq6zze8giqxEtNck1QRNa7fQQ6Jid5</a></td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">路由</strong>：PancakeSwap → Meteora DLMM → AlphaQ → Deriverse（4 池多跳）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">Gas</strong>：0.0000086 SOL（约 0.0006 美元）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><strong style="color: #1a1a1a;">钱包核对</strong>：SOL 0.201154956 → 0.191146329（扣 0.01 + fee 吻合）；USDC 29.5 → 30.226164（+0.726 与 quote 0.73 一致）</td></tr>
+</table></section>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">坑三：客户端自报成功 ≠ 链上可查</h2>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">广播后客户端立刻返回 SUCCESS，但<strong style="color: #1a1a1a;">马上查 <code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">getTransaction</code> 是 NOT FOUND</strong>——索引延迟约 3 秒，等几秒再查才成功。</p>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;">这个教训很重要：<strong style="color: #1a1a1a;">「客户端自报」不能当「链上可查」的证据</strong>。验证必须用二值判据（tx hash 在 Solscan/链上存在才算数），这也是这几天共学一直在强调的方法论。</p>
+
+<section style="margin: 2.2em 0; text-align:center;"><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section><span style="display:inline-block;width:6px;height:6px;border:1px solid #2c2c2c;border-radius:50%;margin:0 10px;vertical-align:middle;background:#fff;"></span><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section></section>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">产出</h2>
+
+<section style="margin: 18px 0 22px; padding: 4px 0;">
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">scripts/jupiter_swap_d3.py</code> — quote + build 流程（Python）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;"><code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">scripts/swap_mainnet.mjs</code> — 完整签名+广播（Node）</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;"><code style="background:#f5f5f5;padding:2px 4px;border-radius:3px;font-size:14px;font-family:monospace;">solana-arbitrage</code> skill 更新：jupiter-swap-api-2026.md 端点表 + 实测结果</td></tr>
+</table></section>
+
+<h2 style="font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 2.3em 0 1em; padding: 0 0 10px 14px; border-left: 5px solid #2c2c2c; border-bottom: 1px solid #e5e7eb; letter-spacing: 1px; line-height:1.45;">明天（D4）</h2>
+
+<section style="margin: 18px 0 22px; padding: 4px 0;">
+<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#f3f4f6;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#f3f4f6;color:#555;font-size:15px;line-height:1.8;">价格监控脚本 v0：Helius RPC / Jupiter Quote API 拉 DEX 报价，Python 打印价差</td></tr>
+<tr><td style="width:34px;padding:8px 0 8px 4px;vertical-align:top;text-align:center;background:#fff;"><span style="display:inline-block;width:7px;height:7px;background:#2c2c2c;border-radius:50%;vertical-align:middle;"></span></td><td style="padding:8px 12px 8px 4px;vertical-align:top;background:#fff;color:#555;font-size:15px;line-height:1.8;">读 toll-fee-pool / premium-buyin-lp 群讨论 case</td></tr>
+</table></section>
+
+<section style="margin: 2.2em 0; text-align:center;"><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section><span style="display:inline-block;width:6px;height:6px;border:1px solid #2c2c2c;border-radius:50%;margin:0 10px;vertical-align:middle;background:#fff;"></span><section style="display:inline-block;width:42px;height:2px;background:#e5e7eb;vertical-align:middle;"></section></section>
+
+<p style="margin: 0 0 1.25em; color: #555; font-size: 15px; line-height: 1.95; letter-spacing: 0.08em; word-spacing: 0.05em; text-align: justify; text-indent: 2em;"><em>本文为个人学习记录，不构成投资建议。链上套利有风险，请自行评估。</em></p>
+
+
+
+
+
+</section>
+
+</main>
+</body>
+</html>

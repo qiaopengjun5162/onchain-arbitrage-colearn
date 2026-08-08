@@ -1,0 +1,37 @@
+# ===== 安全：凭证/密钥（绝不提交） =====
+.env
+.env.*
+!.env.sample
+*.key
+*.pem
+*id.json
+*keypair.json
+*wallet.json
+*secret.json
+*credential*.json
+*_secret*
+*.p12
+*.keystore
+
+# ===== 构建产物 =====
+target/
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.cache/
+
+# ===== 本地数据/日志（按需提交，默认排除） =====
+data/*.csv
+data/*.json
+*.log
+.DS_Store
+
+# ===== 编辑器/OS =====
+.idea/
+.vscode/
+*.swp
+*.swo

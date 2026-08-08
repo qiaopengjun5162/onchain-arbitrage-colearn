@@ -1,0 +1,22 @@
+[articles]
+root = "/Users/qiaopengjun/Code/Solana/onchain-arbitrage-colearn"
+
+[wechat]
+appid = ""
+author = "Paxon Qiao"
+account_type = "personal"
+auth_method = "cookie"
+auto_publish = false
+theme = "geek-black"
+
+[footer]
+enabled = true
+variant = "community"
+title = "寻月隐君"
+description = "专注 Web3、Python、Go、Rust 技术分享，探索区块链、智能合约、DApp 等前沿内容。\n技术的光，未来的道。"
+rules = "本文为个人学习记录，不构成投资建议。链上套利有风险，请自行评估。"
+qrcode = "social/wechat/qrcode-xunyuege-20260808.jpg"
+qrcode_note = "扫码加入「寻月阁」共学群"
+follow_image = "wechatmoonpost.jpg"
+follow_text = "关注《寻月隐君》，一起在技术的星空下寻找属于自己的明月。"
+divider = "— · —"
