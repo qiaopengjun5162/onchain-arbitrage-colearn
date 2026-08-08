@@ -31,6 +31,12 @@
   - [ ] GitHub：
   - [ ] 链上（合约/浏览器）：
   - [ ] 第三方研报：
+- 美股标的补充源（一手数据，`notes/us-stock-free-data-sources-20260808.md`）：
+  - [ ] DATAROMA（大佬 13F 持仓）：https://dataroma.com/m/home.php
+  - [ ] Finviz（板块强弱图）：https://finviz.com/map.ashx
+  - [ ] Macrotrends（历史估值 PE/PS/PB）：https://macrotrends.net
+  - [ ] Seeking Alpha（多空观点）：https://seekingalpha.com
+  - [ ] TradingView（K 线/指标）：https://tw.tradingview.com
 
 ## Step 3. 基础信息与团队背景
 
