@@ -1,0 +1,117 @@
+name: Daily Market Snapshot
+
+on:
+  schedule:
+    # 每天 02:00 UTC = 北京 10:00（美股开盘前 12h，闭市漂移窗口）
+    - cron: "0 2 * * *"
+  workflow_dispatch:      # 支持手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          pip install --quiet ccxt yfinance requests
+
+      # 1. 币股时钟差快照（gate xStocks vs yfinance 美股）
+      - name: Stock clock-drift snapshot
+        run: |
+          mkdir -p data
+          python3 - <<'PY'
+          import ccxt, csv, os
+          from datetime import datetime, timezone
+          import yfinance as yf
+
+          STOCKS = {
+              "NVDAX/USDT": "NVDA", "TSLAX/USDT": "TSLA", "COINX/USDT": "COIN",
+              "MSTRX/USDT": "MSTR", "AAPLX/USDT": "AAPL", "AMZNX/USDT": "AMZN",
+              "GOOGLX/USDT": "GOOGL", "QQQX/USDT": "QQQ", "SPYX/USDT": "SPY",
+              "MCDX/USDT": "MCD", "AVGOX/USDT": "AVGO",
+          }
+          ex = ccxt.gate({"enableRateLimit": True, "timeout": 15000})
+          rows = []
+          for pair, us_sym in STOCKS.items():
+              try:
+                  t = ex.fetch_ticker(pair)
+                  h = yf.Ticker(us_sym).history(period="1d")
+                  if not t.get("bid") or len(h) == 0:
+                      continue
+                  mid = (t["bid"] + t["ask"]) / 2
+                  us_p = float(h["Close"].iloc[-1])
+                  dev = (mid - us_p) / us_p * 10000
+                  rows.append({
+                      "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                      "pair": pair, "us_sym": us_sym,
+                      "gate_mid": round(mid, 2), "us_price": round(us_p, 2),
+                      "dev_bps": round(dev, 1),
+                  })
+              except Exception:
+                  continue
+          if rows:
+              new = not os.path.exists("data/stock_vs_us_stock_log.csv")
+              with open("data/stock_vs_us_stock_log.csv", "a", newline="") as f:
+                  w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+                  if new:
+                      w.writeheader()
+                  w.writerows(rows)
+              top = sorted(rows, key=lambda r: -abs(r["dev_bps"]))[:3]
+              print("TOP 偏离:", [(r["pair"], r["dev_bps"]) for r in top])
+          PY
+
+      # 2. Solana DEX 价差快照（Jupiter quote，公开 API）
+      - name: Solana DEX spread snapshot
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, csv, os
+          from datetime import datetime, timezone
+
+          SOL = "So11111111111111111111111111111111111111112"
+          USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+          url = f"https://api.jup.ag/swap/v1/quote?inputMint={SOL}&outputMint={USDC}&amount=1000000000"
+          req = urllib.request.Request(url, headers={"User-Agent": "gh-actions-snapshot"})
+          with urllib.request.urlopen(req, timeout=20) as resp:
+              d = json.loads(resp.read())
+          plan = d.get("routePlan", [])
+          rows = []
+          for step in plan:
+              si = step.get("swapInfo", {})
+              if si:
+                  out = int(si.get("outAmount", 0)) / 1e6
+                  rows.append({
+                      "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                      "amm": si.get("label", "?"),
+                      "price": round(out, 4),
+                  })
+          if rows:
+              new = not os.path.exists("data/solana_dex_snapshot.csv")
+              with open("data/solana_dex_snapshot.csv", "a", newline="") as f:
+                  w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+                  if new:
+                      w.writeheader()
+                  w.writerows(rows)
+              print("Jupiter 最优:", rows[0])
+          PY
+
+      # 3. 提交数据回仓库
+      - name: Commit snapshot data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/*.csv || true
+          if git diff --cached --quiet; then
+            echo "无数据变化，跳过提交"
+          else
+            git commit -m "chore: daily market snapshot $(date -u +%Y-%m-%d)"
+            git push
+          fi
