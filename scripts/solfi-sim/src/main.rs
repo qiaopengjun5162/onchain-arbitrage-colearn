@@ -6,7 +6,7 @@ mod types;
 mod utils;
 
 use crate::args::{App, Command};
-use crate::cmd::{calculate_spread, display_cutoffs, fetch_and_persist_accounts, simulate};
+use crate::cmd::{calculate_spread, display_cutoffs, fetch_and_persist_accounts, simulate, verify_slippage};
 use crate::constants::DEFAULT_RPC_URL;
 use clap::Parser;
 use dotenv::dotenv;
@@ -40,6 +40,9 @@ async fn main() -> eyre::Result<()> {
         Command::Spreads { starting_usdc } => calculate_spread(starting_usdc)?,
         Command::Simulate { amount, direction, slot, ignore_errors } => {
             simulate(direction, amount, slot, ignore_errors, true)?;
+        }
+        Command::Slippage { amount } => {
+            verify_slippage(amount)?;
         }
     }
 

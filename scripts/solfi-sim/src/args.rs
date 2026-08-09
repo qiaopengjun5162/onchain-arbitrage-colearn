@@ -33,6 +33,13 @@ pub enum Command {
         #[arg(long)]
         ignore_errors: bool,
     },
+
+    /// Full round-trip slippage verification (USDC → buy SOL → sell back)
+    Slippage {
+        /// Amount of USDC to start the round trip with
+        #[arg(short, long, default_value_t = 1000.0)]
+        amount: f64,
+    },
 }
 
 #[derive(Debug, Parser)]

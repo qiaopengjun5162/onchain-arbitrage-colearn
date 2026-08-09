@@ -130,6 +130,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", action="store_true")
     ap.add_argument("--watch", type=int, default=0)
+    ap.add_argument("--watchdog", action="store_true", help="cron 模式：全静默，只有环净收益>0 才输出")
     args = ap.parse_args()
 
     if not HELIUS_KEY:
@@ -140,6 +141,27 @@ def main():
         raydium = read_raydium()
         jup = jupiter_quotes()
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        if not raydium or not jup:
+            if not args.watchdog:
+                print(f"\n=== 真实滑点验证 @ {ts} ===")
+                print("Raydium 直读或 Jupiter 失败")
+            return
+        # 算净收益
+        positives = []
+        for r in jup:
+            if "error" in r:
+                continue
+            c = next((x for x in raydium["curve"] if x["amount_sol"] == r["amount_sol"]), None)
+            if not c:
+                continue
+            net_bps = (r["exec_price"] - c["buy_cost_price"]) / c["buy_cost_price"] * 10000
+            if net_bps > 0:
+                positives.append((r["amount_sol"], net_bps))
+        if args.watchdog:
+            # watchdog：只报正收益（静默模式）
+            if positives:
+                print(f"⚠️ 环净收益转正 @ {ts}：{positives}")
+            return
         print(f"\n=== 真实滑点验证 @ {ts} ===")
         if not raydium:
             print("Raydium 直读失败")
