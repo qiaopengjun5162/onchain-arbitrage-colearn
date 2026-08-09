@@ -17,6 +17,7 @@
 | **资金费率信号方法论**（Z-score + OI 交叉） | `notes/funding-rate-signal-engineering-20260808.md` |
 | **币股时钟差**（闭市漂移→开盘收敛） | `notes/tokenized-stock-arbitrage.md` |
 | **监控脚本全家桶**（8 个哨兵） | `scripts/` + `daily/2026-08-08.md` 总结 |
+| **自建节点/基建验收清单**（延迟/吞吐/一致性/资源） | `notes/node-infra-acceptance-checklist-20260808.md` |
 | **Solana 研究线**（Rust 双实现） | `scripts/solana-rs/`（quote/build/swap/spread） |
 
 ## 📈 实测发现（2026-08-08）

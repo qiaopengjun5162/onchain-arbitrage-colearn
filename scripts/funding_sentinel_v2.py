@@ -31,12 +31,12 @@ PROXY = os.environ.get("PROXY", "http://127.0.0.1:7890")
 # 永续合约：币种 → 各所 symbol（统一用 USDT 本位永续）
 SYMBOLS = ["BTC", "ETH", "SOL", "DOGE", "XRP", "BNB", "ADA", "AVAX", "LINK", "SUI"]
 
-# 各所配置：funding ✅ / oi ✅ / 历史 ✅
+# 各所配置：funding ✅ / oi ✅ / 历史 ✅ / spot（basis 用）
 EXCHANGES = {
-    "okx": {"swap": "{sym}/USDT:USDT", "has_oi": True, "has_hist": True},
-    "bitget": {"swap": "{sym}/USDT:USDT", "has_oi": True, "has_hist": True},
-    "kucoin": {"swap": "{sym}/USDT:USDT", "has_oi": True, "has_hist": True},
-    "gate": {"swap": "{sym}/USDT:USDT", "has_oi": False, "has_hist": True},
+    "okx": {"swap": "{sym}/USDT:USDT", "spot": "{sym}/USDT", "has_oi": True, "has_hist": True},
+    "bitget": {"swap": "{sym}/USDT:USDT", "spot": "{sym}/USDT", "has_oi": True, "has_hist": True},
+    "kucoin": {"swap": "{sym}/USDT:USDT", "spot": "{sym}/USDT", "has_oi": True, "has_hist": True},
+    "gate": {"swap": "{sym}/USDT:USDT", "spot": "{sym}/USDT", "has_oi": False, "has_hist": True},
 }
 
 # 信号阈值
@@ -44,7 +44,9 @@ ZSCORE_HIGH = 1.5          # |z-score| ≥1.5 视为显著偏离基线
 RANK_TOP_N = 3             # 横截面 Rank 前 N 名报信号
 OI_CHANGE_BPS = 100        # OI 环比变化 ≥1% 视为方向性（用 8h 窗口对比需要历史；这里用现货 OI 快照做近似）
 PRICE_FLAT_PCT = 0.5       # 24h 价格变动 <0.5% 视为横盘
+BASIS_PCTILE_HIGH = 0.8    # basis 分位 ≥0.8 = 永续溢价处历史高位（接盘信号）
 LOG_PATH = Path(__file__).parent.parent / "data" / "funding_signal_log.csv"
+BASIS_LOG_PATH = Path(__file__).parent.parent / "data" / "funding_basis_history.csv"
 
 def build_exchange(name: str):
     cls = getattr(ccxt, name)
@@ -91,6 +93,54 @@ def fetch_price_pct(exchange, swap_sym: str):
         return None, None
 
 
+def fetch_basis(exchange, swap_sym: str, spot_sym: str):
+    """永续-现货价差（bps）。永续溢价 = 正 basis = 多头拥挤信号。"""
+    try:
+        swap_t = exchange.fetch_ticker(swap_sym)
+        spot_t = exchange.fetch_ticker(spot_sym)
+        swap_p = swap_t.get("last")
+        spot_p = spot_t.get("last")
+        if not swap_p or not spot_p or spot_p <= 0:
+            return None
+        return (swap_p - spot_p) / spot_p * 10000  # bps
+    except Exception:
+        return None
+
+
+def basis_percentile(symbol: str, ex: str, cur_bps: float, window: int = 100):
+    """当前 basis 相对历史的分位（0~1）。高 = 永续溢价处历史高位。"""
+    if cur_bps is None or not BASIS_LOG_PATH.exists():
+        return None
+    try:
+        past = []
+        with open(BASIS_LOG_PATH) as f:
+            for line in f:
+                parts = line.strip().split(",")
+                if len(parts) >= 4 and parts[1] == symbol and parts[2] == ex:
+                    try:
+                        past.append(float(parts[3]))
+                    except ValueError:
+                        pass
+        past = past[-window:]
+        if len(past) < 20:
+            return None
+        below = sum(1 for p in past if p <= cur_bps)
+        return below / len(past)
+    except Exception:
+        return None
+
+
+def append_basis_log(symbol: str, ex: str, bps):
+    """basis 快照落盘（分位计算的数据源）。"""
+    if bps is None:
+        return
+    new = not BASIS_LOG_PATH.exists()
+    with open(BASIS_LOG_PATH, "a") as f:
+        if new:
+            f.write("ts,symbol,ex,basis_bps\n")
+        f.write(f"{datetime.now(timezone.utc).isoformat(timespec='seconds')},{symbol},{ex},{bps:.2f}\n")
+
+
 def collect_snapshot(symbols: list) -> list:
     """返回 [{symbol, ex, funding, zscore, oi, price, pct}]"""
     rows = []
@@ -103,16 +153,22 @@ def collect_snapshot(symbols: list) -> list:
             continue
         for sym in symbols:
             swap = cfg["swap"].format(sym=sym)
+            spot = cfg.get("spot", "").format(sym=sym)
             try:
                 fz = fetch_funding_zscore(ex, swap)
                 if not fz:
                     continue
                 oi = fetch_oi(ex, swap) if cfg["has_oi"] else None
                 price, pct = fetch_price_pct(ex, swap)
+                basis = fetch_basis(ex, swap, spot) if spot else None
+                if basis is not None:
+                    append_basis_log(sym, ex_name, basis)
+                basis_p = basis_percentile(sym, ex_name, basis)
                 rows.append({
                     "symbol": sym, "ex": ex_name,
                     "funding": fz["funding"], "zscore": fz["zscore"],
                     "mean": fz["mean"], "oi": oi, "price": price, "pct": pct,
+                    "basis": basis, "basis_pctile": basis_p,
                 })
             except Exception:
                 continue
@@ -148,12 +204,17 @@ def aggregate(rows: list) -> list:
         prices = [i["price"] for i in items if i.get("price")]
         pcts = [i["pct"] for i in items if i.get("pct") is not None]
         ois = [i["oi"] for i in items if i.get("oi")]
+        # basis 聚合：均值 + 最高分位（单所高即高——接盘信号取最拥挤的所）
+        basis_items = [i for i in items if i.get("basis") is not None]
+        basis_p_items = [i for i in items if i.get("basis_pctile") is not None]
         out.append({
             "symbol": sym,
             "funding": w_funding, "zscore": w_z, "max_z": max_z, "dispersion": dispersion,
             "oi_avg": statistics.mean(ois) if ois else None,
             "price": statistics.mean(prices) if prices else None,
             "pct": statistics.mean(pcts) if pcts else None,
+            "basis_avg": statistics.mean(i["basis"] for i in basis_items) if basis_items else None,
+            "basis_max_pctile": max(i["basis_pctile"] for i in basis_p_items) if basis_p_items else None,
             "ex_count": len(items),
         })
     # 横截面 rank：按 z-score 排序（正 = 高于自身基线）
@@ -164,9 +225,10 @@ def aggregate(rows: list) -> list:
 
 
 def classify(row: dict) -> str:
-    """三态分类：拥挤积累 / 拥挤出清 / 被动扛单 / 正常"""
+    """三态分类：拥挤积累 / 拥挤出清 / 被动扛单 / 正常（+ basis 分位交叉）"""
     z = abs(row.get("max_z", row.get("zscore", 0)))
     pct = row["pct"] if row["pct"] is not None else 0
+    basis_high = (row.get("basis_max_pctile") or 0) >= BASIS_PCTILE_HIGH
     if z >= ZSCORE_HIGH:
         if row.get("oi_avg") and abs(pct) < PRICE_FLAT_PCT:
             return "被动扛单"   # 高费率 + 价格不动 = 多单死扛
@@ -175,6 +237,8 @@ def classify(row: dict) -> str:
         return "拥挤积累"       # 高费率 + OI 存在（近似）
     if z <= -ZSCORE_HIGH:
         return "负费率(空头拥挤)"
+    if basis_high and (row.get("basis_avg") or 0) > 0:
+        return "高basis溢价"    # funding 正常但永续溢价处高位 = 远期看多拥挤
     return "正常"
 
 
@@ -202,13 +266,15 @@ def main():
                     w.writerow({**r, "class": classify(r)})
         if signals:
             print(f"\n=== {datetime.now(timezone.utc).strftime('%H:%M:%S')} UTC 资金费率信号 ===")
-            print(f"{'币种':<8}{'OI加权funding':>16}{'Z-avg':>8}{'Z-max':>8}{'Rank':>6}{'24h%':>8}  分类")
+            print(f"{'币种':<8}{'OI加权funding':>16}{'Z-avg':>8}{'Z-max':>8}{'Rank':>6}{'24h%':>8}{'basis分位':>9}  分类")
             for r in agg:  # 显示全部排名，标出显著
                 cls = classify(r)
                 mark = " ★" if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH else ""
+                bp = r.get("basis_max_pctile")
+                bp_s = f"{bp:.2f}" if bp is not None else "  -"
                 print(f"{r['symbol']:<8}{r['funding']*100:>13.4f}%{r['zscore']:>8.2f}"
                       f"{r['max_z']:>8.2f}{r['rank']:>6}"
-                      f"{r['pct'] if r['pct'] is not None else 0:>7.2f}%  {cls}{mark}")
+                      f"{r['pct'] if r['pct'] is not None else 0:>7.2f}%{bp_s:>9}  {cls}{mark}")
         elif not args.quiet:
             print(f"[{datetime.now(timezone.utc).strftime('%H:%M:%S')} UTC] 无显著 funding 信号 ({len(symbols)} 币 × {len(EXCHANGES)} 所)")
 

@@ -10,8 +10,8 @@ import json
 # 代理配置：本地 Clash/V2Ray 代理
 PROXY = os.environ.get("HTTPS_PROXY", "http://127.0.0.1:7890")
 
-# Jupiter V6 Quote API
-JUPITER_QUOTE_URL = "https://quote-api.jup.ag/v6/quote"
+# Jupiter Swap API v1（Metis 路由引擎；quote-api.jup.ag v6 已于 2025-10-01 弃用）
+JUPITER_QUOTE_URL = "https://api.jup.ag/swap/v1/quote"
 
 # Token mints on Solana mainnet
 SOL_MINT = "So11111111111111111111111111111111111111112"   # Wrapped SOL

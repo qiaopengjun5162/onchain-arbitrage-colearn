@@ -119,3 +119,4 @@
 - awesome-systematic-trading: https://github.com/paperswithbacktest/awesome-systematic-trading
 - ai-goofish-monitor: https://github.com/Usagi-org/ai-goofish-monitor
 - TelegramGroup: https://github.com/AZeC4/TelegramGroup
+- 量化供应商选型指南（PPT 营销套路拆解，原野之诗 2026-08-08）: https://mp.weixin.qq.com/s/M3WlFiiHDC6l5So-Fi-8Ww
