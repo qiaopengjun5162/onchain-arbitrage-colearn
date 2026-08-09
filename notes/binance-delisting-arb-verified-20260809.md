@@ -47,11 +47,23 @@
 | 时间风险 | 价差收敛节奏不定（HFT 在 41↔439bps 大幅摆动） |
 | 数据源 | **openInterestHist 接口被币安地区限制**（返回 HTML 错误页）——OI 数据需换源（ccxt fetch_open_interest_history / 第三方） |
 
+## 2026-08-09 追加：L/S ratio 是价差的强预测因子（净方向实证）
+
+- 数据：ccxt `fetch_long_short_ratio_history`（binance futures/data 端点，走代理可用）
+- **HFT 实证（92h 对齐）**：
+  - **空头主导（ratio<0.5，22h）：价差均值 162.7 bps**
+  - **多头主导（ratio≥0.5，70h）：价差均值 38.6 bps**
+  - 价差峰值 439bps 正出现在 ratio 跌至 0.407 时；结算前 ratio 从 0.53 一路跌到 0.31
+- **机制**：下架公告 → 空头大举进入（赌跌/吃 funding）→ 结算时空头必须买回平仓 = **确定性买压** → 合约价被推高 → 溢价现货。空头越拥挤（ratio 越低），结算买压越大，价差越极端
+- **「盯 OI 猛干」的正确解读升级**：盯 OI 增长（活跃度）+ **L/S ratio 失衡方向**（<0.5 = 空头拥挤 = 结算买压 = 做多合约/做空现货；>0.5 反之）
+- ACX 的 -49bps 折价也解释通了：折价出现时 L/S ratio 必然偏向多头（多头拥挤 → 结算卖压）
+- 数据：`data/hft_lsr_spread_20260809.csv`（待落盘）
+
 ## 待办
 
 - [x] **OI 数据源打通**：ccxt `fetch_open_interest_history` 走代理可用（binance fapi openInterestHist 被地区限制，ccxt 正常）
 - [x] **下架公告监控**：改为 `scripts/delisting_monitor.py`——不抓公告（币安反爬），直接用 fapi exchangeInfo 的 SETTLING 状态 + deliveryDate 未来过滤，cron 每小时 watchdog 已挂（fc5813813b3f）
-- [ ] **多空比验证**：拉历史 long/short ratio 看净方向与价差符号的对应
+- [x] **多空比验证**：ccxt `fetch_long_short_ratio_history` 可用；HFT 实证空头拥挤(ratio<0.5)价差均值 162.7bps vs 多头主导 38.6bps——ratio 是价差方向预测因子
 - [ ] **订单簿验证**：下架前盘口深度 vs 价差——真实可吃多少（进场冲击）
 - [ ] **OI 领先指标量化**：HFT OI+174.5% / ACX OI-51.8% 两案例方向相反但价差都大——假设「OI 活跃度（变化率）驱动价差」，需更多样本验证
 
