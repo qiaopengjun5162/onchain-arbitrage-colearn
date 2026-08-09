@@ -44,6 +44,7 @@ env = {"HTTPS_PROXY": "http://127.0.0.1:7890", "HTTP_PROXY": "http://127.0.0.1:7
 |---|---|---|---|
 | D1 | x.com/qiaopengjun/status/2085661488010912055 | 6 | 08-07 发布 |
 | D2 | x.com/qiaopengjun/status/2085913863829229589 | 6 | 08-08 发布 |
+| D3 | x.com/qiaopengjun/status/2086403022721290416 | 6 | 08-09 发布 |
 
 ## 常见坑
 
