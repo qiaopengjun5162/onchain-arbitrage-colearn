@@ -50,6 +50,57 @@ def fetch_settling(session) -> list:
     return out
 
 
+def depth_analysis(session, symbol: str) -> dict:
+    """订单簿联动：拉 fapi + spot 深度，量化「±1%/±2% 深度 vs 价差」。
+
+    意义（notes/bitmart-first-pot-alpha-20260809.md 容量真相）：
+    - 价差是「每单位可吃」的上限，容量决定「能吃多少单位」
+    - 下架币价差常 1-4%，但盘口薄 → 实际可吃量 << 价差幅度
+    - 这个函数在 SETTLING 信号出现时自动量化「X bps 价差下能吃多少」
+    """
+    try:
+        r = session.get(f"https://fapi.binance.com/fapi/v1/depth?symbol={symbol}&limit=1000", timeout=15)
+        f = r.json()
+        r2 = session.get(f"https://api.binance.com/api/v3/depth?symbol={symbol}&limit=1000", timeout=15)
+        s = r2.json()
+        if "bids" not in f or "bids" not in s:
+            return {"error": "深度格式异常"}
+        f_bid = float(f["bids"][0][0]) if f["bids"] else 0
+        f_ask = float(f["asks"][0][0]) if f["asks"] else 0
+        s_bid = float(s["bids"][0][0]) if s["bids"] else 0
+        s_ask = float(s["asks"][0][0]) if s["asks"] else 0
+        # 价差（合约 vs 现货，bps）
+        spread_bps = (f_bid - s_ask) / s_ask * 10000 if s_ask else 0
+
+        def depth_1pct(book, best, pct):
+            """从 best 向价格移动 pct% 内累计量（吃单方向）。"""
+            cum = 0.0
+            for price, qty in book:
+                p = float(price)
+                if best > 0:
+                    if pct > 0 and p <= best * (1 + pct / 100):
+                        cum += float(qty)
+                    elif pct < 0 and p >= best * (1 + pct / 100):
+                        cum += float(qty)
+                    else:
+                        break
+            return cum
+
+        return {
+            "spread_bps": round(spread_bps, 1),
+            "fapi_bid": f_bid, "fapi_ask": f_ask,
+            "spot_bid": s_bid, "spot_ask": s_ask,
+            # 合约盘口 ±1%/±2% 深度（按 ask 侧吃 = 做空合约）
+            "fapi_ask_1pct": round(depth_1pct(f["asks"], f_ask, 1), 0),
+            "fapi_ask_2pct": round(depth_1pct(f["asks"], f_ask, 2), 0),
+            # 现货盘口 ±1%/±2% 深度（按 bid 侧 = 做多现货）
+            "spot_bid_1pct": round(depth_1pct(s["bids"], s_bid, -1), 0),
+            "spot_bid_2pct": round(depth_1pct(s["bids"], s_bid, -2), 0),
+        }
+    except Exception as e:
+        return {"error": str(e)[:80]}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--verbose", action="store_true", help="显示全部 SETTLING 而非仅新增")
@@ -72,6 +123,16 @@ def main():
                 print(f"无未来结算合约（{now_iso()}）")
             return
         settling.sort(key=lambda s: s["deliveryDate"])
+        # 订单簿联动：对最近的 SETTLING 合约做深度分析（量化可吃量）
+        if settling:
+            sym = settling[0]["symbol"]
+            dep = depth_analysis(session, sym)
+            if "error" not in dep:
+                print(f"📊 盘口（{sym}，{now_iso()}）：价差 {dep['spread_bps']:+.1f} bps")
+                print(f"   fapi ask: {dep['fapi_ask']} | spot bid: {dep['spot_bid']}")
+                print(f"   ±1% 深度: 合约侧 {dep['fapi_ask_1pct']:,.0f} | 现货侧 {dep['spot_bid_1pct']:,.0f}")
+                print(f"   ±2% 深度: 合约侧 {dep['fapi_ask_2pct']:,.0f} | 现货侧 {dep['spot_bid_2pct']:,.0f}")
+                print(f"   → 价差 {dep['spread_bps']}bps 能吃 {min(dep['fapi_ask_1pct'], dep['spot_bid_1pct']):,.0f} 单位（±1%深度下限）")
         if args.verbose or first:
             print(f"⚠️ {len(settling)} 个合约正在结算/下架（{now_iso()}）：")
             for s in settling[:25]:

@@ -24,6 +24,9 @@
 - 全量有意义笔记（482篇全文 PDF + 目录索引，9大主题，intensivecolearn.ing 公开打卡全量精选，生成 2026-08-08）：本仓库 `notes/full-meaningful-notes-482-20260808.pdf` / `notes/full-meaningful-notes-482-index.md` / `notes/full-meaningful-notes-482-fulltext-20260808.md`
 - 趋势追踪 MA 均线交叉策略研究复盘（v1.0.1，7页，基于 2026-08-06~07 8小时 dryRun 复盘：噪声剃头/不能无限套娃/甜点区间=15min~1h K线+$5000+/高波动趋势市/风控把PnL曲线当资产/量价验证=放量窗口才可靠；系统化交易方向，非链上套利，Paper Trading 须与实盘区分）：本仓库 `notes/ma-crossover-strategy-20260807.pdf` / `notes/ma-crossover-strategy-20260807-fulltext.md`
 - LI.FI 跨链成本观测（群友教学 PDF：142次成本观测+72h价差→evidence.csv 负结论方法论）：本仓库 `notes/lifi-cost-observation-methodology.md`
+- Cryptoxiao 事件交易方法论（newsliquid OI 异动策略模板：OI异动/主力占比>50%/主力盈利判定启动，$TUT 单机盘案例）：https://x.com/cryptoxiao/status/2086348730618528116 → 本仓库 `notes/newsliquid-oi-event-strategy-20260809.md`
+- 缠论 K 线包含关系处理入门（技术分析教学：向上高高/向下低低原则，顶底分型前置课）：https://x.com/OtherSideBJ/status/2086296538754818425 → 本仓库 `notes/chan-kline-inclusion-20260809.md`
+- awesome-systematic-trading（wangzhe3224 整理，4.8K star，系统化交易工具分类：回测/实盘框架 backtrader·Freqtrade·vn.py·Nautilus、AI量化 FinRL·Qlib·FinGPT、因子/数据/风控/接口/书籍，跨股票·加密·期货·期权·外汇）：https://github.com/wangzhe3224/awesome-systematic-trading → 本仓库 `notes/awesome-systematic-trading-20260809.md`
 
 ## Hermes
 
