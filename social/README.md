@@ -19,6 +19,9 @@
 
 ## 发布流水线（2026-08-05 起）
 
+> **总 SOP：`templates/daily-publish-pipeline.md`**（打卡 → 公众号 → X → 归档全流程 + 防重复发布检查）
+> 子 SOP：`templates/wechat-publish-sop.md`（公众号）+ `templates/x-publish-sop.md`（X）
+
 ### 目录
 
 - `social/x/`：X 推文草稿
