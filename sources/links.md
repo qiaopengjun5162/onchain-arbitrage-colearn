@@ -31,6 +31,7 @@
 - Bruce Hermes 技巧：回复尾部显示 model/reasoning_effort/session 状态（全局规则，Telegram runtime_footer 配置，官方文档已支持 `display.platforms.telegram.runtime_footer`）：https://x.com/brucexu_eth/status/2086271718306496594 → 本仓库 `notes/hermes-runtime-footer-20260809.md`
 - Polymarket 量化机器人解剖（0xPINK3：香港量化工程师用 Claude 搭的机器人，102 天/29,115 次预测/60% 胜率/日均 $2,370/共 $241,767；短线加密涨跌市场循环，每小时 ~12 笔；=时间套利+对冲方向性敞口+库存轮换组合；先建一侧仓位等概率变动再补另一侧；「许多小幅优势随时间积累」）：https://x.com/0xPINK3/status/2086337881451475451 → 本仓库 `notes/polymarket-claude-bot-241k-20260809.md`
 - Solana 私钥安全（ACCU.CC 长文：Trust Wallet 供应链攻击 700 万 U / 剪贴板攻击 / Coding Agents 新威胁 / 私钥生成随机性 / 保管方案对比——纸钱包·金属钱包·链下多签 naive(拆段不安全)·elder(加法分片)·Shamir SSS / 量子攻击——Solana 地址=公钥无法抗量子，须密切关注）：http://accu.cc/content/solana/prikey_security/ → 本仓库 `notes/solana-prikey-security-20260809.md`
+- Neutral Trade 自动驾驶仪（Solar 社区推广：自动学习策略组合、跟踪表现、判断回撤、自动切换最佳策略；一次存款覆盖多元策略中性收益；9/1 前免手续费+NT 积分）：https://x.com/solana_zh/status/2085908862972887258 → 本仓库 `notes/neutral-trade-autopilot-20260809.md`
 
 ## Hermes
 
