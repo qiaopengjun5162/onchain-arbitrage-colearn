@@ -57,14 +57,18 @@
 - **机制**：下架公告 → 空头大举进入（赌跌/吃 funding）→ 结算时空头必须买回平仓 = **确定性买压** → 合约价被推高 → 溢价现货。空头越拥挤（ratio 越低），结算买压越大，价差越极端
 - **「盯 OI 猛干」的正确解读升级**：盯 OI 增长（活跃度）+ **L/S ratio 失衡方向**（<0.5 = 空头拥挤 = 结算买压 = 做多合约/做空现货；>0.5 反之）
 - ACX 的 -49bps 折价也解释通了：折价出现时 L/S ratio 必然偏向多头（多头拥挤 → 结算卖压）
-- 数据：`data/hft_lsr_spread_20260809.csv`（待落盘）
+- **OI 累计偏离是价差领先指标**（2026-08-09 量化）：
+  - HFT：OI 累计 +177% 时价差 302bps（OI +128%→+177% 期间价差 77→302）——OI 爬升 → 价差放大
+  - ACX：OI 累计 -42% 时价差峰值 122.7bps——OI 萎缩（持仓撤退）→ 价差也放大
+  - **规律：OI 剧烈偏离基线（不论方向）→ 价差窗口打开；小时级脉冲弱（三组均值接近），累计偏离才是信号**
+- 数据：`data/hft_lsr_spread_20260809.csv`（92 行）+ `data/delisting_oi_spread_20260809.csv`（192 行）
 
 ## 待办
 
 - [x] **OI 数据源打通**：ccxt `fetch_open_interest_history` 走代理可用（binance fapi openInterestHist 被地区限制，ccxt 正常）
 - [x] **下架公告监控**：改为 `scripts/delisting_monitor.py`——不抓公告（币安反爬），直接用 fapi exchangeInfo 的 SETTLING 状态 + deliveryDate 未来过滤，cron 每小时 watchdog 已挂（fc5813813b3f）
 - [x] **多空比验证**：ccxt `fetch_long_short_ratio_history` 可用；HFT 实证空头拥挤(ratio<0.5)价差均值 162.7bps vs 多头主导 38.6bps——ratio 是价差方向预测因子
-- [ ] **订单簿验证**：下架前盘口深度 vs 价差——真实可吃多少（进场冲击）
+- [ ] **订单簿验证**（依赖未来下架事件）：delisting_monitor 报信号时，拉该币 `fetch_order_book` 算「前5档深度 vs 价差」的真实可吃量；当前无 SETTLING 合约可测（2026-08-09 07:15 刚结算完一批，下一批未宣布）——方法论已就绪，等事件触发
 - [ ] **OI 领先指标量化**：HFT OI+174.5% / ACX OI-51.8% 两案例方向相反但价差都大——假设「OI 活跃度（变化率）驱动价差」，需更多样本验证
 
 ## 结论
