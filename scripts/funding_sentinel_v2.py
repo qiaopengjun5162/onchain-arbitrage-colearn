@@ -45,6 +45,7 @@ RANK_TOP_N = 3             # 横截面 Rank 前 N 名报信号
 OI_CHANGE_BPS = 100        # OI 环比变化 ≥1% 视为方向性（用 8h 窗口对比需要历史；这里用现货 OI 快照做近似）
 PRICE_FLAT_PCT = 0.5       # 24h 价格变动 <0.5% 视为横盘
 BASIS_PCTILE_HIGH = 0.8    # basis 分位 ≥0.8 = 永续溢价处历史高位（接盘信号）
+FUNDING_SPREAD_ALERT = 0.005  # 跨所 funding 最大差 ≥0.5%/期 → 疑似诱盘（TUT 案例：bg/gate 2%/4h vs binance≈0）
 LOG_PATH = Path(__file__).parent.parent / "data" / "funding_signal_log.csv"
 BASIS_LOG_PATH = Path(__file__).parent.parent / "data" / "funding_basis_history.csv"
 
@@ -196,6 +197,9 @@ def aggregate(rows: list) -> list:
         # 离散度：各所 funding 的标准差（情绪分歧度）
         rates = [i["funding"] for i in funded]
         dispersion = statistics.stdev(rates) if len(rates) > 1 else 0
+        # 跨所 funding 最大差（诱盘判别：max - min 的单期差异）
+        funding_spread = (max(rates) - min(rates)) if len(rates) > 1 else 0
+        funding_max_ex = max(funded, key=lambda i: i["funding"]).get("ex") if funded else None
         # 加权 z-score：平均（全局）+ 最大绝对值（单所显著即报）
         z_items = [i for i in items if i.get("zscore") is not None]
         w_z = statistics.mean(i["zscore"] for i in z_items) if z_items else 0
@@ -210,6 +214,7 @@ def aggregate(rows: list) -> list:
         out.append({
             "symbol": sym,
             "funding": w_funding, "zscore": w_z, "max_z": max_z, "dispersion": dispersion,
+            "funding_spread": funding_spread, "funding_max_ex": funding_max_ex,
             "oi_avg": statistics.mean(ois) if ois else None,
             "price": statistics.mean(prices) if prices else None,
             "pct": statistics.mean(pcts) if pcts else None,
@@ -229,6 +234,10 @@ def classify(row: dict) -> str:
     z = abs(row.get("max_z", row.get("zscore", 0)))
     pct = row["pct"] if row["pct"] is not None else 0
     basis_high = (row.get("basis_max_pctile") or 0) >= BASIS_PCTILE_HIGH
+    # 疑似诱盘：跨所 funding 差 ≥ 阈值（TUT 案例：bg/gate 2%/4h vs binance≈0）
+    # 巨大资金费差吸引套利者做空高费所 → 插针收割。最高优先级，优先于一切信号。
+    if (row.get("funding_spread") or 0) >= FUNDING_SPREAD_ALERT:
+        return "疑似诱盘"   # 跨所资金费差异常 = 价差可能是诱饵（notes/tut-funding-trap）
     if z >= ZSCORE_HIGH:
         if row.get("oi_avg") and abs(pct) < PRICE_FLAT_PCT:
             return "被动扛单"   # 高费率 + 价格不动 = 多单死扛
@@ -254,7 +263,9 @@ def main():
     def tick():
         rows = collect_snapshot(symbols)
         agg = aggregate(rows)
-        signals = [r for r in agg if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH]
+        signals = [r for r in agg
+                   if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH
+                   or classify(r) == "疑似诱盘"]
         # 落盘
         if agg:
             new = not LOG_PATH.exists()
@@ -269,9 +280,11 @@ def main():
             print(f"{'币种':<8}{'OI加权funding':>16}{'Z-avg':>8}{'Z-max':>8}{'Rank':>6}{'24h%':>8}{'basis分位':>9}  分类")
             for r in agg:  # 显示全部排名，标出显著
                 cls = classify(r)
-                mark = " ★" if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH else ""
                 bp = r.get("basis_max_pctile")
                 bp_s = f"{bp:.2f}" if bp is not None else "  -"
+                mark = " ★" if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH else ""
+                if cls == "疑似诱盘":
+                    mark = " ⚠️"   # 诱盘优先警示
                 print(f"{r['symbol']:<8}{r['funding']*100:>13.4f}%{r['zscore']:>8.2f}"
                       f"{r['max_z']:>8.2f}{r['rank']:>6}"
                       f"{r['pct'] if r['pct'] is not None else 0:>7.2f}%{bp_s:>9}  {cls}{mark}")

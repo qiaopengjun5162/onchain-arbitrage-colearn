@@ -57,6 +57,17 @@
    - 陷阱：价差来自操纵（资金费诱盘）——**OI 异常、资金费异常、拉盘历史**
    - 判别因子：**看资金费差是否合理 + 看价差来源是「存量」还是「设计」**
 
+## 工程化落地（2026-08-09）✅
+
+**funding_sentinel_v2.py 加「疑似诱盘」检测**：
+- 新常量 `FUNDING_SPREAD_ALERT = 0.005`（跨所 funding 最大差 ≥0.5%/期）
+- aggregate 算 `funding_spread`（max-min）+ `funding_max_ex`（最高费所）
+- classify 新增「疑似诱盘」状态（**最高优先级**，优先于一切信号）
+- signals 过滤包含诱盘（cron 会推送）；显示层 ⚠️ 标记
+- 单元验证：TUT 场景（binance≈0 vs bg/gate 2%）→ 正确标「疑似诱盘」；正常场景 → 「正常」✅
+
+**用法**：`funding_sentinel_v2.py --once`（cron 每 8h 已挂）——未来 TUT 式诱盘会提前标红 ⚠️
+
 ## 关联
 
 - `notes/aster-funding-arb-community-strategy-20260809.md`（TUT 案例 + 窗口期疑惑）
