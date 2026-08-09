@@ -27,6 +27,7 @@
 - Cryptoxiao 事件交易方法论（newsliquid OI 异动策略模板：OI异动/主力占比>50%/主力盈利判定启动，$TUT 单机盘案例）：https://x.com/cryptoxiao/status/2086348730618528116 → 本仓库 `notes/newsliquid-oi-event-strategy-20260809.md`
 - 缠论 K 线包含关系处理入门（技术分析教学：向上高高/向下低低原则，顶底分型前置课）：https://x.com/OtherSideBJ/status/2086296538754818425 → 本仓库 `notes/chan-kline-inclusion-20260809.md`
 - awesome-systematic-trading（wangzhe3224 整理，4.8K star，系统化交易工具分类：回测/实盘框架 backtrader·Freqtrade·vn.py·Nautilus、AI量化 FinRL·Qlib·FinGPT、因子/数据/风控/接口/书籍，跨股票·加密·期货·期权·外汇）：https://github.com/wangzhe3224/awesome-systematic-trading → 本仓库 `notes/awesome-systematic-trading-20260809.md`
+- Robinhood 套利全景审计（0x 哆啦A梦：3天 259 万区块/1327 万 Swap 扫出 122 候选系统，41,945 闭环毛价差 10 万 U；四套系统——首笔价差(98.7% 同区块内)/条件执行/确认后尾气(残差≈0)/覆盖空白；「机器人收入写在覆盖的池子和路线里」；真实利润=毛价差-成功Gas-失败空跑Gas-滑点-库存损耗-延迟-调仓）：https://x.com/hunterweb303/status/2086339604081508638 → 本仓库 `notes/robinhood-arbitrage-audit-20260809.md`
 
 ## Hermes
 
