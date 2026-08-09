@@ -202,12 +202,14 @@ def main():
 
     if args.watchdog:
         # watchdog：全绿静默（stdout 空 = cron 不推送），有问题只打印问题行
+        # 退出码：只对红色（真故障）exit 2；黄色 exit 0——黄色仅提示，
+        # 非零退出码会触发 cron error alert（免费额度抖动每天黄 = 每小时误报）
         if problems:
             print(f"基础设施自检 {ts}")
             for r in problems:
                 print(f"{r['status']} {r['name']} P50={r.get('p50_ms')}ms P99.9={r.get('p999_ms')}ms "
                       f"可用={r.get('availability')} ok={r.get('ok')}")
-        sys.exit(exit_code)
+        sys.exit(2 if any(r["status"] == "🔴" for r in problems) else 0)
 
     print(f"基础设施自检 @ {ts}")
     print(f"{'端点':<14}{'状态':<4}{'P50':>8}{'P99.9':>8}{'SD':>8}{'可用':>8}{'OK':>6}")

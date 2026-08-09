@@ -46,8 +46,8 @@
 | 文章 | media_id | 日期 |
 |---|---|---|
 | D1 交易模型 | 100011335（已发布） | 08-07 |
-| D3 swap | 100011331 | 08-07 |
-| D2 套利分层 | 100011363（当前草稿） | 08-08 |
+| D2 套利分层 | 已发布 08-08（误推草稿 100011385 已删） | 08-08 |
+| D3 swap | 100011392（已发布） | 08-09 |
 
 ## 常见坑
 
@@ -55,3 +55,6 @@
 - qrcode 路径相对 articles root；follow_image 相对文章所在目录
 - 二维码过期（7 天）→ 换新图 + 改 moonpub.toml qrcode 行 + 重新 ship
 - lifecycle guard 拦截：moonpub 带 `--articles` 必须用 execute_code + subprocess 跑
+- **二进制过期**（2026-08-09）：`--style geek-black` 静默 fallback 成 literary 封面 → ship 前 `cargo build --release` + OCR 确认 BUILD NOTES
+- **正文主题**：`moonpub.toml theme` 控制（当前 `geek` 浅色，用户定稿）；与 `--style`（封面）独立
+- **已发布文章别重 ship**：查 `.moonpub/status.jsonl`，误推用 `delete-draft <media_id>` 删
