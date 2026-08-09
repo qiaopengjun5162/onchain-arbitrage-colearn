@@ -24,7 +24,7 @@
 | **币股时钟差**（闭市漂移→开盘收敛） | `notes/tokenized-stock-arbitrage.md` |
 | **监控脚本全家桶**（8 个哨兵） | `scripts/` + `daily/2026-08-08.md` 总结 |
 | **自建节点/基建验收清单**（延迟/吞吐/一致性/资源） | `notes/node-infra-acceptance-checklist-20260808.md` |
-| **Solana 研究线**（Rust 双实现） | `scripts/solana-rs/`（quote/build/swap/spread） |
+| **Solana 研究线**（Rust 双实现） | `scripts/solana-rs/`（quote/build/swap/spread）· `scripts/solfi-sim/`（LiteSVM 模拟器，含 slippage 完整环）· `notes/priority-fee-monitor-20260809.md`（执行成本监控） |
 
 ## 📈 实测发现（2026-08-08）
 
