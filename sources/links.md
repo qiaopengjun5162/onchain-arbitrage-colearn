@@ -30,6 +30,7 @@
 - Robinhood 套利全景审计（0x 哆啦A梦：3天 259 万区块/1327 万 Swap 扫出 122 候选系统，41,945 闭环毛价差 10 万 U；四套系统——首笔价差(98.7% 同区块内)/条件执行/确认后尾气(残差≈0)/覆盖空白；「机器人收入写在覆盖的池子和路线里」；真实利润=毛价差-成功Gas-失败空跑Gas-滑点-库存损耗-延迟-调仓）：https://x.com/hunterweb303/status/2086339604081508638 → 本仓库 `notes/robinhood-arbitrage-audit-20260809.md`
 - Bruce Hermes 技巧：回复尾部显示 model/reasoning_effort/session 状态（全局规则，Telegram runtime_footer 配置，官方文档已支持 `display.platforms.telegram.runtime_footer`）：https://x.com/brucexu_eth/status/2086271718306496594 → 本仓库 `notes/hermes-runtime-footer-20260809.md`
 - Polymarket 量化机器人解剖（0xPINK3：香港量化工程师用 Claude 搭的机器人，102 天/29,115 次预测/60% 胜率/日均 $2,370/共 $241,767；短线加密涨跌市场循环，每小时 ~12 笔；=时间套利+对冲方向性敞口+库存轮换组合；先建一侧仓位等概率变动再补另一侧；「许多小幅优势随时间积累」）：https://x.com/0xPINK3/status/2086337881451475451 → 本仓库 `notes/polymarket-claude-bot-241k-20260809.md`
+- Solana 私钥安全（ACCU.CC 长文：Trust Wallet 供应链攻击 700 万 U / 剪贴板攻击 / Coding Agents 新威胁 / 私钥生成随机性 / 保管方案对比——纸钱包·金属钱包·链下多签 naive(拆段不安全)·elder(加法分片)·Shamir SSS / 量子攻击——Solana 地址=公钥无法抗量子，须密切关注）：http://accu.cc/content/solana/prikey_security/ → 本仓库 `notes/solana-prikey-security-20260809.md`
 
 ## Hermes
 
