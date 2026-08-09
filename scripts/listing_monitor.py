@@ -38,9 +38,10 @@ BINANCE_CATALOGS = {
     53: "系统维护",
     61: "产品更新",
 }
-BYBIT_KEYWORDS = ["listing", "list ", "launch", "上新", "上架", "现货", "futures will list"]
+BYBIT_KEYWORDS = ["listing", "list ", "launch", "上新", "上架", "现货", "futures will list", "delist", "下架", "will remove"]
 
 BINANCE_LISTING_KW = ["will list", "will launch", "new listing", "launchpool", "futures will launch"]
+BINANCE_DELIST_KW = ["will delist", "delisting", "will remove", "下架", "settlement", "settle"]
 
 
 def now_iso():
@@ -67,6 +68,41 @@ def fetch_binance(session) -> list:
                 "ts": int(ts) / 1000 if ts else 0,
                 "url": f"https://www.binance.com/en/support/announcement/{a.get('code')}",
                 "catalog": BINANCE_CATALOGS.get(48, ""),
+            })
+    return out
+
+
+def fetch_binance_delist(session) -> list:
+    """Binance 交易市场更新目录（catalogId=52）→ 过滤下架/结算公告（套利信号源）。
+
+    下架合约价差套利（notes/binance-delisting-arb-verified-20260809.md）：
+    公告日 → reduce-only → 强制平仓 → 合约/现货价差放大（实测 HFT 4.4%）。
+    本函数就是那个「公告即信号」的入口。
+    """
+    out = []
+    params = {"type": 1, "pageNo": 1, "pageSize": 20, "catalogId": 52}
+    url = "https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?" + urlencode(params)
+    try:
+        r = session.get(url, timeout=20)
+        r.raise_for_status()
+        d = r.json()
+    except Exception:
+        return out
+    catalogs = (d.get("data") or {}).get("catalogs") or []
+    for cat in catalogs:
+        for a in cat.get("articles") or []:
+            title = a.get("title", "")
+            tl = title.lower()
+            if not any(k in tl for k in BINANCE_DELIST_KW):
+                continue
+            ts = a.get("releaseDate") or 0
+            out.append({
+                "exchange": "binance",
+                "code": f"delist-{a.get('code', a.get('id', ''))}",
+                "title": title,
+                "ts": int(ts) / 1000 if ts else 0,
+                "url": f"https://www.binance.com/en/support/announcement/{a.get('code')}",
+                "catalog": "下架/结算公告(套利信号)",
             })
     return out
 
@@ -128,7 +164,7 @@ def main():
 
     new_items = []
     fetch_errs = []
-    for name, fn in (("binance", fetch_binance), ("bybit", fetch_bybit)):
+    for name, fn in (("binance", fetch_binance), ("binance-delist", fetch_binance_delist), ("bybit", fetch_bybit)):
         try:
             items = fn(session)
             for it in items:
