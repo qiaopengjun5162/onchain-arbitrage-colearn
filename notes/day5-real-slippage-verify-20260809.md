@@ -43,8 +43,16 @@ D4 发现 Raydium vs Jupiter 中间价差 17-20bps，但那是**假滑点**（�
 
 「主流池无机会」不是坏消息——它把搜索空间**逼向长尾**：新上币、流动性薄弱的池子、清算瞬间的不平衡（这些才是摩擦 > 价差的反例）。对应 D4 赛道选择结论（清算/新币/事件驱动）。
 
+## 2026-08-09 追加：Solana 长尾 meme 币验证（BONK/WIF）
+
+- 脚本：`scripts/solana_meme_cycle_verify.py`（Jupiter 真实路由完整环：USDC→meme→USDC）
+- 实测（09:16 UTC）：BONK -3.58 / -25.80 / **-149.36** bps（10/100/1000 USDC）；WIF -9.73 / -19.95 / -22.57 bps——**全负**
+- **金额越大越亏**：BONK 1000 USDC 时 -149bps（滑点非线性，长尾池深度不足）
+- mint 探测教训：POPCAT/PENGU/PNUT 地址已失效（not tradable），仅 BONK/WIF 可交易
+- **结论：Solana 长尾 meme 也没有套利空间**——与 CEX 侧长尾测试（摆动假象）呼应，「摩擦>价差」在 Solana 全域成立，机会只在事件驱动（下架/清算/新币）
+
 ## 待办
 
-- [ ] Rust 双实现（用户偏好）：`solana-rs` 加 `slippage` 子命令
-- [ ] 长尾池验证：换非主流交易对（如 SOL/USDT、meme 币对）跑同口径
-- [ ] 挂 cron 每小时快照环净收益（观察价差收敛/打开的窗口）
+- [x] Rust 双实现：solfi-sim `slippage` 子命令（-1.22~-4.12bps 与 Python 一致）
+- [x] 长尾池验证：BONK/WIF 全负（-3.6~-149bps）
+- [x] 挂 cron 每小时快照环净收益（watchdog，`滑点验证(slippage_verify)` b9de224f71f5）
