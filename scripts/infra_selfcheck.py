@@ -28,6 +28,30 @@ import os
 import statistics
 import sys
 import time
+from pathlib import Path
+
+
+def _load_env_fallback():
+    """兜底：从 ~/.hermes/.env 读 key（cron/execute_code 不继承 shell env 时防止误报 0%）。"""
+    if os.environ.get("HELIUS_API_KEY"):
+        return
+    env_path = Path.home() / ".hermes" / ".env"
+    if not env_path.exists():
+        return
+    try:
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("export "):
+                    line = line[7:]
+                if line.startswith("HELIUS_API_KEY="):
+                    os.environ["HELIUS_API_KEY"] = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    return
+    except Exception:
+        pass
+
+
+_load_env_fallback()
 from datetime import datetime, timezone
 
 import requests
@@ -114,7 +138,8 @@ def summarize(name, method, url, check, use_proxy):
     sd = statistics.pstdev(latencies) if len(latencies) > 1 else 0.0
     availability = ok_count / total
     status = "🟢"
-    if p999 >= FAIL_P99 or availability < 0.8:
+    if p999 >= FAIL_P99 or availability < 0.5:
+        # 0.5 阈值：免费额度抖动（如 Jupiter 无 key 限流 71%）不算真故障
         status = "🔴"
     elif p999 >= WARN_P99 or sd >= WARN_SD or availability < 1.0:
         status = "🟡"
