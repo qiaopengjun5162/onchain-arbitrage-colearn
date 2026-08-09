@@ -29,6 +29,7 @@
 - awesome-systematic-trading（wangzhe3224 整理，4.8K star，系统化交易工具分类：回测/实盘框架 backtrader·Freqtrade·vn.py·Nautilus、AI量化 FinRL·Qlib·FinGPT、因子/数据/风控/接口/书籍，跨股票·加密·期货·期权·外汇）：https://github.com/wangzhe3224/awesome-systematic-trading → 本仓库 `notes/awesome-systematic-trading-20260809.md`
 - Robinhood 套利全景审计（0x 哆啦A梦：3天 259 万区块/1327 万 Swap 扫出 122 候选系统，41,945 闭环毛价差 10 万 U；四套系统——首笔价差(98.7% 同区块内)/条件执行/确认后尾气(残差≈0)/覆盖空白；「机器人收入写在覆盖的池子和路线里」；真实利润=毛价差-成功Gas-失败空跑Gas-滑点-库存损耗-延迟-调仓）：https://x.com/hunterweb303/status/2086339604081508638 → 本仓库 `notes/robinhood-arbitrage-audit-20260809.md`
 - Bruce Hermes 技巧：回复尾部显示 model/reasoning_effort/session 状态（全局规则，Telegram runtime_footer 配置，官方文档已支持 `display.platforms.telegram.runtime_footer`）：https://x.com/brucexu_eth/status/2086271718306496594 → 本仓库 `notes/hermes-runtime-footer-20260809.md`
+- Polymarket 量化机器人解剖（0xPINK3：香港量化工程师用 Claude 搭的机器人，102 天/29,115 次预测/60% 胜率/日均 $2,370/共 $241,767；短线加密涨跌市场循环，每小时 ~12 笔；=时间套利+对冲方向性敞口+库存轮换组合；先建一侧仓位等概率变动再补另一侧；「许多小幅优势随时间积累」）：https://x.com/0xPINK3/status/2086337881451475451 → 本仓库 `notes/polymarket-claude-bot-241k-20260809.md`
 
 ## Hermes
 
