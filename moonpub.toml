@@ -7,7 +7,7 @@ author = "Paxon Qiao"
 account_type = "personal"
 auth_method = "cookie"
 auto_publish = false
-theme = "geek"
+theme = "default"
 
 [footer]
 enabled = true

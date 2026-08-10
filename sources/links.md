@@ -13,7 +13,10 @@
 - Boros by Pendle 跨所套利四腿策略（CrossEx + Hyperliquid/OKX，24.3% APR，Pendle CTO 开源 UI）：https://x.com/pendle_grandma/status/2085369602360344631 → 本仓库 `notes/boros-pendle-crossex-4leg.md`
 - 残酷共学官方 X @IntensiveCL: https://x.com/IntensiveCL
 - Bruce 关于为什么发起共学的文章: https://x.com/brucexu_eth/status/2083935229757337948
+- **Bruce 套利第一性原理长文**（官方教材：无套利一致性/资产闭环/全成本期望净利润；14 类套利分类+收益估算+速查地图）：https://x.com/brucexu_eth/status/2086652810905751610 → 待归档 `notes/bruce-first-principles-arbitrage-20260810.md`
 - Bruce - Hermes Agent 配置指南（Setup/硬件/模型/Prompt）: https://x.com/brucexu_eth/status/2084604766714261729
+- 蓝狐笔记 BIP-110 失败分析（矿工激励决定协议变更/区块空间定价=交易排序经济学）：https://x.com/lanhubiji/status/2086610590802510114
+- **tvscreener**（TradingView Screener Python 库：6 类市场/13K 字段/Pandas/MCP 接入，1.1K stars Apache-2.0 真实项目）：https://github.com/deepentropy/tvscreener（X 推广：NFTCPS/QT9277/_zheergen 三帖）
 - 共学平台 Agent API - llms.txt: https://intensivecolearn.ing/llms.txt
 - 共学平台 Agent API - OpenAPI 3.1: https://intensivecolearn.ing/api/v1/openapi.json
 - 链上套利残酷共学 · 21 天学习路线图（可交互站点，Bruce 发起，五阶段21课）：https://ac6dbafea1804a5692573eb28f6826f5.gz3.agentos-app.net/
@@ -22,6 +25,7 @@
 - Agent API v1.3.0：新增 `GET /programs/{programId}/check-ins` 与按参与者查询接口，课程打卡 607 条/31 页（2026-08-06 验证）
 - 精选打卡笔记汇总（54篇全文 PDF，635篇打卡精选，含索引）：本仓库 `notes/selected-notes-54-20260806.pdf` / `notes/selected-notes-54-index.md`
 - 全量有意义笔记（482篇全文 PDF + 目录索引，9大主题，intensivecolearn.ing 公开打卡全量精选，生成 2026-08-08）：本仓库 `notes/full-meaningful-notes-482-20260808.pdf` / `notes/full-meaningful-notes-482-index.md` / `notes/full-meaningful-notes-482-fulltext-20260808.md`
+- 增量笔记（137篇全文 PDF + 提取文本，2026-08-08 23:00 后新增打卡，9 大主题：LI.FI跨链 39 / 套利框架 31 / AMM机制 26 / 实盘数据 13 / MEV与抢跑 10 / 学习计划 5 / 做市与LP 5 / 风险与安全 5 / 其他 3，生成 2026-08-09 23:01 BJT）：本仓库 `sources/残酷共学_增量笔记_带索引_20260809.pdf` / `sources/残酷共学_增量笔记_提取文本_20260809.txt`
 - 趋势追踪 MA 均线交叉策略研究复盘（v1.0.1，7页，基于 2026-08-06~07 8小时 dryRun 复盘：噪声剃头/不能无限套娃/甜点区间=15min~1h K线+$5000+/高波动趋势市/风控把PnL曲线当资产/量价验证=放量窗口才可靠；系统化交易方向，非链上套利，Paper Trading 须与实盘区分）：本仓库 `notes/ma-crossover-strategy-20260807.pdf` / `notes/ma-crossover-strategy-20260807-fulltext.md`
 - LI.FI 跨链成本观测（群友教学 PDF：142次成本观测+72h价差→evidence.csv 负结论方法论）：本仓库 `notes/lifi-cost-observation-methodology.md`
 - Cryptoxiao 事件交易方法论（newsliquid OI 异动策略模板：OI异动/主力占比>50%/主力盈利判定启动，$TUT 单机盘案例）：https://x.com/cryptoxiao/status/2086348730618528116 → 本仓库 `notes/newsliquid-oi-event-strategy-20260809.md`
@@ -128,3 +132,8 @@
 - ai-goofish-monitor: https://github.com/Usagi-org/ai-goofish-monitor
 - TelegramGroup: https://github.com/AZeC4/TelegramGroup
 - 量化供应商选型指南（PPT 营销套路拆解，原野之诗 2026-08-08）: https://mp.weixin.qq.com/s/M3WlFiiHDC6l5So-Fi-8Ww
+
+## 自媒体/公众号
+
+- 想赚钱的坤 - 公众号工具站合集（①零克查词 lingkechaci.com 违规词/敏感词 ②易撰 yizhuan5.com/app/trends 原创查询+热点监控 ③文章下载 down.mptext.top（有 API）④创作罐头 czgts.cn/daily_hots/list 低粉爆款+素材选题）：https://x.com/kun66666677/status/2086722055601606928 （2026-08-10 验证四站均在线 HTTP 200；**易撰 CLI 查无实据**——官网无 docs/API/openapi 页，官方只提「数据定制+API 接口服务」需商务洽谈，推文 CLI 说法是推广话术；零克查词站点主推小红书/抖音/B站，公众号违规词覆盖不全；down.mptext.top=微信后端 API 代理站，searchbiz/appmsgpublish 接口需扫码登录，已据此写了直连免登录抓取脚本 `scripts/fetch_wechat_material.py`）
+- 辣条味奶糖. - 三款「去 AI 味」写作 Skill 推荐（桥接文档组合法：三个 skill 各出一版→人工对比融合）：https://x.com/spicycandy00/status/2086732942806847701 （2026-08-10 核验：①KKKKhazix/human-writing 2.2K★ 中文去AI味通用改稿 ✓ ②op7418/Humanizer-zh **15K★**（推文链接贴错成 guizang-ppt-skill PPT 仓库，正确仓库是 Humanizer-zh，英文 Humanizer 汉化版 Claude Code Skill）✓ ③lijigang/ljg-skills 6.8K★ 概念解释型，非专做去AI味 ✓；用户本机已有 `humanizer` skill 同方向；已建桥接文档 `templates/writing-skill-bridge.md`（不安装直接调用+选择逻辑））

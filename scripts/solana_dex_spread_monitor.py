@@ -95,7 +95,11 @@ def read_raydium_pool() -> dict:
 
 
 def jupiter_sample() -> list:
-    """Jupiter 多金额采样：记录每次路由选的 AMM 和价格。"""
+    """Jupiter 多金额采样：记录每次路由选的 AMM 和价格。
+
+    坑（2026-08-10 实测）：第二跳起 inputMint 是 USDC（6 位小数），一律按
+    SOL 9 位除会让价格虚高 1000 倍——只统计 inputMint==SOL 的腿。
+    """
     rows = []
     for amt in SAMPLES_SOL:
         try:
@@ -109,6 +113,8 @@ def jupiter_sample() -> list:
             for step in d.get("routePlan", []):
                 si = step.get("swapInfo", {})
                 if si:
+                    if si.get("inputMint") != SOL_MINT:
+                        continue  # 第二跳起输入非 SOL，价格无意义
                     out = int(si.get("outAmount", 0)) / 1e6
                     inp = int(si.get("inAmount", 0)) / 1e9  # 该腿实际输入 SOL
                     rows.append({

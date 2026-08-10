@@ -36,6 +36,10 @@ LOOKBACK_HOURS = 24  # 拉最近 24h 的清算（够覆盖 cron 间隔）
 MIN_COLLATERAL_USD = 50_000   # 抵押品 >= $50K
 MIN_BONUS_USD = 5_000         # 清算奖励 >= $5K
 
+# 论文2（Aave V2 Frictions, Schuler 2026）落地：θ 经济规模过滤 + v̄ 显示 + 净利估计
+THETA_USD = 250            # 最小经济可行清算规模（论文 θ=250 fin）：v̄<θ 的头寸是 stale，扣成本无利可图
+GAS_EST_USD = 20           # EVM 清算 tx Gas 估计（跨链平均，含竞争/失败摊派）
+
 # morpho 优先（D4 分析 + 2026-08-09 DB 实测：morpho 76%，base 77%）
 # morpho 平均奖励仅 $363（max $10K），aave_v3 奖励 ~$0 → morpho 用更低阈值才能抓得到
 MORPHO_MIN_BONUS_USD = 1_000       # morpho 奖励 >= $1K 即报
@@ -45,6 +49,19 @@ PRIORITY_NETWORKS = ["base"]        # base 优先（morpho 主战场）
 
 def now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _alert(it, net, debt, collat, bonus):
+    """论文2 落地：v̄=debt（实际可清算量），θ=THETA_USD 经济规模过滤，净利估计=bonus-gas。"""
+    stale = debt < THETA_USD  # v̄<θ：扣交易成本后无利可图
+    return {
+        "net": net, "protocol": it.get("protocol"), "wallet": it.get("wallet_address"),
+        "tx": it.get("tx_hash"), "dt": it.get("datetime"),
+        "debt": debt, "collat": collat, "bonus": bonus,
+        "net_est": max(0.0, bonus - GAS_EST_USD),  # 清算人估计净利（毛奖励 - gas/竞争）
+        "stale": stale,
+        "loan": it.get("loan_token_symbol"),
+    }
 
 
 def fetch_liquidations(session, network: str, hours: int) -> list:
@@ -113,22 +130,12 @@ def main():
                      it.get("loan_token_symbol"), debt, collat, bonus, now_iso()),
                 )
                 if collat >= MIN_COLLATERAL_USD or bonus >= MIN_BONUS_USD:
-                    new_alerts.append({
-                        "net": net, "protocol": it.get("protocol"), "wallet": it.get("wallet_address"),
-                        "tx": it.get("tx_hash"), "dt": it.get("datetime"),
-                        "debt": debt, "collat": collat, "bonus": bonus,
-                        "loan": it.get("loan_token_symbol"),
-                    })
+                    new_alerts.append(_alert(it, net, debt, collat, bonus))
                 else:
                     # morpho 优先：低阈值单独判断（morpho 奖励天然小，通用阈值抓不到）
                     proto = (it.get("protocol") or {}).get("name", "") if isinstance(it.get("protocol"), dict) else str(it.get("protocol", ""))
                     if "morpho" in proto.lower() and (collat >= MORPHO_MIN_COLLATERAL_USD or bonus >= MORPHO_MIN_BONUS_USD):
-                        new_alerts.append({
-                            "net": net, "protocol": it.get("protocol"), "wallet": it.get("wallet_address"),
-                            "tx": it.get("tx_hash"), "dt": it.get("datetime"),
-                            "debt": debt, "collat": collat, "bonus": bonus,
-                            "loan": it.get("loan_token_symbol"),
-                        })
+                        new_alerts.append(_alert(it, net, debt, collat, bonus))
         except Exception as e:
             errors.append(f"{net}: {e}")
 
@@ -140,12 +147,14 @@ def main():
 
     if new_alerts:
         print(f"⚡ 清算告警（{now_iso()}，共 {len(new_alerts)} 笔超阈值）：")
-        # 排序：优先网络在前（base 优先），同网络按抵押品降序
-        new_alerts.sort(key=lambda a: (a["net"] not in PRIORITY_NETWORKS, -a["collat"]))
+        # 排序：优先网络在前（base 优先），同网络按估计净利降序（值不值得抢）
+        new_alerts.sort(key=lambda a: (a["net"] not in PRIORITY_NETWORKS, -a["net_est"]))
         for a in new_alerts:
             tag = "⭐" if a["net"] in PRIORITY_NETWORKS else ""
+            stale_tag = "（stale: v̄<θ 无利可图）" if a["stale"] else ""
             print(f"{tag} 🔴 [{a['net']}] {a['protocol']} | 抵押品 ${a['collat']:,.0f} | "
-                  f"债务 ${a['debt']:,.0f} ({a['loan']}) | 奖励 ${a['bonus']:,.0f}")
+                  f"v̄(可清算) ${a['debt']:,.0f} ({a['loan']}) | 奖励 ${a['bonus']:,.0f} | "
+                  f"净利≈${a['net_est']:,.0f} {stale_tag}")
             print(f"   {a['dt']} | 钱包 {a['wallet'][:10]}...{a['wallet'][-6:]}")
             print(f"   tx: https://etherscan.io/tx/{a['tx']}")
     elif not args.quiet:

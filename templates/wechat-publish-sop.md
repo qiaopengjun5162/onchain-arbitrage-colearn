@@ -31,15 +31,19 @@
      ```
    - 标题风格：`共学 D{天}：{主题}`
    - 结尾不写免责声明（footer rules 已含）
-2. **ship 一条龙**（cookie 模式）：
+2. **ship 前查违规词**（约 30 秒，粗筛非终审）：
+   - 零克查词 https://lingkechaci.com（免费；主推小红书/抖音/B站，公众号词库覆盖不全，当参考）
+   - 只传「标题+摘要+改写段落」；**未发布研究草稿不要整篇上传**（内容会过第三方服务器）
+   - 微信审核才是终审，工具过完仍可能被拒
+3. **ship 一条龙**（cookie 模式）：
    ```python
    moonpub --articles <知识库根> ship social/wechat/<slug>.md --style geek-black
    # env: WECHAT_APPID/SECRET（~/.zshrc）+ WECHAT_AUTH_METHOD=cookie + WECHAT_PREVIEW_TO=qpj4812701762
    ```
    - 自动：封面(geek-black) → 渲染 → 图片传 CDN → 推草稿 → 原创/赞赏/留言/创作来源 → 手机预览发送
    - 成功标志：`media_id: 10001xxxx` + `images: N uploaded`
-3. **确认发布**：手机微信收预览 → 满意 → 微信后台/订阅号助手 app 草稿箱发布（人工）
-4. **记录**：daily/<当天>.md 追加（media_id、变更）
+4. **确认发布**：手机微信收预览 → 满意 → 微信后台/订阅号助手 app 草稿箱发布（人工）
+5. **记录**：daily/<当天>.md 追加（media_id、变更）
 
 ## 历史 media_id
 

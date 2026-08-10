@@ -15,7 +15,14 @@
 | **链上取证方法论**（怎么分析一个套利地址） | `notes/aave-liquidator-0x8d64d775-address-research-20260808.md` · `notes/robinhood-arb-0xd7121208-address-research-20260808.md` |
 | **赛道选择结论**（清算/原子/跨链怎么选） | `notes/arbitrage-track-selection-20260808.md` |
 | **风控总纲**（套利=概率游戏，敞口控制生死线） | `notes/arb-risk-black-swan-20260809.md` |
+| **137 篇增量批次消化**（LI.FI 0.25% 成本地板 / 无套利带 / Robinhood V4-hook 开窗根因 / 0xd712 失败成本门槛公式 / Solana LP 集中度） | `notes/colearn-incremental-137-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260809.pdf` |
+| **Day 6 报价对比实验**（L0006：Base→Arb USDC 三档×三桥；无规模折扣 25bps 恒定 + 快6s≈1bps + 「时长假象」across 100k 档 1s→900s） | `notes/day6-lifi-quote-compare-20260810.md` · `scripts/day6_lifi_quote_compare.py` |
+| **验证日：066+128**（066 最小价差公式复算：EVM 0.6114% 精确复现、Solana priority fee 30h 全 0 → 门槛=费率地板 Raydium 0.50%；128 WETH/USDG 双池核验：深池 0x52e65B 3.04e18 vs 浅池 0xb2a6aD 5.82e15 = 522 倍，bot proxy 0x19c8 吻合） | `notes/backtest-verify-066-128-20260810.md` · `scripts/066_smin_recalc.py` · `scripts/066_smin_recalc_fee_sweep.py` |
+| **清算/套利学术四连读**（70% 清算无跳变 / Aave V2 状态机 H-V-S / Hawkes 跨协议级联 Morpho→Compound / CEX-DEX 3 巨头垄断 $233.8M） | `notes/defi-liquidation-mev-papers-digest-20260810.md` · `sources/papers/` |
+| **Bruce 第一性原理 + 14 类对照总表**（官方教材：无套利一致性/7步执行法/14 类区间 vs 我们实测的存活状态导航页） | `notes/bruce-first-principles-arbitrage-20260810.md` |
+| **888BMM 两腿 swap 实例**（USDC→EURC→USDC 无 flashloan 无清算；与 068 互证）+ **信息差套利本质**（赚钱=信息差套利，三步法=哨兵架构同构） | `notes/888bmm-two-leg-swap-20260810.md` · `notes/information-gap-arb-essence-20260810.md` |
 | **下架合约价差套利**（群策略实证：HFT 439bps + OI 累计偏离 + L/S ratio 净方向） | `notes/binance-delisting-arb-verified-20260809.md` · `scripts/binance_delisting_review.py` · `scripts/delisting_monitor.py` |
+| **拍卖类调研（Maker LIQ2.0）**（空白候选补齐：Dog→Clipper 荷兰式拍卖、零 DAI flash-callee 参与、实测全系统 0 活跃拍卖 + ETH-A 最近活动 2026-06-05、新 7 参事件签名避坑） | `notes/maker-liquidation-auction-20260810.md` |
 | **期现套利成本模型**（主流币空间恒负 -27~-32bps，持续性过滤） | `notes/basis-arb-model-first-run-20260809.md` · `scripts/basis_arb_model.py` |
 | **长尾币期现测试**（快照假象 vs 持续性：GOAT 54%★ / MEW 17%✗） | `notes/longtail-basis-test-snapshot-vs-persistence-20260809.md` |
 | **BitMart 第一桶金**（充值时间差 alpha：确定性失衡时刻+提前埋伏） | `notes/bitmart-first-pot-alpha-20260809.md` |
@@ -23,6 +30,8 @@
 | **资金费率信号方法论**（Z-score + OI 交叉） | `notes/funding-rate-signal-engineering-20260808.md` |
 | **币股时钟差**（闭市漂移→开盘收敛） | `notes/tokenized-stock-arbitrage.md` |
 | **监控脚本全家桶**（8 个哨兵） | `scripts/` + `daily/2026-08-08.md` 总结 |
+| **公众号素材抓取**（直连免登录抓单篇→markdown+图片；search/list 代理模式需 down.mptext.top cookie，微信会话风险自担） | `scripts/fetch_wechat_material.py` |
+| **去 AI 味写作桥接**（3 个 skill 不安装直接调用：human-writing 长文 / Humanizer-zh 编辑清理 / ljg-plain 概念解释，含硬规则+选择逻辑） | `templates/writing-skill-bridge.md` |
 | **自建节点/基建验收清单**（延迟/吞吐/一致性/资源） | `notes/node-infra-acceptance-checklist-20260808.md` |
 | **Solana 研究线**（Rust 双实现 + 执行层监控） | `scripts/solana-rs/`（quote/build/swap/spread）· `scripts/solfi-sim/`（LiteSVM 模拟器，含 slippage 完整环）· 执行层 5 哨兵：`priority_fee_monitor.py`（竞价）· `jito_bundle_monitor.py`（MEV tip）· `drift_funding_monitor.py`（链上 funding）· `failed_tx_monitor.py`（失败率）· `jupiter_route_monitor.py`（路由变化）+ `execution_quality_tracker.py`（达成率）|
 
