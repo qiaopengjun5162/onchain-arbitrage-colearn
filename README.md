@@ -19,6 +19,7 @@
 | **Day 6 报价对比实验**（L0006：Base→Arb USDC 三档×三桥；无规模折扣 25bps 恒定 + 快6s≈1bps + 「时长假象」across 100k 档 1s→900s） | `notes/day6-lifi-quote-compare-20260810.md` · `scripts/day6_lifi_quote_compare.py` |
 | **验证日：066+128**（066 最小价差公式复算：EVM 0.6114% 精确复现、Solana priority fee 30h 全 0 → 门槛=费率地板 Raydium 0.50%；128 WETH/USDG 双池核验：深池 0x52e65B 3.04e18 vs 浅池 0xb2a6aD 5.82e15 = 522 倍，bot proxy 0x19c8 吻合） | `notes/backtest-verify-066-128-20260810.md` · `scripts/066_smin_recalc.py` · `scripts/066_smin_recalc_fee_sweep.py` |
 | **网格策略趋势市回测**（「在金」1300U 幸存者偏差验证：OKX BTC 1h 13 个月，下跌月亏损率 88% vs 非下跌月盈利 100%；0 手续费仍净亏 → 趋势月库存浮亏>震荡月 gross edge；10x 杠杆 -10% 月即爆仓；手续费 vs 格距生死线 = L0007 成本拆解落地） | `notes/grid-trend-backtest-20260811.md` · `scripts/grid_trend_backtest.py` · `data/grid_monthly_backtest.csv` |
+| **DOS 多链搬砖三步落地**（找币→监控→搬砖：slot0 直读价格与 Gate 精确一致；BSC+ETH 双链深池多链币极稀缺（候选 OFT 币 BSC 全无池）；DOS 毛价差 136bps 但 BSC→ETH 桥费 $0.69 吃成净 7.6bps → 当前 NO-GO；等 ETH 折价+ETH→BSC 便宜方向） | `scripts/multi_chain_spread_monitor.py` · `notes/dos-bridge-arb-20260811.md` |
 | **研究线 #14：Meme 微观结构**（5M 壳价 cohort 验证「难亏钱」假设 + Dev 行为哨兵四本账 + 增发监控；博弈研究非实盘建议；接 #13 低容量量化共享基建） | `notes/research-backlog.md` · `notes/meme-dev-harvest-pattern-20260811.md` |
 | **TUT Rust 双实现 v2 · 时间对齐**（inner join on ts 替代 index 硬对齐；ts 毫秒归一化+去重；抓到 v1 盲区：2025-03-20 bn 09:00 起 vs bg 00:00 起=按 index 配对全错；交叉验证：2026-05-28 检出 11-bar 窗口、2026-08-09 检出 31-bar/16.16% 插针窗口，与 Python 版一致） | `scripts/tut_backtest/rust/src/main.rs` |
 | **无套利带雷达 v2**（Raydium 锚点校准：池 58oQChx 活跃确认；深度过滤=腿价偏离锚点≥300bps 标 suspect 不告警；Jupiter 池列表 API 不可用→偏离代理；实测全配对在走廊内，100 SOL 档 Raydium↔Quantum 61.4bps 顶到 60bps 走廊上沿） | `scripts/no_arb_corridor_radar.py` · `data/corridor_series.csv` |
@@ -37,6 +38,8 @@
 | **Day 6 晚间增量精华**（046「成本在时间不在费用」与时长假象独立互证 / 093 Solana 首笔盈利+构造延迟瓶颈 / 094 事件套利六阶段 / 085 滑点授权金句 / 086 报价采集 v1 / 091 清算多链化 / 092 完整成本模型） | `notes/day6-incremental-evening-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260810.pdf` |
 | **下架合约价差套利**（群策略实证：HFT 439bps + OI 累计偏离 + L/S ratio 净方向） | `notes/binance-delisting-arb-verified-20260809.md` · `scripts/binance_delisting_review.py` · `scripts/delisting_monitor.py` |
 | **拍卖类调研（Maker LIQ2.0）**（空白候选补齐：Dog→Clipper 荷兰式拍卖、零 DAI flash-callee 参与、实测全系统 0 活跃拍卖 + ETH-A 最近活动 2026-06-05、新 7 参事件签名避坑） | `notes/maker-liquidation-auction-20260810.md` |
+| **拍卖哨兵 v1（Maker Clipper）**（LIQ2.0 调研落地：IlkRegistry.list() 动态拉 35 ilk → Dog.ilks 拿 clip → Clipper.count() 轮询，>0 即告警+sales() 明细；多 RPC fallback 防限流；cron 每 30 分钟） | `scripts/maker_clipper_sentinel.py` · `data/maker_clipper.db` |
+| **D9 预习：CLMM 集中流动性**（tick 与价格 P=1.0001^tick；虚拟储备公式 x=L(1/√p−1/√pb) y=L(√p−√pa)；Raydium 储备实测资金效率 X21.5x/Y19.5x；出区间=单边资产=网格穿界风险的 AMM 版；可视化 `data/clmm_visual.png`） | `notes/amm-math-clmm-preview-20260811.md` · `scripts/amm_clmm_visualize.py` |
 | **期现套利成本模型**（主流币空间恒负 -27~-32bps，持续性过滤） | `notes/basis-arb-model-first-run-20260809.md` · `scripts/basis_arb_model.py` |
 | **长尾币期现测试**（快照假象 vs 持续性：GOAT 54%★ / MEW 17%✗） | `notes/longtail-basis-test-snapshot-vs-persistence-20260809.md` |
 | **BitMart 第一桶金**（充值时间差 alpha：确定性失衡时刻+提前埋伏） | `notes/bitmart-first-pot-alpha-20260809.md` |
