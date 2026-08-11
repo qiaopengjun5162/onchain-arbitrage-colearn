@@ -137,3 +137,7 @@
 
 - 想赚钱的坤 - 公众号工具站合集（①零克查词 lingkechaci.com 违规词/敏感词 ②易撰 yizhuan5.com/app/trends 原创查询+热点监控 ③文章下载 down.mptext.top（有 API）④创作罐头 czgts.cn/daily_hots/list 低粉爆款+素材选题）：https://x.com/kun66666677/status/2086722055601606928 （2026-08-10 验证四站均在线 HTTP 200；**易撰 CLI 查无实据**——官网无 docs/API/openapi 页，官方只提「数据定制+API 接口服务」需商务洽谈，推文 CLI 说法是推广话术；零克查词站点主推小红书/抖音/B站，公众号违规词覆盖不全；down.mptext.top=微信后端 API 代理站，searchbiz/appmsgpublish 接口需扫码登录，已据此写了直连免登录抓取脚本 `scripts/fetch_wechat_material.py`）
 - 辣条味奶糖. - 三款「去 AI 味」写作 Skill 推荐（桥接文档组合法：三个 skill 各出一版→人工对比融合）：https://x.com/spicycandy00/status/2086732942806847701 （2026-08-10 核验：①KKKKhazix/human-writing 2.2K★ 中文去AI味通用改稿 ✓ ②op7418/Humanizer-zh **15K★**（推文链接贴错成 guizang-ppt-skill PPT 仓库，正确仓库是 Humanizer-zh，英文 Humanizer 汉化版 Claude Code Skill）✓ ③lijigang/ljg-skills 6.8K★ 概念解释型，非专做去AI味 ✓；用户本机已有 `humanizer` skill 同方向；已建桥接文档 `templates/writing-skill-bridge.md`（不安装直接调用+选择逻辑））
+
+## 套利实盘/案例
+
+- 在金 - vibe-coding 网格系统实盘记录（4 交易所 6 账户，1 个月 1300U；更新：只看实盘交易所/主页仓位+强平价/Decibel APT 手续费报错+API 钱包地址+复制；承诺 Arcus 规模入场后开源）：https://x.com/zaijin338191/status/2086779614068896068 （2026-08-11 回测验证幸存者偏差：`notes/grid-trend-backtest-20260811.md`——13 个月下跌月亏损率 75-88%、非下跌月盈利率 100%；0 手续费全期仍净亏，趋势月库存浮亏 > 震荡月 gross edge；10x 杠杆 2026-01 -10% 月即爆仓。评论区 YuChen 4 个月赚几千刀/本金几百刀同属状态选择偏差样本）
