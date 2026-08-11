@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""无套利带雷达 v1（只读）：价差矩阵 → 走廊宽度 → 出轨检测。
+"""无套利带雷达 v2（只读）：价差矩阵 → 走廊宽度 → 出轨检测 + 深度过滤。
 
 原理（notes/colearn-incremental-137-digest-20260810.md，群友 110 笔记）：
 - 无套利带 = 两腿费率和走廊：同一资产在两个池子之间往返，
@@ -9,11 +9,20 @@
 - 低费率池走廊窄 → 出轨频率高 → 机会频率高
 - 深度枯竭池按深度过滤（避免假出轨：报价虚高）
 
+v2 变更（2026-08-11）：
+- Raydium 锚点校准：池 58oQChx…（owner 675kPX9M…，vault 模式）RPC 确认活跃 ✅
+- 深度过滤：Jupiter 池列表 API 不可用（/swap/v1/pools 404、stats 超时），
+  且部分 AMM（Quantum 等）池地址无直接 token 账户 → 用「价格偏离锚点」代理：
+  每条腿价 vs 同金额档 Raydium 锚点价，偏离 > DEPTH_SUSPECT_BPS(300bps)
+  视为深度可疑（枯竭池假报价候选），出轨时标记「疑似假信号」不告警；
+  将来拿到池结构解析（ammKey→vault 直读）可替换为真实 TVL 过滤
+- 连续确认逻辑仍留待 v3
+
 实现：
 - 价格源：Raydium SOL-USDC 直读（vault 余额恒定乘积）+ Jupiter quote 各金额档路由腿
 - 走廊宽度 = fee_A + fee_B（协议费率查表）+ 冲击项（金额档间价格差估算）
 - 出轨 = |spread_bps| > corridor_bps（超出走廊）
-- 配对矩阵：同金额档下不同池两两配对，输出 spread/corridor/exit
+- 配对矩阵：同金额档下不同池两两配对，输出 spread/corridor/exit/suspect
 
 用法：
   python scripts/no_arb_corridor_radar.py            # 单次扫描
@@ -51,6 +60,7 @@ USDC_VAULT = "HLmqeL62xR1QoZ1HKKbXRrdN1p3phKpxRMb2VVopvBBz"
 
 SAMPLES_SOL = [0.1, 1, 10, 100]
 EXIT_BPS_MIN = 20        # 出轨超出走廊 ≥20bps 才算信号（防测量噪音）
+DEPTH_SUSPECT_BPS = 300  # v2：腿价偏离 Raydium 锚点 ≥3% 视为深度可疑（枯竭池假报价候选）
 STATE_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_radar_state.json"
 LOG_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_exits.csv"
 SERIES_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_series.csv"
@@ -166,12 +176,20 @@ def tick() -> int:
     # 配对矩阵：同金额档内两两配对（同池跳过）
     # 说明：同 quote 内多腿互配 = 同一时刻两个活池在卖同一资产，最纯的走廊对比；
     # Raydium 直读是独立锚点（最深的池，价格可信）。
-    # 深度过滤留待 v2（需读池 TVL；v1 用 EXIT_BPS_MIN + 费率走廊挡噪音）。
+    # v2 深度过滤：每金额档以 Raydium 为锚点，腿价偏离 ≥DEPTH_SUSPECT_BPS 标 suspect。
     pairs = []
     by_size = {}
     for o in obs:
         by_size.setdefault(o["sample_sol"], []).append(o)
     for size, group in by_size.items():
+        anchor = next((o for o in group if o["pool"] == "Raydium"), None)
+        for o in group:
+            if o["pool"] != "Raydium" and anchor and anchor["price"]:
+                o["dev_bps"] = abs(o["price"] - anchor["price"]) / anchor["price"] * 10000
+                o["suspect"] = o["dev_bps"] > DEPTH_SUSPECT_BPS
+            else:
+                o["dev_bps"] = 0.0
+                o["suspect"] = False
         for a, b in combinations(group, 2):
             if a["pool"] == b["pool"]:
                 continue
@@ -185,13 +203,16 @@ def tick() -> int:
                 "spread_bps": round(spread_bps, 1),
                 "corridor_bps": corr, "exit_bps": round(exit_bps, 1),
                 "fee_a": a["fee_bps"], "fee_b": b["fee_bps"],
+                "dev_a": round(a["dev_bps"], 1), "dev_b": round(b["dev_bps"], 1),
+                "suspect": a["suspect"] or b["suspect"],
             })
 
-    # 出轨 = 超出走廊且超出量 ≥ EXIT_BPS_MIN
-    exits = [p for p in pairs if p["exit_bps"] >= EXIT_BPS_MIN]
+    # 出轨 = 超出走廊且超出量 ≥ EXIT_BPS_MIN；suspect 腿的出轨记入「疑似假信号」不告警
+    exits = [p for p in pairs if p["exit_bps"] >= EXIT_BPS_MIN and not p["suspect"]]
+    suspect_exits = [p for p in pairs if p["exit_bps"] >= EXIT_BPS_MIN and p["suspect"]]
 
     ts = pairs[0]["ts"] if pairs else datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    # 状态快照（记录最近出轨集合；连续确认逻辑 v2 再加）
+    # 状态快照（记录最近出轨集合；连续确认逻辑 v3 再加）
     cur_keys = [f"{e['size']}:{e['pool_a']}<->{e['pool_b']}" for e in exits]
     state = {"exit_keys": cur_keys, "ts": ts}
     try:
@@ -214,12 +235,14 @@ def tick() -> int:
         new2 = not SERIES_PATH.exists()
         with open(SERIES_PATH, "a", newline="") as f:
             w = csv.DictWriter(f, fieldnames=["ts", "size", "pool_a", "pool_b",
-                                              "spread_bps", "corridor_bps", "exit_bps"])
+                                              "spread_bps", "corridor_bps", "exit_bps",
+                                              "dev_a", "dev_b", "suspect"])
             if new2:
                 w.writeheader()
             for p in pairs:
                 w.writerow({k: p.get(k) for k in
-                            ["ts", "size", "pool_a", "pool_b", "spread_bps", "corridor_bps", "exit_bps"]})
+                            ["ts", "size", "pool_a", "pool_b", "spread_bps", "corridor_bps",
+                             "exit_bps", "dev_a", "dev_b", "suspect"]})
     except Exception:
         pass
 
@@ -229,20 +252,26 @@ def tick() -> int:
                 print(f"⚠️ 无套利带出轨 @ {e['ts']}：{e['pool_a']}↔{e['pool_b']} "
                       f"@{e['size']}SOL 价差{e['spread_bps']}bps > 走廊{e['corridor_bps']}bps "
                       f"（超{e['exit_bps']}bps）")
+        # 疑似假信号（深度可疑腿）静默：只记账不打扰
         return 0
 
     print(f"\n=== 无套利带雷达 @ {ts} ===")
-    print(f"{'规模':<6}{'池A':<14}{'池B':<14}{'价差bps':>9}{'走廊bps':>9}{'超出bps':>9}")
+    print(f"{'规模':<6}{'池A':<14}{'池B':<14}{'价差bps':>9}{'走廊bps':>9}{'超出bps':>9}{'深':>4}")
     for p in sorted(pairs, key=lambda x: -x["exit_bps"]):
-        mark = " ⚠️" if p["exit_bps"] >= EXIT_BPS_MIN else ""
+        mark = " ⚠️" if p["exit_bps"] >= EXIT_BPS_MIN and not p["suspect"] else ""
+        mark = " 🔸D" if p["suspect"] else mark
         print(f"{p['size']:<6}{p['pool_a']:<14}{p['pool_b']:<14}"
-              f"{p['spread_bps']:>9.1f}{p['corridor_bps']:>9.0f}{p['exit_bps']:>9.1f}{mark}")
+              f"{p['spread_bps']:>9.1f}{p['corridor_bps']:>9.0f}{p['exit_bps']:>9.1f}{mark:>4}")
     if exits:
-        print(f"\n🚨 出轨 {len(exits)} 对（超出走廊 ≥{EXIT_BPS_MIN}bps）：")
+        print(f"\n🚨 出轨 {len(exits)} 对（超出走廊 ≥{EXIT_BPS_MIN}bps，深度可信）：")
         for e in exits:
             print(f"  {e['pool_a']}↔{e['pool_b']} @{e['size']}SOL: {e['spread_bps']}bps > 走廊 {e['corridor_bps']}bps")
     else:
         print("\n✅ 全部配对在无套利带内（市场有效，无出轨）")
+    if suspect_exits:
+        print(f"\n🔸 疑似假信号 {len(suspect_exits)} 对（腿价偏离锚点 ≥{DEPTH_SUSPECT_BPS}bps，深度可疑，不告警）：")
+        for e in suspect_exits[:5]:
+            print(f"  {e['pool_a']}↔{e['pool_b']} @{e['size']}SOL: {e['spread_bps']}bps（偏离锚点 {max(e['dev_a'], e['dev_b']):.0f}bps）")
     # 最窄走廊池排名（低费率=出轨频率高，机会频率图）
     fee_map = {}
     for o in obs:
