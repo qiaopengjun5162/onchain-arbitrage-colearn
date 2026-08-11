@@ -19,6 +19,7 @@
 | **Day 6 报价对比实验**（L0006：Base→Arb USDC 三档×三桥；无规模折扣 25bps 恒定 + 快6s≈1bps + 「时长假象」across 100k 档 1s→900s） | `notes/day6-lifi-quote-compare-20260810.md` · `scripts/day6_lifi_quote_compare.py` |
 | **验证日：066+128**（066 最小价差公式复算：EVM 0.6114% 精确复现、Solana priority fee 30h 全 0 → 门槛=费率地板 Raydium 0.50%；128 WETH/USDG 双池核验：深池 0x52e65B 3.04e18 vs 浅池 0xb2a6aD 5.82e15 = 522 倍，bot proxy 0x19c8 吻合） | `notes/backtest-verify-066-128-20260810.md` · `scripts/066_smin_recalc.py` · `scripts/066_smin_recalc_fee_sweep.py` |
 | **网格策略趋势市回测**（「在金」1300U 幸存者偏差验证：OKX BTC 1h 13 个月，下跌月亏损率 88% vs 非下跌月盈利 100%；0 手续费仍净亏 → 趋势月库存浮亏>震荡月 gross edge；10x 杠杆 -10% 月即爆仓；手续费 vs 格距生死线 = L0007 成本拆解落地） | `notes/grid-trend-backtest-20260811.md` · `scripts/grid_trend_backtest.py` · `data/grid_monthly_backtest.csv` |
+| **Binance Alpha「搬砖套利」拆解**（Alpha=币安链上聚合入口非独立市场，订单链上执行；「Alpha vs 链上价差」=聚合报价 vs 单池=显示假象；Alpha 资产提现受限=资金闭环存疑；真机会=公告前埋伏的信息差博弈，非价差套利） | `notes/binance-alpha-arbitrage-20260811.md` |
 | **Solana 个人线第一周总结**（D1-D7：交易模型/Anchor 环境/devnet swap/双实现监控/币股哨兵/执行层 5 哨兵；对照 v1 校准自查全达标且超前；广度标注 3 候选：币股★★★/低容量★★★/链上 perp★★） | `notes/solana-week1-summary-20260811.md` |
 | **「看起来赚了≠真的赚了」gross vs net 方法论**（网格1300U/Polymarket榜一/gas反杀三案例合一：评估赚钱案例 5 问=口径/成本占比/返佣依赖/市场状态/最小有效规模；L0008 机会清单筛选前置） | `notes/gross-vs-net-three-cases-20260811.md` |
 | **D8 预习：AMM 数学 x*y=k**（公式推导+Python 手算；Raydium SOL-USDC 真实储备精确复现 73.9612 误差 0；费率反推=0.30% 非 0.25%；深池 1000 SOL 滑点 1.7%；滑点曲线=容量曲线，接 backrun 薄池扫描） | `notes/amm-math-v2-preview-20260811.md` · `scripts/amm_v2_verify.py` |
