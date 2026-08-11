@@ -264,6 +264,7 @@ def save_state(st):
 def main():
     ap = argparse.ArgumentParser(description="Maker LIQ2.0 拍卖哨兵 v1")
     ap.add_argument("--backfill", action="store_true", help="只落盘不告警（首跑）")
+    ap.add_argument("--quiet", action="store_true", help="无异动静默（cron watchdog）")
     ap.add_argument("--history", type=int, default=DEFAULT_PAGES,
                     help="每个 clip 拉日志的翻页数（每页 50 条）")
     ap.add_argument("--refresh-ilks", action="store_true", help="强制刷新 ilk 缓存")
@@ -339,13 +340,15 @@ def main():
                                 top / RAY, tab / RAD, lot / 1e18, usr, kpr, coin / RAD,
                                 None, None, None, now_iso())
                 else:
-                    # topics[1]=id, [2]=usr；data = (top, tab, lot, wad, coin)
+                    # Take(id indexed, max, price, owe, tab, lot, usr indexed)
+                    #   topics[1]=id, topics[2]=usr；data = (max, price, owe, tab, lot)
+                    #   price=ray(1e27), owe/tab=rad(1e45), lot=wad(1e18), max 可能超大(不限价)
                     aid = int(topics[1], 16)
                     usr = "0x" + topics[2][-40:] if len(topics) > 2 and topics[2] else ""
                     vals = eth_abi.decode(TAKE_DATA_ABI, bytes.fromhex(data[2:]))
-                    top, tab, lot, wad, coin = vals
+                    max_p, price, owe, tab, lot = vals
                     row_vals = ("TAKE", ilk_name, clip, str(aid), blk, tx,
-                                top / RAY, tab / RAD, lot / 1e18, usr, "", wad / 1e18,
+                                price / RAY, tab / RAD, lot / 1e18, usr, "", owe / RAD,
                                 None, None, None, now_iso())
                 dup = conn.execute(
                     "SELECT 1 FROM auction_events WHERE event_type=? AND auction_id=? AND tx=?",
@@ -369,9 +372,9 @@ def main():
             errors.append(f"logs {clip[:10]}: {e}")
 
     st["last_block"] = latest
-    save_state(st)
     try:
         conn.commit()
+        save_state(st)  # 仅提交成功后才推进已扫块号
     except sqlite3.OperationalError as e:
         errors.append(f"final commit: {e}")
     conn.close()
@@ -394,7 +397,7 @@ def main():
                 print(f"  🔴 活跃拍卖 {a['ilk']} id={a['aid']} tab=${a['tab']:,.2f} "
                       f"lot={a['lot']:,.4f} 当前价 {p_s} vs 市价 ${a['market_price'] or '?'} → 折价 {d_s}")
                 print(f"     usr={a['usr'][:10]}… tic={a['tic']}")
-    elif not args.backfill:
+    elif not args.backfill and not args.quiet:
         print(f"无活跃拍卖，无新 Kick（latest blk {latest}，已扫至 {st['last_block']}）")
 
 

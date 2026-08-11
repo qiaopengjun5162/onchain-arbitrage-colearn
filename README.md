@@ -32,6 +32,8 @@
 | **实操案例：毛利为正 gas+桥费翻负**（0.004 ETH 跨链毛利 +0.13% 但成本占 1.46%=毛利的 11 倍 → 净亏；最小有效规模=固定成本/价差率，$7.5 亏、$83 平、$1000 进最优点；门槛公式 NO-GO 判定一致） | `notes/gas-bridge-fee-eats-arb-case-20260811.md` |
 | **群讨论复盘：认知推进四阶段**（概念共识→案例吸引→路径>代码→基建门槛；系统=数据/识别/执行/风控四层；术语：吃尸体=对手方风险/埋伏/原子套利；AI 降门槛不产利润；结论：案例≠收益证明、个人活路在低容量结构性价差） | `notes/group-discussion-synthesis-20260811.md` |
 | **Polymarket 排行榜税前口径验证**（@runes_leo 推文实测：手续费公式逐档正确；每股费实测 0.012-0.014 与推文吻合；返佣真实可量化 Djdjdjekekek 11 天 $74.6K；榜单 pnl=gross；抓到反例 HomeRunHazard 月榜 +$454K 但近 11 天纯交易 −$121K；修正：24-45% 只适用于 edge≈费的吃单 bot） | `notes/polymarket-leaderboard-gross-pnl-20260811.md` · `scripts/polymarket_leaderboard_fee_verify.py` |
+| **Backrun 薄池扫描器 v1**（容量边界量化：SOL 主流全深池互证 D5；BONK 容量边界实测 $10K——$10K 档 -40%、$50K 档 -73%；长尾币按美元档扫 + 多跳路由 outputMint 定位坑） | `scripts/backrun_thin_pool_scanner.py` · `notes/research-backlog.md` #13 |
+| **Maker LIQ2.0 拍卖哨兵 v1**（35 ilk 动态发现 + 多 RPC fallback + watchdog；cron 30m；双 Agent 协同撞 DB 教训） | `scripts/maker_clipper_sentinel.py` · `scripts/auction_sentinel.py` |
 | **清算/套利学术四连读**（70% 清算无跳变 / Aave V2 状态机 H-V-S / Hawkes 跨协议级联 Morpho→Compound / CEX-DEX 3 巨头垄断 $233.8M） | `notes/defi-liquidation-mev-papers-digest-20260810.md` · `sources/papers/` |
 | **Bruce 第一性原理 + 14 类对照总表**（官方教材：无套利一致性/7步执行法/14 类区间 vs 我们实测的存活状态导航页） | `notes/bruce-first-principles-arbitrage-20260810.md` |
 | **888BMM 两腿 swap 实例**（USDC→EURC→USDC 无 flashloan 无清算；与 068 互证）+ **信息差套利本质**（赚钱=信息差套利，三步法=哨兵架构同构） | `notes/888bmm-two-leg-swap-20260810.md` · `notes/information-gap-arb-essence-20260810.md` |
