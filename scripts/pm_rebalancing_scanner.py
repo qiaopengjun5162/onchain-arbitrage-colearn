@@ -32,6 +32,7 @@ Polymarket「Market Rebalancing Arbitrage」盘口级扫描器。
 """
 
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -45,7 +46,9 @@ MIN_PROFIT = 0.02        # 每 $1 名义的最小净利（论文下限 $0.05，�
 MIN_SHARES = 20          # 最小可执行容量（股）
 MAX_MARKETS = 300        # 最多拉取的 market 数（分页，每页 100）
 TIME_BUDGET = 100        # 全局时间预算（秒）
-LOG_PATH = "data/pm_rebalancing_scan.jsonl"
+LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "..", "data", "pm_rebalancing_scan.jsonl")
+QUIET = False            # cron 模式：有信号才输出（watchdog），否则静默
 
 
 def get(url, retries=2, timeout=15):
@@ -196,6 +199,7 @@ def decide(res, min_profit, min_shares):
 
 
 def main():
+    global QUIET
     max_markets, min_profit, min_shares, loop = MAX_MARKETS, MIN_PROFIT, MIN_SHARES, 0
     args = sys.argv[1:]
     for i, a in enumerate(args):
@@ -205,6 +209,8 @@ def main():
             min_profit = float(args[i + 1])
         elif a == "--loop" and i + 1 < len(args):
             loop = int(args[i + 1])
+        elif a == "--quiet":
+            QUIET = True
 
     while True:
         run_once(max_markets, min_profit, min_shares)
@@ -213,15 +219,20 @@ def main():
         time.sleep(loop)
 
 
+def log(msg):
+    if not QUIET:
+        print(msg)
+
+
 def run_once(max_markets, min_profit, min_shares):
-    print(f"== PM rebalancing scan {time.strftime('%Y-%m-%d %H:%M:%S')} ==")
+    log(f"== PM rebalancing scan {time.strftime('%Y-%m-%d %H:%M:%S')} ==")
     deadline = time.time() + TIME_BUDGET
     try:
         markets = fetch_markets(max_markets)
     except Exception as e:
-        print("  fetch markets failed:", e)
+        log("  fetch markets failed: " + str(e))
         return
-    print(f"  markets fetched: {len(markets)}")
+    log(f"  markets fetched: {len(markets)}")
 
     # 分组：negRisk → 按 negRiskMarketID；否则单条件
     groups = {}
@@ -231,12 +242,12 @@ def run_once(max_markets, min_profit, min_shares):
             groups.setdefault(gid, []).append(m)
         else:
             groups.setdefault("SINGLE:" + str(m.get("id")), [m])
-    print(f"  groups: {len(groups)}")
+    log(f"  groups: {len(groups)}")
 
     hits, scanned, skipped = [], 0, 0
     for gid, ms in groups.items():
         if time.time() > deadline:
-            print("  [time budget exceeded, stopping]")
+            log("  [time budget exceeded, stopping]")
             break
         try:
             if gid.startswith("SINGLE"):
@@ -259,7 +270,7 @@ def run_once(max_markets, min_profit, min_shares):
         sig, net, cap, reason = decide(res, min_profit, min_shares)
         if sig != "NONE":
             hits.append((label, res, sig, net, cap))
-        log = {
+        rec = {
             "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
             "label": label, "type": res["type"],
             "long_gross_bps": round(res["long"][0] * 10000), "long_net_bps": round(res["long"][1] * 10000),
@@ -268,16 +279,18 @@ def run_once(max_markets, min_profit, min_shares):
             "decision": sig, "reject_reason": reason,
         }
         with open(LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(log, ensure_ascii=False) + "\n")
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
-    print(f"  signals: {len(hits)}  (scanned {scanned}, skipped big sets {skipped})")
+    if QUIET and not hits:
+        return  # watchdog：无信号静默
+    log(f"  signals: {len(hits)}  (scanned {scanned}, skipped big sets {skipped})")
     for label, res, sig, net, cap in hits:
         wall = " ⚠️wall" if res.get("wall") else ""
-        print(f"  [{sig}] {label}  net={net}bps cap~{cap:.0f}sh{wall}")
+        log(f"  [{sig}] {label}  net={net}bps cap~{cap:.0f}sh{wall}")
         if res["type"] == "set":
-            print(f"        ΣYES_ask={res['sum_ask']:.4f} ΣYES_bid={res['sum_bid']:.4f} n={res['n']}")
+            log(f"        ΣYES_ask={res['sum_ask']:.4f} ΣYES_bid={res['sum_bid']:.4f} n={res['n']}")
         else:
-            print(f"        Y({res['yes'][0]:.3f}/{res['yes'][1]:.3f}) N({res['no'][0]:.3f}/{res['no'][1]:.3f})")
+            log(f"        Y({res['yes'][0]:.3f}/{res['yes'][1]:.3f}) N({res['no'][0]:.3f}/{res['no'][1]:.3f})")
 
 
 if __name__ == "__main__":
