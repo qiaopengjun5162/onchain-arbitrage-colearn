@@ -36,3 +36,20 @@
 - [ ] 「bStocks 事件响应检查表」：公告 → ticker → 底层美股价 → BSC 链上池 → 净价差 → 深度 → 判定（半自动脚本）
 - [ ] 确认 08-11 TradFi perp 批次的标的清单（bapi 详情接口参数待修）
 - [ ] DOS 线更新：DOSUSDT 永续上线 → 期现结构新角度（币安合约 vs 链上/现货）
+
+## 追加（23:40）：bapi 详情接口修复 + GMEB 实况 + TradFi perp 亚洲批次
+
+### bapi 详情接口修好（公告→ticker 全自动管线打通）
+- 端点：`GET https://www.binance.com/bapi/composite/v1/public/cms/article/detail/query?articleCode={code}`，**必须带 Referer/Origin 头**（否则 403 反爬/illegal parameter）
+- 正文在 `data.body`（嵌套 JSON，需 tree-walk 提取文本），摘要 `data.seoDesc` 直接给 ticker
+
+### 「明天的新品」实锤 = 今天 GMEB
+- **08-12 12:00 UTC（北京 20:00）GMEB/USDT 上市**（GameStop bStocks）+ 零挂单费 + 零费 Convert + 同刻成为抵押资产
+- 23:34 检查表实况（上市 3.5h 后）：GME 底层 $18.51 / Binance $18.52（+5bps，定价准）/ BSC 主池 $18.58（+40bps，$598K 深度，24h 量 $10.2M）
+- **窗口衰减证据**：链上→Binance 两腿毛 +32bps，扣两腿 DEX 费+现货 taker 费后 ≈ 0-15bps → 观察级，无肉
+- 对比 ALABB（08-05 上市，+35bps 溢价仍挂着）→ 上币窗口寿命 = 数小时到数天，GME 这种热股收敛更快
+
+### TradFi perp 批次（08-11）= 亚洲股票！老白「亚洲差异化」落地
+- **KUAISHOUUSDT（快手）/ MEITUANUSDT（美团）/ CSOPSKHYNIX2LUSDT（韩华 2x）/ CSOPSAMSUNG2LUSDT（三星 2x）**，02:00-02:15 UTC 分 4 波上市，20x 杠杆，Multi-Assets Mode
+- 意义：Binance RWA perp 从美股扩到亚洲股票；CSOP = 香港杠杆 ETF 发行商——「链上外汇/亚洲资产」方向被验证
+- bStocks 线目前只有美股（GMEB 等），期现套利候选 = 美股 bStock vs 对应 TradFi perp（若上）

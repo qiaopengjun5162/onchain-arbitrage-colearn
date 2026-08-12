@@ -47,14 +47,21 @@ def http_json(url, timeout=TIMEOUT):
 def stock_price(ticker):
     """底层美股实时价（yfinance，失败返回 None）"""
     import yfinance as yf
-    t = yf.Ticker(ticker)
-    hist = t.history(period="1d", interval="1m", prepost=True)
-    if hist.empty:
-        # 闭市时取最后收盘
-        hist = t.history(period="5d")
-    if hist.empty:
-        return None
-    return float(hist["Close"].iloc[-1])
+    # bStocks 命名：XXXB → 底层美股 XXX（GMEB→GME, ALABB→ALAB, NVDAB→NVDA）
+    cands = [ticker]
+    if ticker.endswith("B") and len(ticker) > 3:
+        cands.append(ticker[:-1])
+    for c in cands:
+        try:
+            t = yf.Ticker(c)
+            hist = t.history(period="1d", interval="1m", prepost=True)
+            if hist.empty:
+                hist = t.history(period="5d")
+            if not hist.empty:
+                return float(hist["Close"].iloc[-1])
+        except Exception:
+            continue
+    return None
 
 def binance_price(symbol):
     """Binance 现货价。主 API 区域封锁（451）→ 用 data-api.binance.vision 镜像（不封）"""
