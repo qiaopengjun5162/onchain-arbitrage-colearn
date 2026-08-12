@@ -15,6 +15,10 @@
   python scripts/day6_lifi_quote_compare.py --amounts 1000,10000,100000
 
 依赖：python3 + requests（走代理）
+
+⚠️ 2026-08-12 勘误：本脚本未带 integrator 参数，测的是「默认渠道」的 25bps 平台费
+（见 `notes/l0006-integrator-retest-20260812.md`）。带 `integrator=jumper.exchange` 该费归零。
+重测用 `scripts/l0006_integrator_retest.py`。
 """
 
 import argparse
