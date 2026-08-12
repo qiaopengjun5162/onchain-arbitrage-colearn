@@ -35,3 +35,11 @@
 - [ ] 各跨链脚本统一加 `integrator=jumper.exchange`（day6_lifi_quote_compare.py、multi_chain_spread_monitor.py 的 LI.FI 部分）
 - [ ] DOS 报价带 integrator 重测，更新 dos-bridge-arb 笔记净价差数字
 - [ ] （可选）验证 jumper.exchange 在 quote/advanced-routes/execute 三端行为一致（本次只测 quote）
+
+## ⚠️ 勘误（2026-08-12 下午）：DOS 重测假设被证伪——integrator 对 DOS 无影响
+
+- **假设**（本笔记初版）：DOS 净 7.6bps 含默认平台费，带 jumper.exchange 应回升到 ~32bps
+- **实测证伪**：①LI.FI `/v1/quote` 对 BSC→ETH 全部 404（USDT/DOS/任意币，含 sanity 对照）——**LI.FI 根本没有 BSC→ETH 主网路由**，Base→Arb 同参数正常（997.5/1000.0 复现）②查原笔记：DOS 走 **LayerZero V2 原生 OFT 桥**（BSC OFT ↔ ETH OFTAdapter，桥费 BSC→ETH $0.69 = LayerZero 消息费 + BNB gas），**与 LI.FI 平台费是两个独立系统**
+- **修正结论**：DOS 的 7.6bps 本来就是「无 LI.FI 平台费」口径；integrator 参数不适用 → 净价差维持 ~7.6bps，**NO-GO 判定不变**
+- **新发现（更有价值）**：跨链成本模型必须按「实际桥」核算——LI.FI 覆盖 ≠ 全链（BSC→ETH 盲区）；聚合器报价查不到 ≠ 路径不存在（DOS 走原生桥活得很好）
+- 教训：先写假设再验证（AGENTS.md 规则），假设被数据打脸是正常产出

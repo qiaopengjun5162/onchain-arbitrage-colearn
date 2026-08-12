@@ -26,6 +26,7 @@
 - 成本模型：桥费（方向相关：BSC→ETH $0.69 vs ETH→BSC $0.02）+ gas + DEX 费 + 滑点计提
 - **关键发现**：BSC→ETH 方向桥费（$0.69）是主要杀手——毛 136bps 扣完只剩 7.6bps；ETH→BSC 方向（桥费 $0.02）若 ETH 折价会好很多
 - 结论：DOS 当前净价差远低于 3% 阈值，**NO-GO**；监控挂着，等上币窗口价差放大（PDF 快照时 BSC 0.5645/ETH 0.557 毛 ~130bps，波动剧烈 0.274-0.758）
+- 2026-08-12 补：integrator=jumper.exchange **不适用**——DOS 走 LayerZero 原生 OFT 桥（$0.69=消息费+BNB gas），与 LI.FI 平台费无关；且实测 LI.FI 对 BSC→ETH 无任何路由（404）。净 7.6bps 即无平台费口径，NO-GO 维持（详见 notes/l0006-integrator-retest-20260812.md 勘误）
 
 ## 四、搬砖（paper 判定，实盘须批准）
 
