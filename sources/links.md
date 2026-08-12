@@ -157,3 +157,15 @@
 - 另一面 - 缠论走势类型快速入门（走势只有两类：盘整=1 个同级别中枢 a+A+b / 趋势≥2 个同方向同级别中枢 a+A+b+B+c；方向按进入段 a 定；走势终完美=开始必结束、结束后转其他类型；「走势不可预测但可完全分类」；先给已完成走势贴标签，不预测生长中走势）：https://x.com/OtherSideBJ/status/2087003997853086136 （2026-08-11 归档：分类学哲学与「只读已发生、不预测」一致；中枢≈无套利带走廊、趋势≈出轨后持续偏离的跨域映射）
 
 - 青蛙💎 - BTC 资金费率套利保姆级教程（488 天净赚 9.57% APR~7.16%；统一账户现货多+永续空 1x delta 中性；历史数据 2019-09→2026-08 共 7578 次结算 85.58% 正/14.42% 负，84 月仅 6 月合计负、最差 2020-03 -0.53%，2026 2-4 月连续三个月负；成本=价差+基差+四笔手续费；省费四招=返佣/VIP/BNB 抵扣/Maker；安全结构=不借币+1x+数量配平+独立子账号）：https://x.com/BlockBloomer/status/2087068515220308232 （2026-08-11 归档：research-backlog #2 同所资金费率套利的完整实操答案；「连续负费率期」是最大尾部风险；7.16% 是诚实口径，对比 1200% 年化类晒单）
+
+- brucexu.eth - 转发点赞「Hermes 登顶背后：一个 Web3 团队的进阶之路」研究报告（@0xjacobzhao 分析：Hermes 现象级增长=挑战者增长系统——承接 OpenClaw 教育成熟的用户池+闭合「可委托性」；Bruce 贡献了个人体验反馈）：https://x.com/brucexu_eth/status/2087078955228762263 （2026-08-11 归档：AI Agent×Web3 交叉参考，与 qintopia-agent-os 框架设计潜在相关；原文链接 x.com/0xjacobzhao/status/2087070528003858829）
+
+- Solar (Solana 中文社群) - 在 Solana 上构建 Kalshi/Polymarket 风格预测市场教程（QuickNode 原推：Anchor + Quasar 完整可运行代码、动画演示；学预测市场机制 + 商业逻辑→Solana 账户结构）：https://x.com/Solana_zh/status/2087092893320163500 （2026-08-11 归档：接 Polymarket 研究线（供给侧理解）+ D2 Anchor 环境实操；候选补课「Solana 预测市场实战」）
+
+- 403-error - 为什么聊天系统要为 Agent 重做一遍（Raft/slock AI-Native 聊天系统分析：消息 CLI+Freshness Hold 二阶段验证（序列变了扣住存 Draft 让 Agent 二次决定）；Agent Inbox（信号/正文分离控上下文）；群聊静音；单 Agent 单 append-only 上下文（身份连续+prefix caching）；Multi-Agent 反思=超级 Agent 内部也要调度、个体绑定让「名字标记权利/身份标记责任」）：https://x.com/SiyuYeAndy/status/2086751636081545456 （2026-08-11 归档：qintopia-agent-os 多 Agent 通信层设计直接参考——消息一致性+上下文控制是核心难点）
+
+- Paxon 提供 - Binance 官方 OPENAIUSDT Pre-IPO Perpetual（2026-05-26 上线）：Pre-IPO 永续品类，交易 OpenAI 未来公开市场估值预期；不代表真实股权、不挂钩任何现货代币（2026-08-11 归档：事件驱动价格发现品类；无现货锚=无法期现套利；与 Polymarket 二元结算结构对比）
+
+- Paxon 截图 - 现货 OPENAI/USDT vs 合约 OPENAIUSDT Pre-IPO 永续对比（现货=独立订单簿的合成/主题代币；永续=基于 OpenAI 上市估值预期的合成衍生品，USDT 现金结算无实物交割、标记价±1%规则+资金费率、IPO 取消可能结算下架；两者无可转换/可交割/可赎回关系 → 价差巨大但**不存在无风险套利空间**）（2026-08-11 归档：假价差案例 #2——与 Binance Alpha「聚合器 vs 单池」同构：没有可转换/可赎回闭环的价差不是套利）
+
+- 投机实验室 - TradingView 免费 DIY Custom Strategy Builder 指标（免费白用：指标搜索栏输入「DIY Custom Strategy Builder」收藏添加；自由组合领先指标组/确认指标组/开关版等多指标策略）：https://x.com/LabSpeculation/status/2087111347972747501 （2026-08-11 归档：与 tvscreener 同源（TradingView 生态）；可作策略可视化/快速验证工具，注意社区指标非官方策略引擎）
