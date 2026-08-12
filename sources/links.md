@@ -10,6 +10,7 @@
 - CoW DAO Research《Private MEV Protection RPCs: Benchmark Study》（OFA 返现机制原始研究，80% 私有 RPC）：https://arxiv.org/abs/2505.19708 → 本仓库 `notes/arxiv-private-mev-protection-rpcs.md`
 - Polymarket NegRisk Adapter「NO 回收套利」（0x 哆啦A梦分析 + arXiv 2608.00666，108.6 万 USDC 机制套利利润）：https://x.com/hunterweb303/status/2085552085618340330 → 本仓库 `notes/polymarket-negrisk-no-recycle-arbitrage.md`
 - Polymarket 套利数学原理（Marginal Polytope/Bregman Projection/Frank-Wolfe，同论文数学向，4000 万美元）：https://x.com/pritipatelfgoo/status/2085560709115678803 → 本仓库 `notes/polymarket-arbitrage-math-framework.md`
+- **Unravelling the Probabilistic Forest: Arbitrage in Prediction Markets**（AFT 2025/Flashbots FRP-51：Polymarket 一年 86.6M bids 实证，两类套利=Market Rebalancing（ΣYES≠$1）+Combinatorial（依赖市场对），已实现利润 ~$3,960 万、大头是「买 NO」$17.3M，约 99% 机会未被执行；LLM 找依赖市场对方法）：https://arxiv.org/pdf/2508.03474 → 本仓库 `notes/pm-probabilistic-forest-arb-paper-20260812.md` / `sources/papers/pm-probabilistic-forest-arb-2508.03474.pdf`
 - Boros by Pendle 跨所套利四腿策略（CrossEx + Hyperliquid/OKX，24.3% APR，Pendle CTO 开源 UI）：https://x.com/pendle_grandma/status/2085369602360344631 → 本仓库 `notes/boros-pendle-crossex-4leg.md`
 - 残酷共学官方 X @IntensiveCL: https://x.com/IntensiveCL
 - Bruce 关于为什么发起共学的文章: https://x.com/brucexu_eth/status/2083935229757337948
