@@ -54,18 +54,68 @@ def scan(symbol):
                            "dex": p.get("dexId"), "vol": float((p.get("volume") or {}).get("h24") or 0)}
     return symbol, list(best.values())
 
+def by_address(addr):
+    """按 token 合约地址查池（绕过 symbol 假币问题）"""
+    try:
+        d = http_json(f"https://api.dexscreener.com/latest/dex/tokens/{addr}")
+    except Exception:
+        return []
+    out = []
+    for p in (d.get("pairs") or []):
+        chain = p.get("chainId")
+        if chain not in CHAIN_MAP:
+            continue
+        liq = float((p.get("liquidity") or {}).get("usd") or 0)
+        if liq < MIN_LIQ:
+            continue
+        price = float(p.get("priceUsd") or 0)
+        if price <= 0:
+            continue
+        out.append({"chain": chain, "price": price, "liq": liq, "dex": p.get("dexId"),
+                    "vol": float((p.get("volume") or {}).get("h24") or 0)})
+    out.sort(key=lambda x: -x["liq"])
+    return out
+
+def playbook_assets(db_path, limit=80):
+    """从 playbook sqlite 读已验证多链资产（官方地址级）"""
+    import sqlite3
+    con = sqlite3.connect(db_path)
+    cur = con.cursor()
+    cur.execute("""SELECT a.symbol, d.chain_name, d.token_address
+                   FROM assets a JOIN deployments d ON d.asset_id = a.id
+                   WHERE a.status='verified' AND d.scan_status='verified'
+                     AND d.token_address IS NOT NULL AND d.token_address != ''
+                   ORDER BY a.symbol""")
+    by_sym = {}
+    for sym, chain, addr in cur.fetchall():
+        by_sym.setdefault(sym.upper(), {})[chain] = addr
+    con.close()
+    out = []
+    for sym, chains in by_sym.items():
+        if len(chains) >= 2:
+            out.append((sym, chains))
+        if len(out) >= limit:
+            break
+    return out
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", help="逗号分隔")
     ap.add_argument("--file", help="每行一个 symbol")
+    ap.add_argument("--playbook", nargs="?", const="/Users/qiaopengjun/Code/layerzero-arb-playbook/layerzero-multichain-arbitrage/data/layerzero-arbitrage.sqlite",
+                    help="从 playbook 数据库读官方地址（地址级查询，默认路径）")
     args = ap.parse_args()
     syms = []
+    pb_assets = []
+    if args.playbook:
+        pb_assets = playbook_assets(args.playbook)
+        print(f"playbook 已验证多链资产: {len(pb_assets)} 个（地址级）\n")
     if args.file:
         syms = [l.strip() for l in open(args.file) if l.strip() and not l.startswith("#")]
     if args.symbols:
         syms += [s.strip().upper() for s in args.symbols.split(",") if s.strip()]
-    if not syms:
-        print("用法: --symbols DOS,ZRO 或 --file assets.txt")
+    if not syms and not pb_assets:
+        print("用法: --symbols DOS,ZRO | --file assets.txt | --playbook")
         return 1
 
     print(f"=== OFT 多链价差扫描 @ {__import__('time').strftime('%H:%M:%S')}（毛价差，未扣桥费） ===\n")
@@ -83,8 +133,30 @@ def main():
                 pairs.append((f"{CHAIN_MAP[a['chain']]}↔{CHAIN_MAP[b['chain']]}", sp,
                               a["price"], b["price"], min(a["liq"], b["liq"])))
         pairs.sort(key=lambda x: -abs(x[1]))
-        for name, sp, pa, pb, liq in pairs[:2]:
-            rows.append((abs(sp), sym, name, sp, pa, pb, liq))
+        for name, sp, pa, pb_, liq in pairs[:2]:
+            rows.append((abs(sp), sym, name, sp, pa, pb_, liq))
+        best = pairs[0]
+        print(f"{sym:10s} {best[0]:9s} {best[1]:+8.1f}bps  {best[2]:<10.4f} {best[3]:<10.4f}  min_liq ${best[4]:,.0f}")
+    for sym, chains in pb_assets:
+        best_pool = {}
+        for chain, addr in chains.items():
+            pools = by_address(addr)
+            if pools:
+                best_pool[chain] = pools[0]  # 最优流动性池
+        cl = list(best_pool.items())
+        if len(cl) < 2:
+            print(f"{sym:10s} 地址级池不足（{len(cl)} 链有池）")
+            continue
+        pairs = []
+        for i in range(len(cl)):
+            for j in range(i + 1, len(cl)):
+                (ca, a), (cb, b) = cl[i], cl[j]
+                sp = (b["price"] - a["price"]) / a["price"] * 10000
+                pairs.append((f"{CHAIN_MAP[ca]}↔{CHAIN_MAP[cb]}", sp, a["price"], b["price"],
+                              min(a["liq"], b["liq"])))
+        pairs.sort(key=lambda x: -abs(x[1]))
+        for name, sp, pa, pb_, liq in pairs[:2]:
+            rows.append((abs(sp), sym, name, sp, pa, pb_, liq))
         best = pairs[0]
         print(f"{sym:10s} {best[0]:9s} {best[1]:+8.1f}bps  {best[2]:<10.4f} {best[3]:<10.4f}  min_liq ${best[4]:,.0f}")
 
