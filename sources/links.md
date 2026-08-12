@@ -31,6 +31,7 @@
 - LI.FI 跨链成本观测（群友教学 PDF：142次成本观测+72h价差→evidence.csv 负结论方法论）：本仓库 `notes/lifi-cost-observation-methodology.md`
 - Cryptoxiao 事件交易方法论（newsliquid OI 异动策略模板：OI异动/主力占比>50%/主力盈利判定启动，$TUT 单机盘案例）：https://x.com/cryptoxiao/status/2086348730618528116 → 本仓库 `notes/newsliquid-oi-event-strategy-20260809.md`
 - 缠论 K 线包含关系处理入门（技术分析教学：向上高高/向下低低原则，顶底分型前置课）：https://x.com/OtherSideBJ/status/2086296538754818425 → 本仓库 `notes/chan-kline-inclusion-20260809.md`
+- 交易心理「反人性」5 次升级（另一面：猜涨跌→玩概率/一夜暴富→慢慢复利/研究市场→研究自己/情绪交易→机械执行/凭感觉→相信系统；与 gross-vs-net 方法论同主题：稳定盈利=执行系统而非预测）：https://x.com/OtherSideBJ/status/2087132116949831967
 - awesome-systematic-trading（wangzhe3224 整理，4.8K star，系统化交易工具分类：回测/实盘框架 backtrader·Freqtrade·vn.py·Nautilus、AI量化 FinRL·Qlib·FinGPT、因子/数据/风控/接口/书籍，跨股票·加密·期货·期权·外汇）：https://github.com/wangzhe3224/awesome-systematic-trading → 本仓库 `notes/awesome-systematic-trading-20260809.md`
 - Robinhood 套利全景审计（0x 哆啦A梦：3天 259 万区块/1327 万 Swap 扫出 122 候选系统，41,945 闭环毛价差 10 万 U；四套系统——首笔价差(98.7% 同区块内)/条件执行/确认后尾气(残差≈0)/覆盖空白；「机器人收入写在覆盖的池子和路线里」；真实利润=毛价差-成功Gas-失败空跑Gas-滑点-库存损耗-延迟-调仓）：https://x.com/hunterweb303/status/2086339604081508638 → 本仓库 `notes/robinhood-arbitrage-audit-20260809.md`
 - Bruce Hermes 技巧：回复尾部显示 model/reasoning_effort/session 状态（全局规则，Telegram runtime_footer 配置，官方文档已支持 `display.platforms.telegram.runtime_footer`）：https://x.com/brucexu_eth/status/2086271718306496594 → 本仓库 `notes/hermes-runtime-footer-20260809.md`
