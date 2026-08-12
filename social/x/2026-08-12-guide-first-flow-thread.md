@@ -20,7 +20,7 @@ gas 和桥费是固定成本，不随仓位缩放：0.004 ETH 和 1 ETH 跨链�
 **6/6**
 小白正确姿势：小金额买流程认知，目的排序是流程 > 数据 > 赚钱。金额控制在预算 1-2%，每笔产出 tx hash + 费用拆解 + 对账。0.10U 学费买来的认知，远超学费本身。
 
-完整版（公众号已发）：https://mp.weixin.qq.com/s/待补
+完整版（公众号已发）：https://mp.weixin.qq.com/s/qgzF2vypXVdnQiypJNxP-A
 
 #链上套利 #Crypto #DeFi #Web3
 
