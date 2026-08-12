@@ -33,6 +33,10 @@
 - 缠论 K 线包含关系处理入门（技术分析教学：向上高高/向下低低原则，顶底分型前置课）：https://x.com/OtherSideBJ/status/2086296538754818425 → 本仓库 `notes/chan-kline-inclusion-20260809.md`
 - 交易心理「反人性」5 次升级（另一面：猜涨跌→玩概率/一夜暴富→慢慢复利/研究市场→研究自己/情绪交易→机械执行/凭感觉→相信系统；与 gross-vs-net 方法论同主题：稳定盈利=执行系统而非预测）：https://x.com/OtherSideBJ/status/2087132116949831967
 - 火山哥从0量化回测教程（X 内嵌 17 分钟视频，小白向：装工具→配环境→导策略→跑回测→看收益；免费不卖课，营销话术「活菩萨」；无方法论增量，小白向参考；⚠️ 教程类回测易忽略防假回测三坑=未来函数/屏幕价当成交价/忽略信号延迟，见 notes/day7-incremental-digest-20260811.md 笔记134）：https://x.com/huoshan007/status/2087111278984618441
+- 多因子选股模型教程（公众号「数据科学实战」：价值/质量/动量三因子 z-score 标准化→加权合成→排序范式；文末知识星球引流=付费转化；方法论=传统多因子选股，与链上套利无关；z-score 量纲统一思路可借鉴于因子监控）；https://mp.weixin.qq.com/s/Ttr5fB4dqetr2-NO7qIpfQ
+- Ye Su 观点：crypto 两个原生发明=稳定币 + RWA perp（「rwa 的终极形态就是 perp，大家要的是敞口是波动，现货 DTCC 自己会做」；agent 部分截断未取到全文）：https://x.com/allen_su1024/status/2087240766041264182 → 与 research-backlog 链上 perp★★ 候选直接相关
+- **Polymarket 做市商无损套利漏洞**（Verilla.eth：近期新爆出、已知损失 ~$3.1 万、之前出过类似问题这次更狠、团队尚无处理方案；=「与市场无关」的机制类 alpha 实例，但规则风险=漏洞会被修）：https://x.com/CasaVerilla/status/2087051601496408322
+- **上海天气「最无聊策略」实证**（0xInoo：市场几成定局时 70-80¢ 买稳赢结果→每笔 20-30%→重复 600 次→共 $4,926；无杠杆；= Paxon 天气策略同构的公开案例；容量现实：600 笔×~$8 平均 = 单笔资金 ~$30-40，绝对收益天花板低；只展示赢面=幸存者视角）：https://x.com/Inoosota/status/2087011806057259456
 - awesome-systematic-trading（wangzhe3224 整理，4.8K star，系统化交易工具分类：回测/实盘框架 backtrader·Freqtrade·vn.py·Nautilus、AI量化 FinRL·Qlib·FinGPT、因子/数据/风控/接口/书籍，跨股票·加密·期货·期权·外汇）：https://github.com/wangzhe3224/awesome-systematic-trading → 本仓库 `notes/awesome-systematic-trading-20260809.md`
 - Robinhood 套利全景审计（0x 哆啦A梦：3天 259 万区块/1327 万 Swap 扫出 122 候选系统，41,945 闭环毛价差 10 万 U；四套系统——首笔价差(98.7% 同区块内)/条件执行/确认后尾气(残差≈0)/覆盖空白；「机器人收入写在覆盖的池子和路线里」；真实利润=毛价差-成功Gas-失败空跑Gas-滑点-库存损耗-延迟-调仓）：https://x.com/hunterweb303/status/2086339604081508638 → 本仓库 `notes/robinhood-arbitrage-audit-20260809.md`
 - Bruce Hermes 技巧：回复尾部显示 model/reasoning_effort/session 状态（全局规则，Telegram runtime_footer 配置，官方文档已支持 `display.platforms.telegram.runtime_footer`）：https://x.com/brucexu_eth/status/2086271718306496594 → 本仓库 `notes/hermes-runtime-footer-20260809.md`
