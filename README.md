@@ -47,6 +47,7 @@
 | **L0009 阶段复盘·知识图谱 v1**（四层结构：概念→机制→工具→决策；14 类存活地图三支柱（毛差<费/价差≠可执行/返佣撑收益）；7 条互证网；edge 收敛=事件驱动>常驻>预测）→ `notes/l0009-knowledge-graph-v1-20260813.md` |
 | **证据记录体系 v1**（D10 流水线第一步：6 个 🟡 候选 × 30 天自动收数 → `data/evidence_daily.jsonl` + 台账 `notes/evidence-tracker.md`；cron 每日 23:30 watchdog；到期自动评分）→ `scripts/evidence_harvester.py` |
 | **Day 8 增量精华**（008 DOS 加错池子=信息差活教材 / 073 大价差≠好机会·8 项成本 / 117 DOS LayerZero 独立核验=互证 / 048 固定金额薄池毁灭冲击 / 114 bStock四层市场证伪·TradFi perp 全清单 HK11+KR3 / 057 HIP-3 双边做市）→ `notes/day8-incremental-digest-20260812.md` |
+| **Day 9 增量精华**（012 µToken=Unipeg 同团队+v4 Hook 双账本错位 / 018 DOS 三方互证·池子 1 万U+未开提现 / 034 LayerZero 同工具互证·224 资产 / 002 GUA「行消失」四态 / 063 Anthropic 盘前-350u 教训·资金费 0.5bp/8h / 051 报价≠成交 / 053 执行前决策闸门五问 / 060 LLAMMA 软清算=套利者是清算引擎）→ `notes/day9-incremental-digest-20260813.md` |
 | **Day 7 增量精华**（052 库存再平衡后净 Edge 仍负 -196~-221bps·三处互证 / 064 integrator 参数让 25bps 平台费归零·L0006 需复测 / 098 TUT 插针实证·20% 筹码转 Bitget / 132 六策略回测·LINK 快桥唯一正夏普 0.62 / 130 论文修正·清算人 183+ 中位 $20K / 126 HIP-3 股票永续 20 只） | `notes/day7-incremental-digest-20260811.md` · `sources/残酷共学_增量笔记_带索引_20260811.pdf` |
 | **下架合约价差套利**（群策略实证：HFT 439bps + OI 累计偏离 + L/S ratio 净方向） | `notes/binance-delisting-arb-verified-20260809.md` · `scripts/binance_delisting_review.py` · `scripts/delisting_monitor.py` |
 | **拍卖类调研（Maker LIQ2.0）**（空白候选补齐：Dog→Clipper 荷兰式拍卖、零 DAI flash-callee 参与、实测全系统 0 活跃拍卖 + ETH-A 最近活动 2026-06-05、新 7 参事件签名避坑） | `notes/maker-liquidation-auction-20260810.md` |
