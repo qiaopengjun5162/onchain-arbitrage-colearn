@@ -50,3 +50,21 @@
 - V2 预习：`notes/amm-math-v2-preview-20260811.md` / `scripts/amm_v2_verify.py`
 - 网格穿界风险：`notes/grid-trend-backtest-20260811.md`（同构结论）
 - 无套利带雷达：`scripts/no_arb_corridor_radar.py`（走廊宽度 ← 费率；CLMM 低费率池走廊更窄）
+
+
+---
+
+## D9 正式完成（2026-08-13）：脚本复跑 + 可视化验证 ✅
+
+- `scripts/amm_clmm_visualize.py` 复跑成功（rc=0），`data/clmm_visual.png` 已生成
+- 实测关键输出（Raydium SOL-USDC V2 池参数对比）：
+  - tick 区间：±5% = 1001 ticks / ±10% = 2007 / ±20% = 4055（线性 ≈ 区间百分比 × 20）
+  - **资金效率：同样的 L 只花 ~1/10 资金（X 21.5x / Y 19.5x）**——±10% 区间内 V3 资金效率 ≈ V2 的 10 倍
+  - 反向验证：V2 的 1/10 资金放 ±10% 区间 → L = V2 的 195%
+  - 区间内 swap 公式验证：Δy = L·(√P_new − √P_cur)（74→74.74 输出 25,074 USDC）
+- 个人线 D9 主线 ✅（tick/区间/流动性分布 Python 可视化）
+
+## 下一步（承接预习笔记）
+
+- [ ] 把 CLMM 出区间风险接进网格模拟器（穿界 = 单边资产）
+- [ ] 滑点曲线 × CLMM 区间选择：最优区间宽度 vs 交易量分布（接 #13 容量曲线）
