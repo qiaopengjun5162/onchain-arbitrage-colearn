@@ -124,11 +124,39 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ticker", help="bStock ticker 如 NVDAB")
     ap.add_argument("--tickers", help="逗号分隔多个")
+    ap.add_argument("--watchdog", action="store_true", help="静默模式：仅 GO 级信号/两腿价差≥50bps 才输出")
     args = ap.parse_args()
     tickers = [t.strip().upper() for t in (args.tickers or args.ticker or "").split(",") if t.strip()]
     if not tickers:
         print("用法: --ticker NVDAB 或 --tickers A,B,C")
         return 1
+
+    signals = []
+    if args.watchdog:
+        # watchdog：逐 ticker 检查，仅收集 GO/两腿大价差信号
+        for tk in tickers:
+            underlying = tk[:-1] if tk.endswith("B") and len(tk) > 4 else tk
+            up = stock_price(underlying)
+            bsym, bpx = binance_price(tk + "USDT")
+            pools = dexscreener(tk)
+            for p in pools:
+                if up and p["price"]:
+                    spread = (p["price"] - up) / up * 10000
+                    if abs(spread) >= GO_BPS and p["liq_usd"] >= MIN_LIQ_USD:
+                        signals.append(f"🚨 {tk} 链上{spread:+.0f}bps（liq ${p['liq_usd']:,.0f}）→ 事件响应检查表全链验证")
+                if bpx and p["price"]:
+                    x = (bpx - p["price"]) / p["price"] * 10000
+                    if abs(x) >= 50:
+                        signals.append(f"🔄 {tk} 链上→Binance 两腿 {x:+.0f}bps（先验提现/到账）")
+            if bpx and up:
+                s = (bpx - up) / up * 10000
+                if abs(s) >= GO_BPS:
+                    signals.append(f"🔄 {tk} Binance 现货 vs 美股 {s:+.0f}bps（单腿=赌收敛，需 perp 锁）")
+        if signals:
+            print(f"=== bStocks 事件窗口 @ {time.strftime('%Y-%m-%d %H:%M:%S')} ===")
+            for s in signals:
+                print(s)
+        return 0
 
     print(f"=== bStocks 事件响应检查表 @ {time.strftime('%H:%M:%S')} ===\n")
     for tk in tickers:
