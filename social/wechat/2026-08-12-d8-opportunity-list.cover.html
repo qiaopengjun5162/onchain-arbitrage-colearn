@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cover</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:900px;height:500px;overflow:hidden;font-family:'SF Pro Text',-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:#030712}
+.cover{width:900px;height:500px;position:relative;overflow:hidden;background:radial-gradient(circle at 78% 18%,rgba(34,197,94,.22),transparent 25%),linear-gradient(135deg,#020617 0%,#0b1020 48%,#111827 100%);color:#e5edf7;padding:64px 76px}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(148,163,184,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.08) 1px,transparent 1px);background-size:34px 34px;opacity:.65}
+.glow{position:absolute;right:74px;top:54px;width:220px;height:220px;border:1px solid rgba(34,197,94,.28);border-radius:50%;box-shadow:0 0 60px rgba(34,197,94,.16)}
+.panel{position:relative;height:100%;border:1px solid rgba(148,163,184,.22);border-radius:18px;background:rgba(2,6,23,.72);box-shadow:0 22px 55px rgba(0,0,0,.35);padding:38px 44px;display:flex;flex-direction:column;justify-content:center}
+.toolbar{position:absolute;top:20px;left:24px;display:flex;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 16px rgba(34,197,94,.8)}
+.dot:nth-child(2){background:#38bdf8;box-shadow:0 0 14px rgba(56,189,248,.7)}
+.dot:nth-child(3){background:#f59e0b;box-shadow:0 0 14px rgba(245,158,11,.65)}
+.tag{display:inline-block;color:#86efac;font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;margin-bottom:24px}
+.prompt{color:#22c55e;margin-right:10px}
+.title{font-size:42px;font-weight:900;line-height:1.16;color:#f8fafc;max-width:640px;margin-bottom:18px;letter-spacing:.4px;text-shadow:0 0 24px rgba(34,197,94,.16)}
+.subtitle{font-size:16px;color:#a7b6c8;line-height:1.75;max-width:560px;margin-bottom:34px}
+.meta{display:flex;align-items:center;gap:14px;color:#94a3b8;font-size:13px}
+.chip{border:1px solid rgba(34,197,94,.32);border-radius:999px;padding:7px 13px;color:#bbf7d0;background:rgba(34,197,94,.08);font-family:'SF Mono',Consolas,monospace}
+.author{letter-spacing:1px}
+.scanline{position:absolute;left:0;right:0;bottom:62px;height:1px;background:linear-gradient(90deg,transparent,#22c55e,transparent);opacity:.75}
+</style>
+</head>
+<body>
+<main class="cover" data-cover-style="geek-black">
+  <div class="grid"></div><div class="glow"></div>
+  <section class="panel">
+    <div class="toolbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="tag"><span class="prompt">$</span>TECH NOTES</div>
+    <h1 class="title">共学 D8：11 个机会过完 5 问，只有 3 个敢进清单</h1>
+    <p class="subtitle">第八天把 5 问筛选落地成机会清单。11 个候选方向过筛，3 个进清单（PM 天气、吃尸体、费率窗口），5 个挂 30 天证据，2 个暂缓。附 jumper 归零 25bps、返佣 1.9 倍实锤、薄池 100% 出轨率。</p>
+    <div class="meta"><span class="chip">WEB3 · DEV</span><span class="author">Paxon Qiao</span></div>
+    <div class="scanline"></div>
+  </section>
+</main>
+</body>
+</html>
