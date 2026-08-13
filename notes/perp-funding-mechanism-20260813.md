@@ -48,3 +48,10 @@
 - [ ] HL funding 历史抓取脚本（info API）→ data/hl_funding.csv
 - [ ] Drift funding 与 CEX 并排哨兵（现有 drift_funding cron 已跑，补对比列）
 - [ ] 跨所 funding 价差 z-score 阈值 = 0.5%/24h 才报（防噪音）
+
+## 补充（16:30）：HL funding 快照首跑 + cron 上线
+
+- `scripts/hl_funding_monitor.py`（公开 API 无 key，232 资产）→ `data/hl_funding.csv` + cron `13ed6ccf8134`（每 8h，watchdog ≥50%/yr 才报）
+- **首跑抓到极端值**：KAITO **-1187.5%/yr**（空头付多头 12 倍！）、MOVE -295%/yr、GRIFFAIN +99%/yr、BABY -95.5%、CASHCAT +88%
+- 规律：极端 funding 全在长尾/meme 资产（KAITO/MOVE/GRIFFAIN/BABY/CASHCAT）——与 CEX 侧 TUT 陷阱同构（funding 高=拥挤，且长尾流动性差）
+- 观察口径：负 funding 大 = 空头拥挤付钱（多头吃）；但要过「为什么」关（多头拥挤可吃 vs 现货溢价吃不到），且长尾资产滑点/深度是执行杀手

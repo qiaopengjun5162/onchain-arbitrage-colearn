@@ -60,7 +60,8 @@ USDC_VAULT = "HLmqeL62xR1QoZ1HKKbXRrdN1p3phKpxRMb2VVopvBBz"
 
 SAMPLES_SOL = [0.1, 1, 10, 100]
 EXIT_BPS_MIN = 20        # 出轨超出走廊 ≥20bps 才算信号（防测量噪音）
-DEPTH_SUSPECT_BPS = 300  # v2：腿价偏离 Raydium 锚点 ≥3% 视为深度可疑（枯竭池假报价候选）
+DEPTH_SUSPECT_BPS = 300  # 腿价偏离 Raydium 锚点超过此值 = 深度可疑
+HARD_CAP_BPS = 5000       # 配对价差超过此值 = 报价损坏（v2.1，#13 发现的 12 万 bps 假出轨）
 STATE_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_radar_state.json"
 LOG_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_exits.csv"
 SERIES_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_series.csv"
@@ -196,6 +197,9 @@ def tick() -> int:
             spread_bps = (b["price"] - a["price"]) / a["price"] * 10000
             corr = corridor_width(a, b)
             exit_bps = abs(spread_bps) - corr
+            # v2.1 硬上限：无锚点腿（薄池互配）报价损坏时 spread 可达 12 万 bps（Manifest×Scorch
+            # 实锤，2026-08-12 #13 分析发现）——|spread|>5000bps 一律标损坏，防假出轨告警
+            hard_corrupt = abs(spread_bps) > HARD_CAP_BPS
             pairs.append({
                 "ts": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
                 "size": size, "pool_a": a["pool"], "pool_b": b["pool"],
@@ -204,7 +208,7 @@ def tick() -> int:
                 "corridor_bps": corr, "exit_bps": round(exit_bps, 1),
                 "fee_a": a["fee_bps"], "fee_b": b["fee_bps"],
                 "dev_a": round(a["dev_bps"], 1), "dev_b": round(b["dev_bps"], 1),
-                "suspect": a["suspect"] or b["suspect"],
+                "suspect": a["suspect"] or b["suspect"] or hard_corrupt,
             })
 
     # 出轨 = 超出走廊且超出量 ≥ EXIT_BPS_MIN；suspect 腿的出轨记入「疑似假信号」不告警
