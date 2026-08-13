@@ -62,6 +62,7 @@ SAMPLES_SOL = [0.1, 1, 10, 100]
 EXIT_BPS_MIN = 20        # 出轨超出走廊 ≥20bps 才算信号（防测量噪音）
 DEPTH_SUSPECT_BPS = 300  # 腿价偏离 Raydium 锚点超过此值 = 深度可疑
 HARD_CAP_BPS = 5000       # 配对价差超过此值 = 报价损坏（v2.1，#13 发现的 12 万 bps 假出轨）
+CONFIRM_N = 2            # v3 连续确认：同一配对连续 N 次采样出轨才算确认信号（30min×2=1h 持续）
 STATE_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_radar_state.json"
 LOG_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_exits.csv"
 SERIES_PATH = Path(__file__).resolve().parent.parent / "data" / "corridor_series.csv"
@@ -216,9 +217,32 @@ def tick() -> int:
     suspect_exits = [p for p in pairs if p["exit_bps"] >= EXIT_BPS_MIN and p["suspect"]]
 
     ts = pairs[0]["ts"] if pairs else datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    # 状态快照（记录最近出轨集合；连续确认逻辑 v3 再加）
-    cur_keys = [f"{e['size']}:{e['pool_a']}<->{e['pool_b']}" for e in exits]
-    state = {"exit_keys": cur_keys, "ts": ts}
+    # v3 连续确认：跨采样累积出轨计数，连续 N 次才确认（防单次测量噪音/瞬时冲击误报）
+    old_state = {}
+    try:
+        if STATE_PATH.exists():
+            old_state = json.loads(STATE_PATH.read_text())
+    except Exception:
+        pass
+    old_pending = old_state.get("pending", {}) or {}
+    # 兼容旧格式：{"exit_keys": [...]} → 视为计数 1（从本次开始重新累计）
+    if old_state.get("exit_keys") and not old_pending:
+        old_pending = {k: 1 for k in old_state["exit_keys"]}
+
+    def key_of(p):
+        a, b = sorted([p["pool_a"], p["pool_b"]])  # 归一化：池名排序防顺序翻转断连续性
+        return f"{p['size']}:{a}<->{b}"
+
+    pending = {}
+    confirmed = []
+    for e in exits:
+        k = key_of(e)
+        cnt = old_pending.get(k, 0) + 1
+        pending[k] = cnt
+        if cnt >= CONFIRM_N:
+            e["confirm_count"] = cnt
+            confirmed.append(e)
+    state = {"pending": pending, "ts": ts}
     try:
         STATE_PATH.parent.mkdir(exist_ok=True)
         with open(STATE_PATH, "w") as f:
@@ -251,12 +275,12 @@ def tick() -> int:
         pass
 
     if args.watchdog:
-        if exits:
-            for e in exits:
-                print(f"⚠️ 无套利带出轨 @ {e['ts']}：{e['pool_a']}↔{e['pool_b']} "
-                      f"@{e['size']}SOL 价差{e['spread_bps']}bps > 走廊{e['corridor_bps']}bps "
-                      f"（超{e['exit_bps']}bps）")
-        # 疑似假信号（深度可疑腿）静默：只记账不打扰
+        if confirmed:
+            for e in confirmed:
+                print(f"⚠️ 无套利带持续出轨（确认×{e['confirm_count']}）@ {e['ts']}："
+                      f"{e['pool_a']}↔{e['pool_b']} @{e['size']}SOL "
+                      f"价差{e['spread_bps']}bps > 走廊{e['corridor_bps']}bps（超{e['exit_bps']}bps）")
+        # 疑似假信号/首次出轨（待确认）静默：只记账不打扰
         return 0
 
     print(f"\n=== 无套利带雷达 @ {ts} ===")
@@ -266,11 +290,16 @@ def tick() -> int:
         mark = " 🔸D" if p["suspect"] else mark
         print(f"{p['size']:<6}{p['pool_a']:<14}{p['pool_b']:<14}"
               f"{p['spread_bps']:>9.1f}{p['corridor_bps']:>9.0f}{p['exit_bps']:>9.1f}{mark:>4}")
-    if exits:
-        print(f"\n🚨 出轨 {len(exits)} 对（超出走廊 ≥{EXIT_BPS_MIN}bps，深度可信）：")
-        for e in exits:
-            print(f"  {e['pool_a']}↔{e['pool_b']} @{e['size']}SOL: {e['spread_bps']}bps > 走廊 {e['corridor_bps']}bps")
-    else:
+    if confirmed:
+        print(f"\n🚨 确认出轨 {len(confirmed)} 对（连续 {CONFIRM_N} 次采样，≥{EXIT_BPS_MIN}bps）：")
+        for e in confirmed:
+            print(f"  {e['pool_a']}↔{e['pool_b']} @{e['size']}SOL: {e['spread_bps']}bps > 走廊 {e['corridor_bps']}bps（确认×{e['confirm_count']}）")
+    pending_show = [e for e in exits if e not in confirmed]
+    if pending_show:
+        print(f"\n⏳ 首次出轨（待连续确认，{len(pending_show)} 对）：")
+        for e in pending_show:
+            print(f"  {e['pool_a']}↔{e['pool_b']} @{e['size']}SOL: {e['spread_bps']}bps（第 1 次）")
+    if not exits:
         print("\n✅ 全部配对在无套利带内（市场有效，无出轨）")
     if suspect_exits:
         print(f"\n🔸 疑似假信号 {len(suspect_exits)} 对（腿价偏离锚点 ≥{DEPTH_SUSPECT_BPS}bps，深度可疑，不告警）：")
