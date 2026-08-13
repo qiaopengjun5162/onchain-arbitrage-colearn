@@ -52,3 +52,17 @@
 - DexScreener 按协议名查 SOL 池：HumidiFi 只匹配到 Meteora WET/SOL 边角池（$22.6K）、Quantum 匹配到同名 meme 池（$4.1K）、Flux 是 FLUXB 代币池——**按协议名无法定位雷达扫到的薄池**
 - 原因：雷达的薄池腿由 Jupiter quote 动态发现（label 标记协议），无池地址记录；TVL 需要 ammKey→vault 解析（雷达 v2 注释已注明此待办）
 - **结论：执行层核验待数据源升级（Jupiter 池列表 API 或 ammKey 解析），不阻塞本笔记的观测层结论**
+
+## 补充（08-13）：执行层卡点攻坚——深度阶梯方案
+
+**问题**：薄池 TVL 无法直接获取（DexScreener 未索引新 AMM、Jupiter 池列表 API 404、各 AMM 账户布局未知）。
+**攻坚过程**：
+1. ✅ Jupiter swapInfo 暴露 **ammKey**（池地址）——但 DexScreener 按地址查仍无索引
+2. ❌ protocols 单池限定报价有**测量偏差**（Aquifer 限定下首腿竟走 ZeroFi；HumidiFi 等新协议不在过滤列表）——冲击曲线 <1bps 不可信，弃用
+3. ✅ **深度阶梯方案**：corridor_series 3 天数据按「池 × 金额档出现频次」重建——100 SOL 档出现频次 = 接大单能力
+
+**深度阶梯（100 档出现频次）**：HumidiFi 186 > BisonFi 85 > Aquifer 66 > Quantum 52 > Flux 26 > Scorch 41 / TesseraV 40（Raydium 锚点 245 含直读双计）
+- HumidiFi = 薄池深度冠军（主路由 500 SOL 也选它）
+- **全部池都能接 100 SOL 档**——「薄池」没有想象中薄，价格敏感而非容量敏感
+
+**结论**：#13 执行层卡点关闭——深度过滤从「价格偏离锚点」代理升级为「深度阶梯参考」；ammKey 已可拿，将来想精算 TVL 再逐个适配 AMM 程序布局。
