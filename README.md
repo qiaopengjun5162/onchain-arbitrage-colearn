@@ -45,6 +45,7 @@
 | **888BMM 两腿 swap 实例**（USDC→EURC→USDC 无 flashloan 无清算；与 068 互证）+ **信息差套利本质**（赚钱=信息差套利，三步法=哨兵架构同构） | `notes/888bmm-two-leg-swap-20260810.md` · `notes/information-gap-arb-essence-20260810.md` |
 | **Day 6 晚间增量精华**（046「成本在时间不在费用」与时长假象独立互证 / 093 Solana 首笔盈利+构造延迟瓶颈 / 094 事件套利六阶段 / 085 滑点授权金句 / 086 报价采集 v1 / 091 清算多链化 / 092 完整成本模型） | `notes/day6-incremental-evening-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260810.pdf` |
 | **L0009 阶段复盘·知识图谱 v1**（四层结构：概念→机制→工具→决策；14 类存活地图三支柱（毛差<费/价差≠可执行/返佣撑收益）；7 条互证网；edge 收敛=事件驱动>常驻>预测）→ `notes/l0009-knowledge-graph-v1-20260813.md` |
+| **证据记录体系 v1**（D10 流水线第一步：6 个 🟡 候选 × 30 天自动收数 → `data/evidence_daily.jsonl` + 台账 `notes/evidence-tracker.md`；cron 每日 23:30 watchdog；到期自动评分）→ `scripts/evidence_harvester.py` |
 | **Day 8 增量精华**（008 DOS 加错池子=信息差活教材 / 073 大价差≠好机会·8 项成本 / 117 DOS LayerZero 独立核验=互证 / 048 固定金额薄池毁灭冲击 / 114 bStock四层市场证伪·TradFi perp 全清单 HK11+KR3 / 057 HIP-3 双边做市）→ `notes/day8-incremental-digest-20260812.md` |
 | **Day 7 增量精华**（052 库存再平衡后净 Edge 仍负 -196~-221bps·三处互证 / 064 integrator 参数让 25bps 平台费归零·L0006 需复测 / 098 TUT 插针实证·20% 筹码转 Bitget / 132 六策略回测·LINK 快桥唯一正夏普 0.62 / 130 论文修正·清算人 183+ 中位 $20K / 126 HIP-3 股票永续 20 只） | `notes/day7-incremental-digest-20260811.md` · `sources/残酷共学_增量笔记_带索引_20260811.pdf` |
 | **下架合约价差套利**（群策略实证：HFT 439bps + OI 累计偏离 + L/S ratio 净方向） | `notes/binance-delisting-arb-verified-20260809.md` · `scripts/binance_delisting_review.py` · `scripts/delisting_monitor.py` |
