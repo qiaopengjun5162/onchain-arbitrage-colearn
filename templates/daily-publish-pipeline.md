@@ -46,6 +46,7 @@ grep -c '"slug":"<slug>","status":"published"' .moonpub/status.jsonl
    - 素材：`notes/` + `daily/` 当天全部产出（**检查完整度**：Rust 双实现、广度点都别漏）
    - frontmatter：title / wechat_title / digest / author / wechat_author
    - 标题风格：`共学 D{天}：{有钩子的主题}`（例：`共学 D3：0.01 SOL 的第一笔真实 swap`）
+   - **文末必带**「关于本次共学」介绍块（`templates/colearn-intro-block.md`，D8 起）——活动导流，文案数字发布前核对
 2. **主题（正文配色）**：`moonpub.toml [wechat] theme` 控制
    - **当前定稿：`geek`（浅色 #f6f8fa GitHub 风）**——用户 8/9 反馈黑底长文累眼后统一
    - 可选浅色：`geek`(GitHub绿) / `blueprint`(浅蓝) / `paper`(米白宋体) / `notebook`(浅蓝白)
