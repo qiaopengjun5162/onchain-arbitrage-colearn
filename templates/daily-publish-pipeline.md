@@ -24,6 +24,8 @@ daily/<日期>.md 打卡
             → 归档发布记录
    │
    └─③ 知识库提交：git commit（文章全套 + daily 追加 + SOP 历史表）
+   │
+   └─④ Obsidian 同步：核心笔记写入 obsidian/ 暂存区 → 复制进 iCloud vault → 双链检查（2026-08-13 起）
 ```
 
 ## ⚠️ 开工前必查（2026-08-09 新增，防重复发布）
@@ -69,7 +71,30 @@ grep -c '"slug":"<slug>","status":"published"' .moonpub/status.jsonl
 - [ ] `social/x/<日期>-d{N}-thread.md` 发布记录补全（起始链接 + 各条 ID）
 - [ ] `templates/x-publish-sop.md` 历史 thread 表 +1 行
 - [ ] `daily/<日期>.md` 追加发布记录
+- [ ] Obsidian 同步：核心笔记 → `obsidian/` 暂存区 → 复制进 iCloud vault（见下节）
 - [ ] git commit
+
+## Obsidian 同步（2026-08-13 定稿，发布后必做）
+
+**机制**：库内 `obsidian/` 目录 = 暂存区（git 管理、可回溯）→ 复制进 iCloud vault = 长期库（Obsidian 打开即见）。两个目录结构必须一致。
+
+- vault 路径：`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/链上套利共学/`
+- 分区：`00 MOC` / `01 角色与配置` / `02 市场地图` / `03 策略假设` / `04 工具与协议` / `05 Bot 代码` / `06 失败复盘` / `07 共学群友`
+
+**步骤**：
+
+1. **选核心笔记**（每天 3-10 篇，不是全部）：有长期价值的方法论/已验证结论/机制认知；跳过纯过程记录
+2. **写暂存区**：按模板（frontmatter：title/date/type/status/tags/source/related），中文，删执行细节（脚本路径/API 绕过/敏感数字）
+3. **双链检查**：`[[链接]]` 必须能解析到 vault 现有文件名（Obsidian 按文件名解析）；断链=链接指向不存在的笔记，要么补笔记要么改链接
+4. **复制进 vault**：`cp obsidian/<分区>/<笔记>.md "<vault>/<分区>/"`
+5. **更新 MOC**（`00 MOC 链上套利共学.md`）：新笔记挂到对应分区节，一句话摘要
+6. **验证**：`comm -23 <(find obsidian -name "*.md" | grep -v -E "^(README|moc-template|note-template|solana/)" | sort) <(find vault -name "*.md" | sed "s|vault/||" | sort)` 输出为空 = 全同步
+7. **git commit**（只提交 obsidian/ 暂存区变更；vault 在 iCloud 不进 git）
+
+**已知坑**：
+- iCloud 同步有几秒~几分钟延迟，Obsidian 里稍等刷新
+- 「实盘达成率」「链上 Perp」等是 MOC 占位符（研究/模拟阶段设计意图），断链检查时豁免
+- 2026-08-13 发现的历史 bug：08-09 的 6 篇只写了暂存区没复制进 vault → 以后必须走完 4-6 步
 
 ## 历史 thread（截至 08-09）
 

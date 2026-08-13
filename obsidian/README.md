@@ -73,3 +73,10 @@ related:
 - 每日打卡只同步“可复用的发现”，不是机械复制全文。
 - 一个策略只有写清假设、成本、风险和放弃条件，才进入策略目录。
 - 公开发布前，从 Obsidian 或 `social/` 生成干净草稿。
+
+## 实际同步机制（2026-08-13 起，见 templates/daily-publish-pipeline.md）
+
+- **本目录 `obsidian/` = 暂存区**（git 管理、可回溯），**iCloud vault = 长期库**（Obsidian 打开即见）。
+- vault 路径：`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/ObsidianVault/链上套利共学/`
+- 流程：写暂存区 → 双链检查 → 复制进 vault → 更新 MOC → comm 验证 → git commit。
+- ⚠️ 历史教训（08-13）：只写暂存区不复制进 vault = 同步失败。两目录结构必须一致。
