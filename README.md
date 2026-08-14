@@ -15,6 +15,8 @@
 | **链上取证方法论**（怎么分析一个套利地址） | `notes/aave-liquidator-0x8d64d775-address-research-20260808.md` · `notes/robinhood-arb-0xd7121208-address-research-20260808.md` |
 | **EVM 实战案例：闪贷灌金库 + oracle/DEX 价差**（Morpho 0 费闪贷 $27.7M 灌 Lulo 金库→allocator 铺 3 市场；V4 近空池 $0.686 扫 sNUSD vs oracle $1.0638 → 满额 91.5% LTV 借出，单笔净赚 ~$297/gas $0.87；含 `idToMarketParams()` + ChainlinkOracleV2 vault 模式取证新动作） | `notes/morpho-flashloan-vault-snusd-arb-case-20260813.md` |
 | **L0011 研究拆解工作流**（阶段三 D10：观察→假设→证据→实验→决策 五步 + T0-T5 六任务模板 + Morpho 案例拆解实录；Hermes 分工=人定义问题/Agent 取证；衔接 L0013 证据体系） | `notes/l0011-research-decomposition-workflow-20260814.md` |
+| **执行现实学：服务器方案评估 + Sequencer 287ms + 官方工具栈**（自建全节点 $240-430/月=研究期过度配置；287ms=L2 公共路径速度地板，结构性机会不需要抢；Bruce 工具文 digest：LI.FI 100RPM+25bps/Binance Web3 免费四类/Taoli $5k/私有 RPC/安全五规则；金句「套利关键是发现机会不是基建」） | `notes/execution-reality-infra-latency-20260814.md` |
+| **HaasOnline 三角套利 scam bot 拆解**（反诈取证：披官方外衣要求导入私钥；8-11 官方辟谣 + 8-13 受害者 4.1 BNB 被转空；识别 check 五连问；归因边界=陈述≠证据需链上核验） | `notes/haasonline-scam-bot-case-20260814.md` |
 | **赛道选择结论**（清算/原子/跨链怎么选） | `notes/arbitrage-track-selection-20260808.md` |
 | **风控总纲**（套利=概率游戏，敞口控制生死线） | `notes/arb-risk-black-swan-20260809.md` |
 | **137 篇增量批次消化**（LI.FI 0.25% 成本地板 / 无套利带 / Robinhood V4-hook 开窗根因 / 0xd712 失败成本门槛公式 / Solana LP 集中度） | `notes/colearn-incremental-137-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260809.pdf` |
