@@ -21,6 +21,8 @@
 | **HKDAP 合约审计 digest**（香港首个持牌港元稳定币：KYC fail-open 死代码/治理单签/transfer 绕过/主网部署 debug 版 13 条；HKMA 指引 4 条冲突；沉淀审计取证五招：角色枚举/授权矩阵/升级还原/存储槽直读/事件对账；稳定币套利方向标记观察） | `notes/hkdap-audit-digest-20260814.md` |
 | **哨兵速读手册**（24 个哨兵×4 问：监控什么/字段含义/触发条件/看到后怎么办；状态色 🟢🟡🔴🔶；字段速记 bps/P50/可用/z-score/出轨；配套 infra_selfcheck 输出升级为「人话版」+ lifi 代理端点单独放宽红线 4000ms 防误报） | `notes/sentinel-cheatsheet-20260814.md` · `scripts/infra_selfcheck.py` |
 | **从研究到生产五阶段管线**（阶段0研究→1回测→2脚本→3模拟→4生产，每阶段 exit criteria；当前位置：0✅/1🔄/2✅/3-4⏳；第一条全流程线候选=币股漂移/费率窗口/PM 事件；Solana 剩余缺口=Jito Bundle pipeline；理解检验机制=费曼复述 15min/天） | `notes/from-research-to-production-roadmap-20260814.md` |
+| **周会 digest 2026-08-14**（Ethanlxl CEX 套利实战方法论：大币无机会/山寨靠狗庄/费率→溢价指数→意图；LI.FI 产品矩阵 ear/composer/intents 零费；z0y1 分享池价vs预言机=我们案例互证） | `notes/weekly-meeting-digest-20260814.md` · `sources/链上套利残酷共学周会_transcript_2026-08-14.txt` |
+| **Morpho 监测方案 digest**（检测公式 deviation=|oracle−spot|/oracle；borrowable=oracle×LTV；三条发现路径（价差扫描/埋雷筛选/去锚监控）；L0-L3 分层；告警 2%/5%/10%；雷达数据源解锁=GraphQL 实测（首屏 4 埋雷市场）；sNUSD 窗口复盘=16h 生命周期+利用率 100% 冻结） | `notes/morpho-discovery-monitoring-digest-20260814.md` · `sources/morpho-arbitrage-discovery-monitoring-2026-08-14.pdf` · `sources/morpho-snusd-arbitrage-window-report-2026-08-14.pdf` |
 | **赛道选择结论**（清算/原子/跨链怎么选） | `notes/arbitrage-track-selection-20260808.md` |
 | **风控总纲**（套利=概率游戏，敞口控制生死线） | `notes/arb-risk-black-swan-20260809.md` |
 | **137 篇增量批次消化**（LI.FI 0.25% 成本地板 / 无套利带 / Robinhood V4-hook 开窗根因 / 0xd712 失败成本门槛公式 / Solana LP 集中度） | `notes/colearn-incremental-137-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260809.pdf` |
