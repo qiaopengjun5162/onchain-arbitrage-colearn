@@ -36,3 +36,52 @@
 - `notes/weekly-meeting-digest-20260814.md`（Ethanlxl 方法论）
 - `notes/morpho-flashloan-vault-snusd-arb-case-20260813.md`（同为 Kyber 0x6131B5fae19E 聚合器）
 - 未深挖：sashiusun.eth（0xda436d，新币玩家）、Mantle KII 合约（0x524e4677 持有 153.6 万 KII ≈ $13.7 万）是否同体系——待确认
+
+---
+
+## 取证过程实录（2026-08-15 凌晨，逐步复盘）
+
+> 目的：记录「怎么一步步得出结论」，比结论本身更可复用。每步标数据源。
+
+### Step 0：输入
+用户连发三链：DeBank(sashiusun.eth) / MantleScan(KII 持有合约) / 地址 0x4bfd879f「赚了一万」。
+初始假设：三地址同属一个操作者，需找出「一万」从哪来。
+
+### Step 1：地址身份识别
+- DeBank 是 SPA 抓不到 → 改 **blockscout v2 API**（eth.blockscout.com/api/v2/addresses/…）
+- 0xda436d = **EOA**，ENS=sashiusun.eth，1.394 ETH，玩新币（DOS/Starlink/MULT/FWA），调自定义 selector（callDiamondWithPermit2/execute/exec）
+- 0x524e4677（Mantle）= **合约**，nonce=1，持有 1,535,626 KII，代码 22KB（Mantle RPC 直查：eth_getCode/balanceOf/name → Kiichain）
+- 0x4bfd879f（ETH）= **合约**，0.026 ETH，交易含 **Kyber swap（0x6131B5fae19E = sNUSD 案例同款聚合器）**、relayTokens、executeSignatures
+
+### Step 2：假设-否证循环（关键方法）
+| 假设 | 验证 | 结果 |
+|---|---|---|
+| OLAS 那笔赚 10 倍？ | 1,000 USDT → 49,927 OLAS = $0.0200/个；CoinGecko 现价 $0.0191 | ❌ 反贵 4.7%，不是暴利 |
+| KII 持仓值 1 万？ | 1,535,626 × $0.0893（CoinGecko kiichain）= $137k | ❌ 是持仓价值不是利润 |
+| HFT 差值？ | token-transfers 方向对账（见 Step 3） | ✅ |
+
+### Step 3：方向对账法（找出真利润）
+blockscout token-transfers 每笔按 from/to 判 IN/OUT，按 token 汇总：
+- 普通代币（DAI/USDT/OLAS/WETH）：IN≈OUT（持平，换脚）
+- **HFT（含乱码 symbol「Тoken」）：IN 416,912 / OUT 1,030,607 → 净多 613,695**
+- 乱码合并证据：「Тoken」134,789 流出与 HFT 134,789 流入数量完全对上 → 同一 token，blockscout 解码失败而已
+- 另：USDC 净多 2,010（次级利润）
+
+### Step 4：历史价格验证（利润定性）
+CoinGecko 日线：08-05 $0.0116 → **08-07 $0.0315（+172%）** → 08-08 $0.0128（-60%）。
+净卖 613,695 × 差价 $0.01-0.02 ≈ **$11,000-19,000** = 「赚了一万」来源 ✅
+
+### Step 5：资金链追归集（三角色闭环）
+1.24 ETH 流出 → 0xdDCfAeAf6877（EOA 中转，收即转）→ 1 分钟后再转 **0x28C6c06298d514 = 余额 212,311 ETH（≈$3.97 亿）巨鲸归集地址**。
+巨鲸 8/7 还亲自供了 134,789 HFT 给执行合约 → 「巨鲸供币→合约出货→利润归集」三角色确认。
+
+### Step 6：落地为监控
+- 「狗庄识别」信号原型：巨鲸供币 + 暴涨(>200%) + 密集出货 + 利润归集
+- `scripts/whale_dump_radar.py` v1：巨鲸流出 ≥$5k 且 24h≥100%/7d≥300% → 信号；cron 每小时（0f53c471f666）
+
+### 方法教训
+1. **先查现价再下暴利结论**——OLAS 假设差点误导（成交价 $0.02 看着像 10 倍，实际就是市价）
+2. **方向对账比看单笔更可靠**——净额差值直接暴露利润币种
+3. **乱码 symbol 用数量匹配合并**——blockscout 对部分代币解码失败，别当成别的币
+4. **历史价格日线定位行情**——暴涨日期=利润窗口
+5. **归集链追 1-2 跳**——利润终点往往藏在中转地址后面
