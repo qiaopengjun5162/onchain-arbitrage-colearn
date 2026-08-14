@@ -36,6 +36,7 @@ tags:
 - [[预测市场套利]] — Polymarket NO 回收 + 数学框架
 - [[Boros 跨所套利四腿]] — Pendle CTO 开源 CrossEx+Boros 四腿（24.3% APR 宣传口径）
 - [[Robinhood Chain 三角套利实战]] — 0xd712 三角套利 + 交易还原三件套 + 手续费生死线
+- [[Morpho 闪贷灌金库 sNUSD 套利实战]] — 0 费闪贷灌金库触发 allocator + oracle/DEX 价差（$0.686 vs $1.0638）满额借出，单笔 $297
 - [[Robinhood 0xD712 套利地址解剖]] — 68 万笔高频原子套利解剖：利润归集 ≠ 累计利润，失败便宜是能力
 - [[Aave 清算者 0x8d64 解剖]] — 闪电贷 + Bebop RFQ + BuilderNet 排序，真实利润看 refund
 - [[Astro CEX 套利产品调研]] — 11 家 CEX 资金费率/现期/期期/汇率网格自动化产品
