@@ -1,7 +1,15 @@
 # 执行现实学：服务器方案评估 + Sequencer 287ms + 官方工具栈 digest（2026-08-14）
 
 > 来源：Paxon 群内分享（服务器拆分方案 + Sequencer 延迟测量）+ Bruce Xu 官方工具文《做链上套利需要哪些工具？API、RPC、钱包与服务器配置》https://mp.weixin.qq.com/s/MbuIBm_-j4sJQBqWSvwJRg
+> 推文源：https://x.com/brucexu_eth/status/2088162020726386703（文章）+ https://x.com/brucexu_eth/status/2088174592208867344（发布推：确认「限时福利」= API 提额登记表单 + LI.FI 内部费率优惠推动中）
 > 定位：阶段三「执行现实学」补充案例，接 L0011 研究拆解工作流
+
+## 登记福利（限时，确认有效）
+
+- 表单：https://tally.so/r/PdQ4q1（只交账号标识/使用场景/预计请求量；**禁交 Secret/私钥/助记词/验证码**）
+- 可提额对象：LI.FI（默认 100 RPM 免费档，交易 25bps 平台费）+ Binance Web3 API 及 Bruce 有联系的合作方
+- 我们已实测 LI.FI integrator=jumper.exchange 可让 25bps 归零（L0006 复测）——提额+费率是双重优化机会
+- 登记草稿见 daily/2026-08-14.md 或聊天记录（复制即用）
 
 ## 一、服务器拆分方案评估（方案一：个人使用）
 
