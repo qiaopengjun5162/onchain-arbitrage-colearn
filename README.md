@@ -18,6 +18,7 @@
 | **执行现实学：服务器方案评估 + Sequencer 287ms + 官方工具栈**（自建全节点 $240-430/月=研究期过度配置；287ms=L2 公共路径速度地板，结构性机会不需要抢；Bruce 工具文 digest：LI.FI 100RPM+25bps/Binance Web3 免费四类/Taoli $5k/私有 RPC/安全五规则；金句「套利关键是发现机会不是基建」） | `notes/execution-reality-infra-latency-20260814.md` |
 | **HaasOnline 三角套利 scam bot 拆解**（反诈取证：披官方外衣要求导入私钥；8-11 官方辟谣 + 8-13 受害者 4.1 BNB 被转空；识别 check 五连问；归因边界=陈述≠证据需链上核验） | `notes/haasonline-scam-bot-case-20260814.md` |
 | **LI.FI API Key 配置清单**（已注册 Integration：Key 只显示一次→测试→安全存放 ~/.config→环境变量接入→匿名 vs 带 Key 对比验证；Key 不进 git/聊天） | `notes/lifi-api-key-setup-20260814.md` |
+| **HKDAP 合约审计 digest**（香港首个持牌港元稳定币：KYC fail-open 死代码/治理单签/transfer 绕过/主网部署 debug 版 13 条；HKMA 指引 4 条冲突；沉淀审计取证五招：角色枚举/授权矩阵/升级还原/存储槽直读/事件对账；稳定币套利方向标记观察） | `notes/hkdap-audit-digest-20260814.md` |
 | **赛道选择结论**（清算/原子/跨链怎么选） | `notes/arbitrage-track-selection-20260808.md` |
 | **风控总纲**（套利=概率游戏，敞口控制生死线） | `notes/arb-risk-black-swan-20260809.md` |
 | **137 篇增量批次消化**（LI.FI 0.25% 成本地板 / 无套利带 / Robinhood V4-hook 开窗根因 / 0xd712 失败成本门槛公式 / Solana LP 集中度） | `notes/colearn-incremental-137-digest-20260810.md` · `sources/残酷共学_增量笔记_带索引_20260809.pdf` |
