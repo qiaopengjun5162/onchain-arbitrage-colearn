@@ -7,6 +7,7 @@
 ## 登记福利（限时，确认有效）
 
 - 表单：https://tally.so/r/PdQ4q1（只交账号标识/使用场景/预计请求量；**禁交 Secret/私钥/助记词/验证码**）
+- **截止：2026-08-31**；过期后可联系微信 brucexu-eth 询问是否还能登记
 - 可提额对象：LI.FI（默认 100 RPM 免费档，交易 25bps 平台费）+ Binance Web3 API 及 Bruce 有联系的合作方
 - 我们已实测 LI.FI integrator=jumper.exchange 可让 25bps 归零（L0006 复测）——提额+费率是双重优化机会
 - 登记草稿见 daily/2026-08-14.md 或聊天记录（复制即用）
