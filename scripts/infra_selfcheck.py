@@ -64,6 +64,24 @@ WARN_P99 = 500        # P99.9 >= 500ms 黄色警告
 FAIL_P99 = 2000       # P99.9 >= 2000ms 红色失败
 WARN_SD = 200         # 标准差 >= 200ms 说明抖动大
 
+# 按端点覆盖阈值：(warn_p99, fail_p99) —— 走个人代理的端点基线延迟高，
+# 用统一 500/2000 会常态误报（2026-08-14 实测 lifi 走代理 P50≈1.1-1.9s 且 100% 可用）
+PER_ENDPOINT_THRESHOLDS = {
+    "lifi": (1500, 4000),   # 跨链报价走 Clash 代理，基线 ~1.1-1.9s
+}
+
+# 端点角色说明（watchdog 输出的人话解释）
+ENDPOINT_ROLE = {
+    "okx": "OKX 行情源",
+    "bitget": "Bitget 行情源",
+    "kucoin": "KuCoin 行情源",
+    "gate": "Gate 行情源",
+    "helius_rpc": "Solana RPC(Helius)",
+    "jupiter": "Jupiter 报价",
+    "defisphere": "清算数据源",
+    "lifi": "LI.FI 跨链报价(走代理)",
+}
+
 # 端点清单：name -> (method, url, 校验函数, 是否走代理, 需要完整URL构造)
 def _ok_200(r):
     return r.status_code == 200
@@ -137,16 +155,18 @@ def summarize(name, method, url, check, use_proxy):
     p999 = sorted(latencies)[int(len(latencies) * 0.999) - 1] if len(latencies) > 1 else latencies[0]
     sd = statistics.pstdev(latencies) if len(latencies) > 1 else 0.0
     availability = ok_count / total
+    warn_p99, fail_p99 = PER_ENDPOINT_THRESHOLDS.get(name, (WARN_P99, FAIL_P99))
     status = "🟢"
-    if p999 >= FAIL_P99 or availability < 0.5:
+    if p999 >= fail_p99 or availability < 0.5:
         # 0.5 阈值：免费额度抖动（如 Jupiter 无 key 限流 71%）不算真故障
         status = "🔴"
-    elif p999 >= WARN_P99 or sd >= WARN_SD or availability < 1.0:
+    elif p999 >= warn_p99 or sd >= WARN_SD or availability < 1.0:
         status = "🟡"
     return {
         "name": name, "status": status, "p50_ms": round(p50, 1),
         "p999_ms": round(p999, 1), "sd_ms": round(sd, 1),
         "availability": f"{availability:.0%}", "ok": f"{ok_count}/{total}",
+        "warn_p99": warn_p99, "fail_p99": fail_p99,
     }
 
 
@@ -205,10 +225,26 @@ def main():
         # 退出码：只对红色（真故障）exit 2；黄色 exit 0——黄色仅提示，
         # 非零退出码会触发 cron error alert（免费额度抖动每天黄 = 每小时误报）
         if problems:
-            print(f"基础设施自检 {ts}")
+            reds = sum(1 for r in problems if r["status"] == "🔴")
+            yellows = len(problems) - reds
+            head = f"🔶 基础设施自检 {ts}：{reds} 个异常 + {yellows} 个偏慢"
+            print(head)
             for r in problems:
-                print(f"{r['status']} {r['name']} P50={r.get('p50_ms')}ms P99.9={r.get('p999_ms')}ms "
-                      f"可用={r.get('availability')} ok={r.get('ok')}")
+                role = ENDPOINT_ROLE.get(r["name"], r["name"])
+                st = r["status"]
+                if st == "🔴":
+                    verdict = "→ 真故障/严重超时，需要处理"
+                elif r.get("availability") and r["availability"] != "100%":
+                    verdict = "→ 有请求失败（免费额度抖动常见），观察"
+                else:
+                    verdict = "→ 偏慢但可用，观察即可"
+                print(f"{st} {r['name']}（{role}）：中位 {r.get('p50_ms')}ms｜"
+                      f"最慢0.1% {r.get('p999_ms')}ms｜可用 {r.get('availability')}（{r.get('ok')}）{verdict}")
+            print("—")
+            print("字段说明：中位=一半请求快于它｜最慢0.1%=尾部延迟（红线 lifi 4000ms/其余 2000ms）"
+                  "｜可用=成功率｜7/7=7 次采样全成功")
+            print("行动建议：🔴 先查 Clash 代理/网络/服务状态，仍异常再排查具体服务；"
+                  "🟡 观察即可，免费额度抖动属正常，不打扰")
         sys.exit(2 if any(r["status"] == "🔴" for r in problems) else 0)
 
     print(f"基础设施自检 @ {ts}")
