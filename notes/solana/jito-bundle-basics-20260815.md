@@ -70,3 +70,15 @@ URL 结构：
 ## 七、要点一句话
 
 **Bundle = 用 tip 竞价的原子交易组**。理解排序层（auction 50ms tick + tip/CU 效率）比会调 API 更重要——这就是为什么 devnet 跑通不等于赚钱（预期管理已对齐）。
+
+## 实测（2026-08-14 晚，D12 前置验证）
+
+| 端点 | 路径 | 结果 |
+|---|---|---|
+| mainnet（ny 等 8 区域） | `/api/v1/bundles` | ✅ 8 tip accounts（**注意：正确路径是 /api/v1/bundles，不是 /api/v1**） |
+| testnet / dallas.testnet | `/api/v1/bundles` | ✅ 8 tip accounts |
+| **devnet** | `/api/v1` 和 `/api/v1/bundles` | ❌ SSL EOF（直连+代理均不可达）——**疑似已退役**（官方文档表格也只有 mainnet+testnet，无 devnet 条目） |
+
+**D12 计划调整**：devnet 不可用 → 两条替代路线：
+1. **testnet**：免费，但 testnet SOL 水龙头可用性/速率待验证
+2. **mainnet 小额 demo**：0.005-0.01 SOL（~$1-2），只做 memo/transfer 无价值交易验证流程闭环（QuickNode 教程标准做法，tip 1000 lamports 可忽略）——**涉及真钱，需 Paxon 批准**
