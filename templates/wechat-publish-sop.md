@@ -57,6 +57,7 @@
 | D6 跨链报价对比 | 100011465（已发布） | 08-12 |
 | 流程篇 | 100011472（草稿待发布） | 08-12 |
 | D7 gross vs net | 100011499（已发布 08-13，https://mp.weixin.qq.com/s/4tO3pp2KLtWs4JEx5tGNDQ） | 08-13 |
+| D8 机会清单 | 100011547（已发布 08-14，https://mp.weixin.qq.com/s/pqogQ-N7Cg7qvyH5KBrmbQ；弃用版 shortlist 草稿 100011540 已提醒后台删） | 08-14 |
 
 ## 常见坑
 
