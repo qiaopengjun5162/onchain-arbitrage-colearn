@@ -77,10 +77,14 @@ def rpc_call(to, data):
     return int(res, 16) if res else None
 
 
-def oracle_price(oracle_addr):
-    """返回 float 价格（按 Morpho 1e36 刻度归一；仅用于相对比较，不跨资产混算）"""
+def oracle_price(oracle_addr, loan_dec, coll_dec):
+    """返回 float 价格（loan asset 计价）。Morpho 刻度公式：
+    raw = price × 10^(36 + loanDec - collDec)，故 price = raw / 10^(36+loanDec-collDec)"""
     v = rpc_call(oracle_addr, SEL_PRICE)
-    return v / 1e36 if v else None
+    if v is None:
+        return None
+    scale = 36 + loan_dec - coll_dec
+    return v / (10 ** scale)
 
 
 def gecko_spot(symbol, addresses):
@@ -141,8 +145,9 @@ def scan(do_deviation=False):
     rows = []
     print(f"🔍 Morpho 全市场扫描 @ {ts} | 共 {len(markets)} 个市场\n")
 
-    # 1) 高危特征筛选
+    # 1) 高危特征筛选（按 collateral+loan 去重，保留流动性最高）
     cands = []
+    seen = {}
     for m in markets:
         lltv, util, flags = classify(m)
         listed = m.get("listed", False)
@@ -150,7 +155,11 @@ def scan(do_deviation=False):
         loan = (m.get("loanAsset") or {}).get("symbol", "?")
         # 候选：非官方 + 高LTV + (利用率高 或 衍生抵押品)
         if (not listed and lltv >= LLTV_MIN and (util >= UTIL_MIN or is_yieldlike(coll))):
-            cands.append((m, lltv, util, flags))
+            key = f"{coll}->{loan}"
+            liq = to_float((m.get("state") or {}).get("liquidityAssetsUsd"))
+            if key not in seen or liq > seen[key][0]:
+                seen[key] = (liq, (m, lltv, util, flags))
+    cands = [v[1] for v in seen.values()]
     cands.sort(key=lambda x: -x[2])  # 利用率降序
 
     print(f"🎯 高危特征候选：{len(cands)} 个\n")
@@ -158,6 +167,8 @@ def scan(do_deviation=False):
         listed = m.get("listed", False)
         coll = (m.get("collateralAsset") or {}).get("symbol", "?")
         loan = (m.get("loanAsset") or {}).get("symbol", "?")
+        coll_dec = (m.get("collateralAsset") or {}).get("decimals", 18)
+        loan_dec = (m.get("loanAsset") or {}).get("decimals", 18)
         oaddr = (m.get("oracle") or {}).get("address", "")
         state = m.get("state") or {}
         # oracle 价（只对稳定币抵押/衍生类算，避免海量调用）
@@ -165,8 +176,8 @@ def scan(do_deviation=False):
         spot = None
         if do_deviation or coll in STABLECOIN_SYMS or is_yieldlike(coll):
             try:
-                oprice = oracle_price(oaddr)
-            except Exception as e:
+                oprice = oracle_price(oaddr, loan_dec, coll_dec)
+            except Exception:
                 oprice = None
         row = {
             "ts": ts,
@@ -184,8 +195,13 @@ def scan(do_deviation=False):
         }
         rows.append(row)
         spot_str = ""
-        if oprice:
+        if oprice is not None:
             spot_str = f" | oracle价={oprice:.6g}"
+            # 稳定币抵押类：oracle 偏离锚 1.0 提示（埋雷信号）
+            if coll in STABLECOIN_SYMS or "USD" in coll.upper():
+                dev_anchor = abs(oprice - 1.0)
+                if dev_anchor > 0.02:
+                    spot_str += f" ⚠️oracle偏离$1锚 {dev_anchor*100:.1f}%"
         print(f"  {'🔴' if util >= 0.99 else '🟡'} {coll} → {loan} "
               f"[{', '.join(flags)}]{spot_str} | 流动池 ${row['liquidity_usd']/1e6:.2f}M")
 
@@ -193,12 +209,14 @@ def scan(do_deviation=False):
     if do_deviation and cands:
         print("\n📐 oracle vs DEX 偏差（GeckoTerminal，网络可用时）")
         for m, lltv, util, flags in cands:
-            coll = m["collateralAsset"]["symbol"]
-            oaddr = m["oracle"]["address"]
-            oprice = oracle_price(oaddr)
+            coll = (m.get("collateralAsset") or {}).get("symbol", "?")
+            oaddr = (m.get("oracle") or {}).get("address", "")
+            coll_dec = (m.get("collateralAsset") or {}).get("decimals", 18)
+            loan_dec = (m.get("loanAsset") or {}).get("decimals", 18)
+            oprice = oracle_price(oaddr, loan_dec, coll_dec)
             if not oprice:
                 continue
-            spots = gecko_spot(coll, [m["collateralAsset"]["address"]])
+            spots = gecko_spot(coll, [(m.get("collateralAsset") or {}).get("address", "")])
             if spots:
                 for addr, p in spots.items():
                     dev = abs(oprice - p) / oprice
