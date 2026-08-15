@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-狗庄出货雷达 v2（whale_dump_radar.py）— 2026-08-15
+狗庄出货雷达 v3（whale_dump_radar.py）— 2026-08-15
 =========================================================
 监控「巨鲸拉盘→合约出货」模式（HFT 案例 0x4bfd879f 沉淀的信号原型）：
   ① 巨鲸/执行合约地址向外部大额转出代币（供币/出货）
   ② 该代币近期暴涨（24h 涨幅超阈值）→ 狗庄拉盘特征
-  ③ 同一代币 1 小时内流出 ≥N 笔 → 密集出货
+  ③ 同一代币 1 小时内流出 ≥N 笔 → 密集出货（独立信号维度）
 
 v2 升级（2026-08-15）：
   - 价格源主切 DexScreener（链上池价，小币种覆盖更好、无 key 无限流），
     选流动性最高池子的价格避免小池子价格失真；CoinGecko 作 fallback 补 7d
   - 默认监控加入执行合约 0x4bfd879f（HFT 案例出货方本体）
+
+v3 升级（2026-08-15）：
+  - 新监控地址 sashiusun.eth（0xDA436d，新币玩家 EOA，HFT 案例关联待确认）
+  - 执行合约侧密集换手独立信号：1h 内同 token 流出 ≥N 笔且总额 ≥ 阈值
+    时即使无暴涨也报 🟡（执行合约密集动本身就是信号——出货/搬币/归集）
 
 数据源（全部免费，0 成本）：
   - blockscout v2 API：地址的 token-transfers（方向 + 金额）
@@ -37,10 +42,12 @@ from pathlib import Path
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 # 已确认的监控地址（HFT 案例实证：0x28C6c06298d514 归集巨鲸余额 212,311 ETH；
-# 0x4bfd879f 是 8/7 HFT 净卖 61.4 万枚的执行合约，出货方本体）
+# 0x4bfd879f 是 8/7 HFT 净卖 61.4 万枚的执行合约，出货方本体；
+# 0xDA436d = sashiusun.eth，新币玩家 EOA，HFT 案例群友三连地址之一）
 DEFAULT_WHALES = [
     "0x28C6c06298d514Db089934071355E5743bf21d60",  # HFT 案例归集巨鲸
     "0x4bfd879f0aa2a45d74419afd32518a9ae53ad629",  # HFT 案例出货执行合约
+    "0xDA436db56e7D5d7ceEb20003Fc63Acd4d8b465ba",  # sashiusun.eth 新币玩家
 ]
 
 # 阈值（可调）
@@ -48,6 +55,7 @@ OUT_MIN_USD = 5_000        # 单笔流出价值下限（USD）
 PUMP_24H = 1.00            # 24h 涨幅 ≥100% 标记
 PUMP_7D = 3.00             # 7d 涨幅 ≥300% 标记（狗庄拉盘特征）
 DENSE_OUT_MIN = 3          # 同代币 1h 内流出笔数 ≥N = 密集出货
+DENSE_OUT_USD = 2_000      # v3：密集换手信号的最小流出总额（低于大额线也能触发）
 LOOKBACK_H = 1             # 扫描窗口（小时）
 
 
@@ -172,7 +180,14 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
             pump = chg24 >= PUMP_24H * 100 or chg7 >= PUMP_7D * 100
             dense = len(outs) >= DENSE_OUT_MIN
 
-            if usd_total >= OUT_MIN_USD and pump:
+            # 信号判定（v3）：
+            #  🔴 大额流出 + 暴涨（狗庄拉盘出货）——原 v1/v2 主信号
+            #  🟡 密集换手 + 流出总额达标（即使无暴涨）——执行合约密集动本身就值得看：
+            #     可能是出货、搬币归集、或爆仓后集中处理，都是「该地址在行动」的证据
+            big_pump = usd_total >= OUT_MIN_USD and pump
+            dense_act = dense and usd_total >= DENSE_OUT_USD and not pump
+
+            if big_pump or dense_act:
                 sig = {
                     "ts": ts, "whale": whale, "token": token_addr,
                     "symbol": price["symbol"], "out_usd": round(usd_total, 0),
@@ -180,14 +195,20 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
                     "n_out": len(outs), "dense": dense,
                     "top_to": outs[0]["to"][:16],
                     "price_src": price.get("dex", "?"),
+                    "sig_type": "pump_dump" if big_pump else "dense_activity",
                 }
                 signals.append(sig)
                 rows.append(sig)
-                level = "🔴" if (chg24 >= 200 or chg7 >= 500) else "🟠"
-                line = (f"{level} 疑似狗庄出货: {price['symbol']} "
-                        f"{whale[:10]}…流出 ${usd_total:,.0f} "
-                        f"(24h {chg24:+.0f}% / 7d {chg7:+.0f}%) {len(outs)}笔"
-                        f"{' 密集!' if dense else ''} | 去向 {sig['top_to']}…")
+                if big_pump:
+                    level = "🔴" if (chg24 >= 200 or chg7 >= 500) else "🟠"
+                    line = (f"{level} 疑似狗庄出货: {price['symbol']} "
+                            f"{whale[:10]}…流出 ${usd_total:,.0f} "
+                            f"(24h {chg24:+.0f}% / 7d {chg7:+.0f}%) {len(outs)}笔"
+                            f"{' 密集!' if dense else ''} | 去向 {sig['top_to']}…")
+                else:
+                    line = (f"🟡 密集换手: {price['symbol']} "
+                            f"{whale[:10]}…1h内{len(outs)}笔流出 ${usd_total:,.0f} "
+                            f"(24h {chg24:+.0f}% 未暴涨) | 去向 {sig['top_to']}…")
                 if watchdog:
                     print(line)
                 else:
