@@ -1,3 +1,6 @@
+"""
+[DEPRECATED 2026-08-15] 被 no_arb_corridor_radar.py 取代（2026-08-15 体检）
+"""
 #!/usr/bin/env python3
 """Solana DEX 价差监控 v0（D4 主线，只读）。
 

@@ -1,3 +1,6 @@
+"""
+[DEPRECATED 2026-08-15] 无 cron 挂载、空数据文件（2026-08-15 体检停用）
+"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """

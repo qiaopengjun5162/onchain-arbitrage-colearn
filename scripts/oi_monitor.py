@@ -24,7 +24,7 @@ import sys
 import time
 from pathlib import Path
 
-import ccxt
+import requests
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "oi_history.db"
@@ -33,6 +33,8 @@ DB_PATH = BASE_DIR / "data" / "oi_history.db"
 # 可用性实测（2026-08-07，走 Clash 代理）：okx/bitget/kucoin ✅；
 # binance 451（地区限制）、bybit 403（CloudFront 地区限制）→ 换代理节点后再启用；
 # gate 的 fetchOpenInterest 未实现；hyperliquid 需先 load_markets。
+# 2026-08-15 重构：ccxt fetch_open_interest 会触发 load_markets（OKX 拉全量 OPTION 极慢，拖死 watchdog）
+# → 改直接 REST 端点，单次采样 <2s
 EXCHANGES = ["okx", "bitget", "kucoin"]
 SYMBOLS = ["BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT", "DOGE/USDT:USDT"]
 OI_SURGE_RATIO = 1.25     # 当前 OI / 基线均值 > 1.25 触发"放大"告警
@@ -43,6 +45,13 @@ MIN_BASE_SAMPLES = 6      # 至少 6 个采样才建立基线（约 3 小时 @30
 
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
+
+PROXY = os.environ.get("PROXY", "")
+PROXIES = {"http": PROXY, "https": PROXY} if PROXY else None
+SESSION = requests.Session()
+if PROXIES:
+    SESSION.proxies.update(PROXIES)
+SESSION.headers.update({"User-Agent": "Mozilla/5.0"})
 
 
 def fmt_num(v, suffix=""):
@@ -55,29 +64,71 @@ def fmt_num(v, suffix=""):
         return "-"
 
 
-def get_exchange(name: str):
-    ex_cls = getattr(ccxt, name)
-    ex = ex_cls({"enableRateLimit": True, "timeout": 20000})
-    proxy = os.environ.get("PROXY", "")
-    if proxy:
-        ex.proxies = {"http": proxy, "https": proxy}
-    return ex
+# ---- REST 直连层（替代 ccxt，2026-08-15 重构） ----
+# 每所一个快照函数：返回 {oi_contracts, oi_usd, price, funding_rate}，失败抛异常
 
-
-def fetch_snapshot(ex, symbol: str):
-    oi = ex.fetch_open_interest(symbol)
-    ticker = ex.fetch_ticker(symbol)
-    fr = None
-    try:
-        fr = ex.fetch_funding_rate(symbol)
-    except Exception:
-        pass
+def _okx_snapshot(symbol):
+    """OKX: /api/v5/public/open-interest + ticker + funding-rate"""
+    base = symbol.split("/")[0] + "-USDT-SWAP"
+    oi = SESSION.get(f"https://www.okx.com/api/v5/public/open-interest?instId={base}", timeout=15).json()
+    oi_row = (oi.get("data") or [{}])[0]
+    t = SESSION.get(f"https://www.okx.com/api/v5/market/ticker?instId={base}", timeout=15).json()
+    t_row = (t.get("data") or [{}])[0]
+    fr = SESSION.get(f"https://www.okx.com/api/v5/public/funding-rate?instId={base}", timeout=15).json()
+    fr_row = (fr.get("data") or [{}])[0]
     return {
-        "oi_contracts": oi.get("openInterestAmount"),
-        "oi_usd": oi.get("openInterestValue"),
-        "price": ticker.get("last"),
-        "funding_rate": fr.get("fundingRate") if fr else None,
+        "oi_contracts": float(oi_row.get("oi") or 0),
+        "oi_usd": None,
+        "price": float(t_row.get("last") or 0),
+        "funding_rate": float(fr_row.get("fundingRate")) if fr_row.get("fundingRate") else None,
     }
+
+
+def _bitget_snapshot(symbol):
+    """Bitget: /api/v2/mix/market/open-interest + ticker + current-fund-rate"""
+    sym = symbol.split("/")[0] + "USDT"
+
+    def _first(data):
+        # Bitget 部分端点 data 是 list（[{...}]），部分是 dict —— 统一取第一个
+        if isinstance(data, list):
+            return (data or [{}])[0]
+        return data or {}
+
+    oi = SESSION.get(f"https://api.bitget.com/api/v2/mix/market/open-interest?symbol={sym}&productType=USDT-FUTURES", timeout=15).json()
+    oi_row = _first(oi.get("data"))
+    # Bitget openInterestList[0].size 是张数（8/15 实测），不是 openInterest 字段
+    oi_list = oi_row.get("openInterestList") or []
+    oi_contracts = float(oi_list[0].get("size")) if oi_list and oi_list[0].get("size") else 0
+    t = SESSION.get(f"https://api.bitget.com/api/v2/mix/market/ticker?symbol={sym}&productType=USDT-FUTURES", timeout=15).json()
+    t_row = _first(t.get("data"))
+    fr = SESSION.get(f"https://api.bitget.com/api/v2/mix/market/current-fund-rate?symbol={sym}&productType=USDT-FUTURES", timeout=15).json()
+    fr_row = _first(fr.get("data"))
+    return {
+        "oi_contracts": oi_contracts,
+        "oi_usd": float(oi_row.get("openInterestValue")) if oi_row.get("openInterestValue") else None,
+        "price": float(t_row.get("lastPr") or 0),
+        "funding_rate": float(fr_row.get("fundingRate")) if fr_row.get("fundingRate") else None,
+    }
+
+
+def _kucoin_snapshot(symbol):
+    """KuCoin: /api/v1/contracts/active 一次拿全量 OI + ticker + funding"""
+    map_ = {"BTC": "XBT", "ETH": "ETH", "SOL": "SOL", "DOGE": "DOGE"}
+    base = symbol.split("/")[0]
+    sym = map_.get(base, base) + "USDTM"
+    active = SESSION.get("https://api-futures.kucoin.com/api/v1/contracts/active", timeout=15).json()
+    row = next((c for c in (active.get("data") or []) if c.get("symbol") == sym), {})
+    t = SESSION.get(f"https://api-futures.kucoin.com/api/v1/ticker?symbol={sym}", timeout=15).json()
+    t_data = (t.get("data") or {})
+    return {
+        "oi_contracts": float(row.get("openInterest") or 0),
+        "oi_usd": float(row.get("openInterestValue")) if row.get("openInterestValue") else None,
+        "price": float(t_data.get("price") or t_data.get("last") or 0),
+        "funding_rate": float(row.get("fundingRate")) if row.get("fundingRate") else None,
+    }
+
+
+SNAPSHOT_FN = {"okx": _okx_snapshot, "bitget": _bitget_snapshot, "kucoin": _kucoin_snapshot}
 
 
 def init_db(conn: sqlite3.Connection):
@@ -173,20 +224,30 @@ def main():
     args = ap.parse_args()
 
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
+    # busy_timeout：多 Agent/多进程并发写同一 db 时防 `database is locked`（8/15 实测根因）
+    conn = sqlite3.connect(DB_PATH, timeout=5.0)
+    conn.execute("PRAGMA busy_timeout=5000")
     init_db(conn)
 
     ts = int(time.time())
     all_alerts = []
+    # 全局 deadline：3 所×4 币 ccxt 限速 sleep 可能拖到 150s+，cron watchdog 需要 90s 内完成
+    deadline = time.time() + 90
     for name in EXCHANGES:
+        if time.time() > deadline:
+            print("[warn] 全局 90s deadline 到，剩余交易所跳过", file=sys.stderr)
+            break
         try:
-            ex = get_exchange(name)
-        except Exception as e:
-            print(f"[skip] {name} 初始化失败: {e}")
+            fn = SNAPSHOT_FN[name]
+        except KeyError:
+            print(f"[skip] {name} 无快照函数")
             continue
         for symbol in SYMBOLS:
+            if time.time() > deadline:
+                print("[warn] 全局 90s deadline 到，剩余采样跳过", file=sys.stderr)
+                break
             try:
-                snap = fetch_snapshot(ex, symbol)
+                snap = fn(symbol)
             except Exception as e:
                 print(f"[skip] {name} {symbol} 拉取失败: {e}")
                 continue

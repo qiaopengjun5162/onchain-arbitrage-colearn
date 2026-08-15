@@ -1,3 +1,6 @@
+"""
+[DEPRECATED 2026-08-15] 手动扫描器，非持续监控；whale_dump_radar 承担持续监控（2026-08-15 体检）
+"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
