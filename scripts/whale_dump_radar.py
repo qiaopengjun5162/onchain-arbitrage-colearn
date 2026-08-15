@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-狗庄出货雷达 v1（whale_dump_radar.py）— 2026-08-15 凌晨
+狗庄出货雷达 v2（whale_dump_radar.py）— 2026-08-15
 =========================================================
 监控「巨鲸拉盘→合约出货」模式（HFT 案例 0x4bfd879f 沉淀的信号原型）：
-  ① 巨鲸地址向外部大额转出代币（供币/出货）
-  ② 该代币近期暴涨（24h/7d 涨幅超阈值）→ 狗庄拉盘特征
-  ③ 同一代币 1 小时内从巨鲸流出 ≥N 笔 → 密集出货
+  ① 巨鲸/执行合约地址向外部大额转出代币（供币/出货）
+  ② 该代币近期暴涨（24h 涨幅超阈值）→ 狗庄拉盘特征
+  ③ 同一代币 1 小时内流出 ≥N 笔 → 密集出货
+
+v2 升级（2026-08-15）：
+  - 价格源主切 DexScreener（链上池价，小币种覆盖更好、无 key 无限流），
+    选流动性最高池子的价格避免小池子价格失真；CoinGecko 作 fallback 补 7d
+  - 默认监控加入执行合约 0x4bfd879f（HFT 案例出货方本体）
 
 数据源（全部免费，0 成本）：
-  - blockscout v2 API：巨鲸地址的 token-transfers（方向 + 金额）
-  - CoinGecko：代币现价 + 24h/7d 涨幅（按 contract address）
+  - blockscout v2 API：地址的 token-transfers（方向 + 金额）
+  - DexScreener API：代币链上池价 + 24h 涨幅（按 contract address）
+  - CoinGecko（fallback）：现价 + 24h/7d 涨幅
 
 用法：
   python scripts/whale_dump_radar.py              # 单次扫描
@@ -30,9 +36,11 @@ from pathlib import Path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-# 已确认的巨鲸归集地址（HFT 案例实证：0x28C6c06298d514 余额 212,311 ETH）
+# 已确认的监控地址（HFT 案例实证：0x28C6c06298d514 归集巨鲸余额 212,311 ETH；
+# 0x4bfd879f 是 8/7 HFT 净卖 61.4 万枚的执行合约，出货方本体）
 DEFAULT_WHALES = [
     "0x28C6c06298d514Db089934071355E5743bf21d60",  # HFT 案例归集巨鲸
+    "0x4bfd879f0aa2a45d74419afd32518a9ae53ad629",  # HFT 案例出货执行合约
 ]
 
 # 阈值（可调）
@@ -64,6 +72,30 @@ def blockscout_transfers(addr, pages=3):
     return items
 
 
+def dexscreener_price(token_addr):
+    """DexScreener 链上池价：选流动性最高池子的 priceUsd + 24h 涨幅。
+    返回 {symbol, usd, chg_24h, chg_7d: None, dex, liq_usd}；查不到返回 None"""
+    try:
+        d = get_json(f"https://api.dexscreener.com/latest/dex/tokens/{token_addr}")
+        pairs = d.get("pairs") or []
+        if not pairs:
+            return None
+        best = max(pairs, key=lambda x: float((x.get("liquidity") or {}).get("usd") or 0))
+        usd = float(best.get("priceUsd") or 0)
+        if usd <= 0:
+            return None
+        return {
+            "symbol": (best.get("baseToken") or {}).get("symbol", "?"),
+            "usd": usd,
+            "chg_24h": (best.get("priceChange") or {}).get("h24"),
+            "chg_7d": None,  # DexScreener 无 7d，留给 CoinGecko fallback
+            "dex": best.get("dexId"),
+            "liq_usd": (best.get("liquidity") or {}).get("usd"),
+        }
+    except Exception:
+        return None
+
+
 def coingecko_price(token_addr):
     """按合约地址查现价 + 24h/7d 涨幅（返回 None 表示查不到）"""
     try:
@@ -74,9 +106,19 @@ def coingecko_price(token_addr):
             "usd": (md.get("current_price") or {}).get("usd"),
             "chg_24h": md.get("price_change_percentage_24h"),
             "chg_7d": md.get("price_change_percentage_7d_in_currency", {}).get("usd"),
+            "dex": "coingecko",
+            "liq_usd": None,
         }
     except Exception:
         return None
+
+
+def token_price(token_addr):
+    """价格源优先级：DexScreener（链上池价）→ CoinGecko（fallback 补 7d）"""
+    p = dexscreener_price(token_addr)
+    if not p:
+        p = coingecko_price(token_addr)
+    return p
 
 
 def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
@@ -87,7 +129,7 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
 
     for whale in whales:
         if not watchdog:
-            print(f"👁 巨鲸 {whale[:14]}…")
+            print(f"👁 监控 {whale[:14]}…")
         try:
             transfers = blockscout_transfers(whale)
         except Exception as e:
@@ -100,7 +142,7 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
             frm = (t.get("from") or {}).get("hash", "").lower()
             to = (t.get("to") or {}).get("hash", "").lower()
             if frm.lower() != whale.lower():
-                continue  # 只看巨鲸流出
+                continue  # 只看该地址流出
             try:
                 ts_t = datetime.fromisoformat(t["timestamp"].replace("Z", "+00:00")).timestamp()
             except Exception:
@@ -121,7 +163,7 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
         for token_addr, outs in out_by_token.items():
             if len(outs) < 1:
                 continue
-            price = coingecko_price(token_addr) if token_addr else None
+            price = token_price(token_addr) if token_addr else None
             if not price or not price.get("usd"):
                 continue
             usd_total = sum(o["amount"] for o in outs) * price["usd"]
@@ -137,12 +179,13 @@ def scan(whales, lookback_h=LOOKBACK_H, watchdog=False):
                     "chg_24h": round(chg24, 1), "chg_7d": round(chg7, 1),
                     "n_out": len(outs), "dense": dense,
                     "top_to": outs[0]["to"][:16],
+                    "price_src": price.get("dex", "?"),
                 }
                 signals.append(sig)
                 rows.append(sig)
                 level = "🔴" if (chg24 >= 200 or chg7 >= 500) else "🟠"
                 line = (f"{level} 疑似狗庄出货: {price['symbol']} "
-                        f"巨鲸{whale[:10]}…流出 ${usd_total:,.0f} "
+                        f"{whale[:10]}…流出 ${usd_total:,.0f} "
                         f"(24h {chg24:+.0f}% / 7d {chg7:+.0f}%) {len(outs)}笔"
                         f"{' 密集!' if dense else ''} | 去向 {sig['top_to']}…")
                 if watchdog:
