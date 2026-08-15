@@ -5,10 +5,18 @@ Jito Bundle demo（jito_bundle_demo.py）— D12 前置产出（2026-08-14）
 ====================================================================
 构造 → 签名 → 提交 → 查状态的完整闭环脚本（无套利意图，只验证流程）。
 
-网络现状（实测 2026-08-14）：
+网络现状（实测 2026-08-14/15）：
   - Jito devnet block engine 已退役（全区域 SSL EOF）→ devnet 不可用
   - testnet.block-engine.jito.wtf 可达 ✅（testnet SOL 需先领水）
-  - mainnet 各区域可达 ✅（需真实 SOL，~$1 级别足够）
+  - mainnet 各区域可达 ✅（需真实 SOL）
+
+实测结论（2026-08-15，mainnet 首笔 bundle 落地成功）：
+  - ⚠️ sendBundle 必须带 params=[txs, {"encoding": "base64"}]——默认 base58 会报
+    "transaction #0 could not be decoded"
+  - ⚠️ tip 太低 → bundle 永远 pending/Invalid：1000~100000 lamports 全部失败，
+    0.005 SOL（5e6 lamports，> 99 分位 tip）→ 立即 confirmed
+  - 落地示例：bundle 0302a15a…（纯 tip 转账单笔），链上 Cy8NLN1y… 5 SOL 转账
+  - 轮询用 getBundleStatuses（landed/pending/invalid）或 getInflightBundleStatuses（5 分钟内）
 
 用法：
   python scripts/jito_bundle_demo.py --network testnet --dry-run   # 只构造+签名+模拟，不提交
@@ -49,6 +57,8 @@ NETWORKS = {
 }
 PROXY = os.environ.get("PROXY", "http://127.0.0.1:7890")
 TIP_MIN = 1000  # lamports；低于此 bundle 不会被拍卖选中
+TIP_DEFAULT = 5_000_000  # ⚠️ 2026-08-15 实测：默认 0.005 SOL（5e6 lamports）才能稳定落地；
+                         # 1000~100000 lamports 全部 pending/Invalid（< 99 分位 tip）
 AMOUNT = 1_000  # 每笔 demo transfer 的 lamports（1e-6 SOL，可忽略）
 
 
@@ -75,7 +85,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--network", choices=list(NETWORKS), default="testnet")
     ap.add_argument("--dry-run", action="store_true", help="只构造+签名，不提交")
-    ap.add_argument("--tip", type=int, default=1000, help="tip lamports（最低 1000）")
+    ap.add_argument("--tip", type=int, default=TIP_DEFAULT, help=f"tip lamports（默认 {TIP_DEFAULT} = 0.005 SOL，实测稳定落地；太低永远 pending）")
     ap.add_argument("--n-tx", type=int, default=3, help="bundle 内交易数（含 tip 交易，≤5）")
     args = ap.parse_args()
 
@@ -119,8 +129,9 @@ def main():
         return
 
     print(f"\n📤 sendBundle → {net['engine']}")
+    # ⚠️ 必须带 {"encoding": "base64"}！默认 base58 → transaction could not be decoded
     d = http_post(net["engine"], {"jsonrpc": "2.0", "id": 1, "method": "sendBundle",
-                                  "params": [encoded]})
+                                  "params": [encoded, {"encoding": "base64"}]})
     if "error" in d:
         print("❌ sendBundle 失败:", d["error"])
         sys.exit(1)
@@ -129,6 +140,8 @@ def main():
     print(f"   （bundle_id ≠ 已上链；继续轮询状态）")
 
     # 4) 轮询状态
+    # ⚠️ tip 太低 → bundle 永远 pending/Invalid（2026-08-15 实测：1000~100000 lamports 全失败，
+    #    0.005 SOL = 5e6 lamports > 99 分位 tip → 立即 confirmed）。建议 tip ≥ 0.001 SOL。
     for i in range(10):
         time.sleep(3)
         st = http_post(net["engine"], {"jsonrpc": "2.0", "id": 1, "method": "getBundleStatuses",

@@ -82,3 +82,10 @@ URL 结构：
 **D12 计划调整**：devnet 不可用 → 两条替代路线：
 1. **testnet**：免费，但 testnet SOL 水龙头可用性/速率待验证
 2. **mainnet 小额 demo**：0.005-0.01 SOL（~$1-2），只做 memo/transfer 无价值交易验证流程闭环（QuickNode 教程标准做法，tip 1000 lamports 可忽略）——**涉及真钱，需 Paxon 批准**
+
+## ✅ mainnet 首笔落地（2026-08-15 晚，Paxon 批准后实测）
+
+- **bundle_id `0302a15a…` confirmed（10 秒内）**，链上 tx `Cy8NLN1y…` 转账 0.005 SOL 到 tip account
+- **坑 1：encoding**——`sendBundle` 不带 `{"encoding": "base64"}` 按默认 base58 解码 → `transaction #0 could not be decoded`
+- **坑 2：tip**——1000~100000 lamports 全 pending/Invalid（< 99 分位 tip 拍卖不选）；0.005 SOL 才稳定落地；实时参考 `bundles.jito.wtf/api/v1/bundles/tip_floor`
+- 完整排查 8 轮记录：`notes/jito-bundle-mainnet-first-land-20260815.md`
