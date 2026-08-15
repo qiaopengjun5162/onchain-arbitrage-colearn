@@ -201,3 +201,7 @@
 ## 资金费率查证
 
 - Bitget 资金费逃票查证（官方规则核验 + 实测：主流 8h 结算钳制±0.01%/往返费0.12%倒挂→100期0期净正；长尾4h结算高费率全负费率=事件非策略；文档时点07/15/23 vs 实测08/16/00差1h）：本仓库 `notes/bitget-funding-fare-dodge-verify-20260815.md`（数据源 Bitget API v2/mix/market）
+
+## 共学增量笔记批次
+
+- 2026-08-15 增量 108 篇 digest（SVR/Atlas 89% 清算奖励回收、LVR σ²/8、Qy 庄家行为三层研判、RPC 新鲜度 vs 延迟、PM 争议期）：`notes/icl-incremental-notes-digest-20260815.md`

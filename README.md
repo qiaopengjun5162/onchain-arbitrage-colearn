@@ -70,6 +70,7 @@
 | **长尾币期现测试**（快照假象 vs 持续性：GOAT 54%★ / MEW 17%✗） | `notes/longtail-basis-test-snapshot-vs-persistence-20260809.md` |
 | **BitMart 第一桶金**（充值时间差 alpha：确定性失衡时刻+提前埋伏） | `notes/bitmart-first-pot-alpha-20260809.md` |
 | **期现套利隐藏爆仓机制**（1倍杠杆统一账户也爆 + 振幅过滤双刃剑） | `notes/basis-arb-hidden-blowup-and-amplitude-filter-20260809.md` |
+| **共学增量笔记 108 篇消化**（SVR/Atlas：Aave L2 已切 SVR 喂价 89% 清算奖励被回收→清算哨兵 aave 优先级有机制级证据；LVR σ²/8 与 LP 回测互证；RPC 新鲜度 vs 延迟双维度验证 rpc_health；Qy 庄家行为三层研判；ARK 9/16 主网上线新公链窗口） | `notes/icl-incremental-notes-digest-20260815.md` |
 | **Bitget 资金费逃票查证**（官方规则+实测：主流币 8h 结算钳制 ±0.01%，往返费 0.12% 倒挂→100 期 0 期净正，逃票不成立；长尾币 4h 结算高费率全负费率=事件非策略；文档时点 07/15/23 vs 实测 08/16/00 差 1h——以 API 为准） | `notes/bitget-funding-fare-dodge-verify-20260815.md` |
 | **资金费率信号方法论**（Z-score + OI 交叉） | `notes/funding-rate-signal-engineering-20260808.md` |
 | **币股时钟差**（闭市漂移→开盘收敛） | `notes/tokenized-stock-arbitrage.md` |
