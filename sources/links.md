@@ -197,3 +197,7 @@
 - 黄小木（转发 Roland.W） - 《我找到了AI写作问题的根源（附解法）》：AI 味两大根源=①自造说法（「执行成本塌方」「先蹲两周侦察」需读者先理解说法再理解事实，未增信息即删）②英译式话语连接（reflecting→「反映出/体现出/表明了/这意味着」，主语错位+事实/解释/结论压一句，负迁移自英文语料主导）；解法=原材料先分三类（事实/可支持解释/未答问题）→ 删连接词分别读前后句 → 用「原因是/与……同时出现/可能与……有关」精确化关系 → 不让 AI 直接润色，让它并排输出「原句/问题/建议」人再核对：https://x.com/ai_xiaomu/status/2087181801458716889 （2026-08-13 归档：与去 AI 味写作线直接相关——比 human-writing「删金句/材料第一」更细一层，补连接词级检查规则，可并入 writing-skill-bridge；评论区微尘印记：dbskill 先识别特征再带着改，AI 直接改=左手倒右手，与「不要直接润色」互证；黄小木转语「看是矛锋利还是盾强」=自家去AI味工具对比）
 
 - Adrian Punk - Punk XHS Cards：把 Markdown 长文转成小红书竖版知识卡片（个人 IP 确认→主题色→封面→内页，三个确认门；教程关键截图按「步骤—截图—完成标志」保留；输出 1 封面+9 内页+publish-copy.md 标题正文 tags+ZIP；Python/Pillow 跨平台渲染）：https://x.com/AdrianPunk115/status/2087494970341257385 （2026-08-13 归档：GitHub 仓库 adrianpunk/punk-xhs-cards 8 commits 实测通过——smoke_render.py 真出 cover.png+card-01.png，SKILL.md+9 references+10 scripts 完整；推文「3 个月赚 8 位数」为营销口径未验证；对共学公众号文章多平台复用有参考价值，与 ObsidianMain 分发管线思路同构，可作 D 系列文章跨平台候选工具）
+
+## 资金费率查证
+
+- Bitget 资金费逃票查证（官方规则核验 + 实测：主流 8h 结算钳制±0.01%/往返费0.12%倒挂→100期0期净正；长尾4h结算高费率全负费率=事件非策略；文档时点07/15/23 vs 实测08/16/00差1h）：本仓库 `notes/bitget-funding-fare-dodge-verify-20260815.md`（数据源 Bitget API v2/mix/market）
