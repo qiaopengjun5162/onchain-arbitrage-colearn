@@ -18,9 +18,21 @@ def spot_price(x, y):
     """现货价：1 X = ? Y（无滑点边际价格）"""
     return y / x
 
+def _check_positive(x, y, dx, fee):
+    """参数合法性：除零/边界保护，非法输入直接报错而不是产出 NaN。"""
+    if x <= 0 or y <= 0:
+        raise ValueError(f"储备必须为正: x={x}, y={y}")
+    if dx <= 0:
+        raise ValueError(f"输入数量必须为正: dx={dx}")
+    if not (0 <= fee < 1):
+        raise ValueError(f"手续费必须在 [0,1): fee={fee}")
+    if dx * (1 - fee) >= x:
+        raise ValueError(f"输入过大: dx·(1−fee)={dx*(1-fee)} 将耗尽储备 x={x}")
+
 def swap_output(x, y, dx, fee=0.003):
     """恒定乘积带费 swap：输入 dx 个 X，输出多少 Y。
     手续费按有效输入扣除：实际入池 = dx·(1−fee)。"""
+    _check_positive(x, y, dx, fee)
     dx_eff = dx * (1 - fee)
     k = x * y
     dy = y - k / (x + dx_eff)
@@ -31,6 +43,16 @@ def price_impact(x, y, dx, fee=0.003):
     dy_ideal = y - x * y / (x + dx)          # 无费理想
     dy_real = swap_output(x, y, dx, fee)
     return dy_ideal - dy_real, dy_ideal, dy_real
+
+def assert_invariants(x, y, dx, dy, fee, k0, tolerance=1e-6):
+    """恒定乘积自检：swap 后 x·y 守恒（相对误差 < tolerance 才算通过）。"""
+    x_new = x + dx * (1 - fee)
+    y_new = y - dy
+    k_new = x_new * y_new
+    rel_err = abs(k_new - k0) / k0
+    assert rel_err < tolerance, f"恒定乘积不守恒: k0={k0:.4f}, k_new={k_new:.4f}, 相对误差 {rel_err:.2e}"
+    print(f"   自检通过: k 相对误差 {rel_err:.2e} (< {tolerance:.0e})")
+    return rel_err
 
 def main():
     print("=" * 70)
@@ -43,6 +65,7 @@ def main():
 
     print("\n2) 1 ETH swap（0.3% 手续费）")
     dx = 1.0
+    k0 = x * y
     dy = swap_output(x, y, dx)
     dy_ideal = y - k / (x + dx)
     print(f"理想输出(无费): {dy_ideal:,.4f} USDC")
@@ -51,6 +74,7 @@ def main():
     print(f"实际成交均价: {dx/dy*1e0:.4f} ETH→ 每 ETH 得 {dy/dx:,.4f} USDC")
     print(f"对现货价的折扣: {(1 - (dy/dx)/spot_price(x,y))*100:.3f}%")
     print(f"新储备: X={x+dx*(1-0.003):.4f}, Y={y-dy:.4f}, 新 k={ (x+dx*(1-0.003))*(y-dy):.2f}")
+    assert_invariants(x, y, dx, dy, 0.003, k0)
 
     print("\n3) 知识库实测复现：Raydium SOL-USDC（08-07 pool_price.py）")
     print("   来源数据: SOL Vault 67,851.11 / USDC Vault 5,033,520.92 / 价格 $74.1848")
