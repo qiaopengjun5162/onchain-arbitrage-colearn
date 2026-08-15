@@ -3,13 +3,16 @@
 ## 共学
 
 - 链上套利残酷共学: https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
+- **taoli.tools 九种套利角度筛选结论**（作者社区角度闭合检查器五问筛选：4 当场砍/4 实测证伪/1 拥挤；单所绝对值 vs 跨所差 68 倍差距→SNDK 0.7% vs 47.7%；逃票判据=资金费>2×往返费；BNB IDO 168 天零异常证伪方法「绕开不知道的量」；cg-screen 22所×1848币一条命令）：本仓库 `notes/taoli-nine-arb-angles-filter-digest-20260815.md` / `sources/九种套利角度-筛选结论_20260815.pdf`
+- **三角套利 TG 机器人骗局受害者陈述**（@RAY10168 8-13：套利豪仔 @pritipatelfgoo 推 TG 机器人→诱导输入私钥→4.1 BNB 秒空；「手续费 1%」实扣本金 1%；⚠️ 该骗子即 8-07 Polymarket 数学笔记分享者=人设立信闭环）：https://x.com/ray10168/status/2087914974215827778 → 本仓库 `notes/tg-scam-victim-statement-and-icefire-tools-20260815.md` / `sources/tg-triangle-arb-scam-ray10168_20260815.json`（关联 `notes/haasonline-scam-bot-case-20260814.md`）
+- **冰火岛社区 GitHub 开源套利/期权工具清单**（@wepoets1107 张无忌 30 仓库：options-eye 11★/backpack-arbitrage 44★/btc-yield-enhancer 68★ 等；5 个代表性仓库已验真：真实存在+代码可审计+默认 dry-run+key 走环境变量）：https://x.com/wepoets1107/status/2088217033557315961 → 本仓库 `notes/tg-scam-victim-statement-and-icefire-tools-20260815.md`
 - Bruce 使命宣言《我想对抗数字世界的失控》（LXDAO/ETHPanda/LI.FI/Hermes 的共同主线）：https://x.com/brucexu_eth/status/2049767573278068872 → 本仓库 `notes/bruce-mission-manifesto.md`
 - Bruce 翻译 Greenfield《以太坊区块构建现状 Part I：需求侧——订单流与优先费》（MEV 三市场/优先费/OFA）：https://x.com/brucexu_eth/status/2085547569577627715 → 本仓库 `notes/ethereum-block-building-part1-demand.md`
 - Bruce 训练 Hermes 写作 Skill 方法论（50 条样本→benchmark→Context 注入，70% 可用）：https://x.com/brucexu_eth/status/2083919618729820229
 - Greenfield 以太坊区块构建 Dune 仪表盘（持续维护，全部图表数据源）：https://dune.com/gcm/ethereum-block-building
 - CoW DAO Research《Private MEV Protection RPCs: Benchmark Study》（OFA 返现机制原始研究，80% 私有 RPC）：https://arxiv.org/abs/2505.19708 → 本仓库 `notes/arxiv-private-mev-protection-rpcs.md`
 - Polymarket NegRisk Adapter「NO 回收套利」（0x 哆啦A梦分析 + arXiv 2608.00666，108.6 万 USDC 机制套利利润）：https://x.com/hunterweb303/status/2085552085618340330 → 本仓库 `notes/polymarket-negrisk-no-recycle-arbitrage.md`
-- Polymarket 套利数学原理（Marginal Polytope/Bregman Projection/Frank-Wolfe，同论文数学向，4000 万美元）：https://x.com/pritipatelfgoo/status/2085560709115678803 → 本仓库 `notes/polymarket-arbitrage-math-framework.md`
+- Polymarket 套利数学原理（Marginal Polytope/Bregman Projection/Frank-Wolfe，同论文数学向，4000 万美元）：https://x.com/pritipatelfgoo/status/2085560709115678803 → 本仓库 `notes/polymarket-arbitrage-math-framework.md` ⚠️ **2026-08-15 标记：分享者 @pritipatelfgoo（套利豪仔）已被证实为诈骗犯（TG 三角套利机器人骗私钥，受害者 4.1 BNB 被转空）——内容本身是 arXiv 论文搬运可独立核验，引用以论文为准**
 - **Unravelling the Probabilistic Forest: Arbitrage in Prediction Markets**（AFT 2025/Flashbots FRP-51：Polymarket 一年 86.6M bids 实证，两类套利=Market Rebalancing（ΣYES≠$1）+Combinatorial（依赖市场对），已实现利润 ~$3,960 万、大头是「买 NO」$17.3M，约 99% 机会未被执行；LLM 找依赖市场对方法）：https://arxiv.org/pdf/2508.03474 → 本仓库 `notes/pm-probabilistic-forest-arb-paper-20260812.md` / `sources/papers/pm-probabilistic-forest-arb-2508.03474.pdf`
 - Boros by Pendle 跨所套利四腿策略（CrossEx + Hyperliquid/OKX，24.3% APR，Pendle CTO 开源 UI）：https://x.com/pendle_grandma/status/2085369602360344631 → 本仓库 `notes/boros-pendle-crossex-4leg.md`
 - 残酷共学官方 X @IntensiveCL: https://x.com/IntensiveCL

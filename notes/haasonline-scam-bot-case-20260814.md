@@ -48,3 +48,6 @@ Bruce 工具文安全五规则全部适用：
 - `notes/solana-prikey-security-20260809.md`（私钥安全主笔记）
 - `notes/execution-reality-infra-latency-20260814.md`（Bruce 工具文安全五规则）
 - 反诈信息来源：BlockBloomer 公众号（OCR 截图），原文 x.com/haasonline/status/... 与 x.com/RAY10168/status/...（链接未完整捕获，可后续补）
+- **原始链接已补（2026-08-15）**：受害者陈述 `x.com/ray10168/status/2087914974215827778`（2026-08-13，48👍5RT，完整帖文+4 图归档 `sources/tg-triangle-arb-scam-ray10168_20260815.json` + `sources/tg_triangle_arb_scam_img1-4.*`）
+- 帖文关键细节：骗子「套利豪仔」@pritipatelfgoo（→ 与 HaasOnline 同一伙？）；TG 机器人「套利手续费 1%」实扣**本金** 1%；一天后要求再转 6 BNB 触发警觉但已来不及，钱包秒空
+- **人设立信闭环（2026-08-15 归档时发现）**：@pritipatelfgoo 正是 08-07 归档的「Polymarket 套利数学原理」笔记分享者（`notes/polymarket-arbitrage-math-framework.md`，arXiv 2608.00666 论文搬运）——完美印证受害者原话「翻了他过往的文章，感觉都是在正经分析量化跟套利」。**骗术画像 = 先搬运正经论文/分析立人设 → 再推 TG 机器人 → 诱导输入私钥**。该笔记已打警示标记（内容可独立核验但引用以论文为准）。
