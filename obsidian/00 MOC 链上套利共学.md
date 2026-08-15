@@ -65,6 +65,7 @@ tags:
 - [[LI.FI 跨链实战实验]] — ETH USDC→ARB USDC 只读 quote 实测（break-even 35 bps）
 - [[套利实战手册]] — LI.FI playbook 文本版：入门三件套（判断→执行→监控）
 - [[监控 Bot 入门]] — 监控脚本是「在场」前提，daily 打卡最易拿证据的产出
+- [[Jito Bundle 提交实战]] — mainnet 首笔落地：encoding 参数缺失 + tip<99 分位两坑；sendBundle 必须带 base64 编码参数、tip 参考 tip_floor 分位数（0.005 SOL 稳定落地）
 
 ## Bot 代码与开源项目
 
@@ -78,6 +79,7 @@ tags:
 - [[0xbdb3ba 统计套利案例]] — 单笔 gas 1.7 万 U，机构垄断实证
 - [[收费站套利回测证伪]] — 假设→证伪：LVR/逆向选择吃掉利润
 - [[JaredFromSubway 蜜罐反杀]] — 三明治之王被假合约武器化，白名单是生死线
+- [[TG 三角套利机器人骗局拆解]] — 人设立信闭环：骗子先搬 arXiv 论文立人设再推 TG 机器人收割；4.1 BNB 秒空；工具验证三问（可审计/dry-run/key 管理）
 - [[MA 均线交叉策略回测复盘]] — 3s 均线追噪声、手续费吃光本金，趋势追踪只在强趋势有效
 
 ## 共学群友
