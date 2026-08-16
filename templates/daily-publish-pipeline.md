@@ -38,6 +38,15 @@ grep -c '"slug":"<slug>","status":"published"' .moonpub/status.jsonl
 # 已发布的文章若要换样式：先 delete-draft 旧草稿，别让草稿箱里躺着重复版本
 ```
 
+**ship 前必查②（2026-08-16 新增，防漏活动介绍块）**：
+
+```bash
+grep -c '关于本次共学' social/wechat/<slug>.md   # 必须 >=1
+grep -c ':::callout' social/wechat/<slug>.md      # 必须 >=1（卡片块）
+# 任一为 0 → 从 templates/colearn-intro-block.md 复制卡片块到文末再 ship
+# 教训：D9（08-13）草稿生成时漏套卡片块就发布了；模板在但没自动校验兜底
+```
+
 2026-08-09 实测教训：D2 昨天已发布，今天为换浅色主题重 ship 推了新草稿（100011385）→ 用户指出"昨天已经发了"→ 立即 `moonpub delete-draft 100011385` 删除，状态改回 published。
 
 ## 公众号编排
@@ -67,6 +76,7 @@ grep -c '"slug":"<slug>","status":"published"' .moonpub/status.jsonl
 
 ## 归档清单（发布完成后）
 
+- [ ] `social/wechat/<slug>.md` 文末含「关于本次共学」callout 卡片块（grep 校验，见开工前必查②）
 - [ ] `social/wechat/<slug>.media_id` 已更新
 - [ ] `.moonpub/status.jsonl` 状态 = published
 - [ ] `social/x/<日期>-d{N}-thread.md` 发布记录补全（起始链接 + 各条 ID）
@@ -123,3 +133,4 @@ grep -c '"slug":"<slug>","status":"published"' .moonpub/status.jsonl
 | 封面风格没生效 | style 参数对但输出不对 | 检查 cover.html 的 data-cover-style 属性 + OCR 封面 PNG |
 | lifecycle guard | moonpub 带 --articles 被拦 | 必须 execute_code + subprocess.run |
 | X 402 | credits depleted | 手动发布，xurl 只做草稿/验证 |
+| 漏活动介绍块 | D9 文末无「关于本次共学」就发布（模板在但没校验） | ship 前 grep 两个关键词（`关于本次共学` + `:::callout`），为 0 就从模板复制 |

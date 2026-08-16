@@ -10,3 +10,9 @@
 {"ts": "2026-08-14T23:30:55+0800", "candidate": "pm_rebal", "name": "PM rebalancing 盘口", "elapsed_days": 2, "metrics": {"scans": 10410, "days_covered": 3, "signal_count": 0, "reject_top": [["negative_after_fee", 10312], ["below_min_profit", 98]]}}
 {"ts": "2026-08-14T23:30:55+0800", "candidate": "oft_crosschain", "name": "OFT 跨链价差", "elapsed_days": 3, "metrics": {"samples": 1, "net_bps_mean": 7.6, "net_positive": 0, "days_covered": 1}}
 {"ts": "2026-08-14T23:30:55+0800", "candidate": "pm_lp", "name": "PM 带方向 LP（计划）", "elapsed_days": 2, "metrics": {"status": "manual", "note": "待 /activity 返佣流水（人工）"}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "stock_drift", "name": "RWA/币股闭市漂移", "elapsed_days": 7, "metrics": {"samples": 2494, "days_covered": 8, "dev_bps_median": 63.0, "dev_bps_mean": 70.4, "dev_bps_max": 345.0, "pct_ge_30bps": 97.4}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "perp_funding", "name": "链上 perp funding 拥挤度", "elapsed_days": 7, "metrics": {"signal_rows": 280, "zscore_ge2": 4, "hl_extreme_annual_ge50": 0}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "thin_corridor", "name": "低容量可行域（#13）", "elapsed_days": 3, "metrics": {"samples": 1175, "days_covered": 6, "exit_events": 150, "max_exit_bps": 79.3, "spread_mean_bps": 31.1}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "pm_rebal", "name": "PM rebalancing 盘口", "elapsed_days": 3, "metrics": {"scans": 14130, "days_covered": 4, "signal_count": 0, "reject_top": [["negative_after_fee", 13995], ["below_min_profit", 135]]}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "oft_crosschain", "name": "OFT 跨链价差", "elapsed_days": 4, "metrics": {"samples": 1, "net_bps_mean": 7.6, "net_positive": 0, "days_covered": 1}}
+{"ts": "2026-08-15T23:30:05+0800", "candidate": "pm_lp", "name": "PM 带方向 LP（计划）", "elapsed_days": 3, "metrics": {"status": "manual", "note": "待 /activity 返佣流水（人工）"}}
