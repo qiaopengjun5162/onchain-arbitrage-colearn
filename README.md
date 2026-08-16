@@ -87,6 +87,7 @@
 | **HL funding 监控脚本**（D9 广度落地：metaAndAssetCtxs 232 资产 1h funding 快照 + fundingHistory 主流 10 币历史，1h 结算×24×365 换算年化；--snapshot/--history/--top；D15+ 挂 cron 观察窗） | `scripts/hl_funding_monitor.py` · `data/hl_funding_snapshot.csv` |
 | **LP 回测牛市段验证**（D11 笔记补牛段：OKX 2024-06→2025-06 BTC +54.9% 8760 根；上涨月动态输 3.0pct/下跌月赢 1.4pct=互证 D11；全程动态 +49.6% > 死守 +37.3%（fee 5.1x 复利）；持有 +54.9% 最强；结论升级「下跌赢/上涨输/全程累计仍赢」；脚本加 --csv/--days；⚠️ OKX history-candles 分页坑 cursor 取页内最旧一条） | `notes/lp-dynamic-range-backtest-20260815.md` · `data/grid_btc_1h_bull_cache.csv` |
 | **D14 三选一决策材料**（第一条全流程线候选对照：币股闭市漂移★（2494 样本/dev_bps 中位 63bps/97.4%≥30bps，阶段1🔄7/30天）vs 费率事件窗口（等事件）vs PM 事件（容量小）；决策建议+待补数据清单） | `notes/d14-decision-material-20260816.md` |
+| **1inch「无风险套利」教程核验**（W3 推文 8.9万views：ETH 1000 USDC→1003.42 USDT +0.34% 截图；核验=常态价差仅0.045% CoinGecko 实测、0.34%是脱锚事件窗口非常态、常态扣gas净亏、最小有效规模$3.3k、「无风险」=接飞刀尾部风险；结论：真实玩法但claim有水分，fusion resolver已磨平价差，不值得开发） | `notes/oneinch-usdc-usdt-claim-20260816.md` |
 
 ## 📈 实测发现（2026-08-08）
 
