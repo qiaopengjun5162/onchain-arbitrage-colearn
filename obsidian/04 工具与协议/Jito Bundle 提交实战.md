@@ -29,6 +29,15 @@ related: [[研究到生产五阶段管线]] [[执行清单五步法]] [[监控 B
 
 ## 沉淀
 
+### 管线 v2（2026-08-16，D12）
+
+demo → 参数化管线 `scripts/jito_bundle_pipeline.py`：
+
+- **tip 自动定价**：现场查 `bundles.jito.wtf/api/v1/bundles/tip_floor`，99 分位 ×1.5 安全垫，下限 0.003 / 上限 0.01 SOL。⚠️ tip_floor 是动态的（2 分钟内 99th 0.0009→0.0035 SOL）——写死 tip 的 demo 只适用当时市场
+- **JSONL 结构化日志**：`data/jito_bundle_log.jsonl`（ts/network/n_tx/tip/basis/bundle_id/status/err），构造-提交-落地全程可追溯
+- **状态机轮询**：getBundleStatuses 主查 + getInflightBundleStatuses 兜底（拿 Invalid 明细），landed/pending/invalid 三态区分
+- 参数化：--network / --n-tx / --tip-mode auto|fixed / --dry-run
+
 - 脚本 `scripts/jito_bundle_demo.py` 已修复（encoding + 默认 tip 5e6 lamports）可复跑
 - bundle 状态机（landed/pending/invalid + blockhash 过期重提交）待做成可复用模块
 - D12：真实 swap bundle（模拟器输出路径）
