@@ -27,6 +27,7 @@ import os
 import random
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -62,8 +63,14 @@ def http_post(url, payload, proxy=True, timeout=30):
     else:
         opener = urllib.request.build_opener()
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
-    with opener.open(req, timeout=timeout) as r:
-        return json.loads(r.read().decode())
+    try:
+        with opener.open(req, timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        # ⚠️ urllib 默认丢错误 body——读出来打印（2026-08-15 实测：400 的
+        # "Duplicate transaction message hash" 只有读 body 才看得到）
+        body = e.read().decode()[:500] if hasattr(e, "read") else ""
+        raise RuntimeError(f"HTTP {e.code} {e.reason}: {body}") from e
 
 
 def rpc_call(rpc, method, params):
@@ -85,13 +92,14 @@ def fetch_tip_floor():
 
 
 def pick_tip(tip_mode, tip_fixed, percentile="99th"):
-    """tip 定价。auto = tip_floor 99 分位 × 1.5 安全垫，下限 0.003 SOL、上限 0.01 SOL。
+    """tip 定价。auto = tip_floor 99 分位 × 1.5 安全垫，下限 0.005 SOL、上限 0.01 SOL。
     返回 (lamports, 依据串)。
 
     定价依据（2026-08-15/16 实测）：
-    - <99 分位 tip 全 pending/Invalid；0.005 SOL（≈当时 99th×4.5）立即 confirmed
+    - <99 分位 tip 全 pending/Invalid；0.005 SOL 立即 confirmed
+    - 0.003 SOL 仍 Invalid（2026-08-16 实测）→ 下限提到 0.005
     - tip_floor 是动态的（2 分钟内 99th 可从 0.0009 涨到 0.0035 SOL）→ 必须现场查
-    - ×1.5 + 下限 0.003 保证落地，上限 0.01 防止极端行情下 demo 烧钱
+    - ×1.5 + 下限 0.005 保证落地，上限 0.01 防止极端行情下 demo 烧钱
     """
     if tip_mode == "fixed":
         return tip_fixed, f"fixed:{tip_fixed}lamports"
@@ -100,7 +108,7 @@ def pick_tip(tip_mode, tip_fixed, percentile="99th"):
     if pct is None:
         # 兜底：实测稳定值 0.005 SOL
         return 5_000_000, "auto:floor-unavailable→0.005SOL(实测稳定)"
-    tip = max(min(pct * 1.5, 0.01), 0.003)
+    tip = max(min(pct * 1.5, 0.01), 0.005)
     return int(tip * 1e9), f"auto:{percentile}={pct:.6f}SOL×1.5→{tip:.6f}SOL"
 
 
@@ -135,14 +143,18 @@ def main():
     print(f"💸 tip account: {tip_acc}（{len(tips)} 选 1）")
 
     # 2) 构造交易
+    # ⚠️ 每笔 self-transfer 金额必须不同（金额×序号递增）——相同 from/to/金额/blockhash
+    #    会生成相同 message → 相同签名 → block engine 报 "Duplicate transaction message hash"
+    #    （2026-08-16 实测 HTTP 400）
     txs = []
     for i in range(n_tx - 1):
+        amt = AMOUNT * (i + 1)
         ix = transfer(TransferParams(from_pubkey=kp.pubkey(), to_pubkey=kp.pubkey(),
-                                     lamports=AMOUNT))
+                                     lamports=amt))
         msg = MessageV0.try_compile(kp.pubkey(), [ix], [], blockhash)
         tx = VersionedTransaction(msg, [kp])
         txs.append(tx)
-        print(f"  tx{i+1}: transfer {AMOUNT} lamports (self) sig={str(tx.signatures[0])[:8]}")
+        print(f"  tx{i+1}: transfer {amt} lamports (self) sig={str(tx.signatures[0])[:8]}")
     tip_ix = transfer(TransferParams(from_pubkey=kp.pubkey(), to_pubkey=Pubkey.from_string(tip_acc),
                                      lamports=tip_lamports))
     msg_tip = MessageV0.try_compile(kp.pubkey(), [tip_ix], [], blockhash)
@@ -189,6 +201,8 @@ def main():
     print(f"   （bundle_id ≠ 已上链；继续轮询状态）")
 
     # 5) 状态机轮询：getBundleStatuses 主查 + getInflightBundleStatuses 兜底（5 分钟内）
+    # ⚠️ 字段差异（2026-08-16 实测）：getBundleStatuses 项有 confirmation_status；
+    #    getInflightBundleStatuses 项是 status（"Pending"/"Landed"/"Invalid"）+ landed_slot
     final = None
     for i in range(12):
         time.sleep(3)
@@ -218,13 +232,19 @@ def main():
                 v2 = st2.get("result", {}).get("value", [])
                 if v2:
                     s2 = v2[0]
-                    conf2 = s2.get("confirmation_status", "?")
+                    conf2 = s2.get("status", "?")
                     err2 = s2.get("err")
-                    if err2 is not None:
+                    slot2 = s2.get("landed_slot")
+                    if conf2 == "Invalid":
                         final = ("invalid", conf2, err2)
-                        print(f"❌ bundle Invalid (inflight): {conf2} err={err2}")
+                        print(f"❌ bundle Invalid (inflight): status={conf2} err={err2} landed_slot={slot2}")
                         break
-                    print(f"  [{i}] inflight status={conf2} err={err2}")
+                    if conf2 == "Landed":
+                        final = ("landed", "inflight-Landed", err2)
+                        print(f"🎉 bundle Landed (inflight): slot={slot2} err={err2}")
+                        print(f"   查 https://explorer.jito.wtf/bundle/{bundle_id}")
+                        break
+                    print(f"  [{i}] inflight status={conf2} err={err2} landed_slot={slot2}")
                 else:
                     print(f"  [{i}] 状态未返回（pending 或已过期）")
             except Exception as e:

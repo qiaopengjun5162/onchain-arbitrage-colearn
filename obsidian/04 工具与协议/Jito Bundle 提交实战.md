@@ -31,11 +31,12 @@ related: [[研究到生产五阶段管线]] [[执行清单五步法]] [[监控 B
 
 ### 管线 v2（2026-08-16，D12）
 
-demo → 参数化管线 `scripts/jito_bundle_pipeline.py`：
+demo → 参数化管线 `scripts/jito_bundle_pipeline.py`，**实战落地 bundle `55ed86fb…` confirmed（第三笔证据）**：
 
-- **tip 自动定价**：现场查 `bundles.jito.wtf/api/v1/bundles/tip_floor`，99 分位 ×1.5 安全垫，下限 0.003 / 上限 0.01 SOL。⚠️ tip_floor 是动态的（2 分钟内 99th 0.0009→0.0035 SOL）——写死 tip 的 demo 只适用当时市场
+- **tip 自动定价**：现场查 `bundles.jito.wtf/api/v1/bundles/tip_floor`，99 分位 ×1.5 安全垫，**下限 0.005 SOL（实测 0.003 仍 Invalid）**、上限 0.01 SOL。⚠️ tip_floor 是动态的且是滞后统计（同小时 99th 0.000029→0.0035→0.008 SOL）——不能只信分位数，必须有实测下限
 - **JSONL 结构化日志**：`data/jito_bundle_log.jsonl`（ts/network/n_tx/tip/basis/bundle_id/status/err），构造-提交-落地全程可追溯
-- **状态机轮询**：getBundleStatuses 主查 + getInflightBundleStatuses 兜底（拿 Invalid 明细），landed/pending/invalid 三态区分
+- **状态机轮询**：getBundleStatuses 主查 + getInflightBundleStatuses 兜底；⚠️ inflight 字段是 `status`（Pending/Landed/Invalid）+ `landed_slot`，不是 confirmation_status
+- **⚠️ 坑：Duplicate transaction message hash**——bundle 内多笔相同交易（同 from/to/金额/blockhash）→ 相同签名 → HTTP 400 拒收；多笔自转必须金额×序号递增
 - 参数化：--network / --n-tx / --tip-mode auto|fixed / --dry-run
 
 - 脚本 `scripts/jito_bundle_demo.py` 已修复（encoding + 默认 tip 5e6 lamports）可复跑

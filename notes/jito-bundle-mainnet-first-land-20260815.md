@@ -49,6 +49,15 @@
 4. **对照实验法**：单笔 sendTransaction 成功 vs bundle 失败 → 隔离出问题在 bundle 路径而非交易本身
 5. **urllib 丢错误 body**：用 curl 重放拿完整错误信息（本项目环境代理下 urllib SSL EOF 常见）
 
+## 追加证据：管线 v2 落地（2026-08-16，D12）
+
+**第三笔 bundle 证据 + 两个新坑**（`scripts/jito_bundle_pipeline.py` 实战）：
+
+- bundle `55ed86fb…` confirmed（err Ok，slot 439560007，~7 秒）；对账 0.181129255 → 0.176124255 SOL（-0.005005 = tip 0.005 + 手续费）
+- **新坑 1：Duplicate transaction message hash**——bundle 内多笔交易 from/to/金额/blockhash 全相同 → message 相同 → 签名相同 → HTTP 400 拒收。修复：金额×序号递增
+- **新坑 2：inflight 字段名**——`getInflightBundleStatuses` 返回 `status`（Pending/Landed/Invalid）+ `landed_slot`，不是 `confirmation_status`；读错字段会一直显示 `?` 掩盖真实状态
+- **tip 定价修正**：0.003 SOL 仍 Invalid（第一轮 9a904ea5）；tip_floor 99 分位波动极大（同小时 0.000029→0.0035→0.008 SOL）且是滞后统计 → **不能只信分位数，必须有实测下限 0.005 SOL**
+
 ## 下一步
 
 - [ ] D12 正题：用 `sendBundle` 提交真实 swap bundle（模拟器输出路径），tip 用默认 0.005 SOL
