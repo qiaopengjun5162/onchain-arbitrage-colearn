@@ -60,9 +60,13 @@ def check_article(path: str, strict: bool = False) -> int:
 
     # 1-4: 逐行检查（定位到具体行）
     for l in lines:
-        # 英文冒号豁免（时间/币对），只查裸英文冒号
-        for m in COLON_ASCII_RE.finditer(l):
-            if not TIME_OR_PAIR_RE.search(l):
+        # moonpub fence 语法行（:::callout / label: / :::）整体豁免——排版语法非正文
+        if l.strip().startswith((":::", "label:")):
+            continue
+        # 英文冒号：先剥掉 URL（https:// 等），只查正文里的裸英文冒号
+        no_url = re.sub(r"https?://[^\s)\]\"]+", "", l)
+        for m in COLON_ASCII_RE.finditer(no_url):
+            if not TIME_OR_PAIR_RE.search(no_url):
                 issues.append(f"  英文冒号: …{l[max(0, m.start()-15):m.end()+15]}…")
                 break
         for name, pat in [("冒号", COLON_RE), ("破折号", DASH_RE),
