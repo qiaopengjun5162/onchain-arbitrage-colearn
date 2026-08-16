@@ -29,7 +29,13 @@ MANIFEST = [
     ("arbitrage-playbook-text-version", "04 工具与协议", "套利实战手册", "playbook"),
     ("defi-arbitrage-capital-guide", "03 策略假设", "套利资本指南", "strategy"),
     ("monitoring-bot-quickstart", "04 工具与协议", "监控 Bot 入门", "tool"),
+    ("l0009-knowledge-graph-v1-20260813", "03 策略假设", "知识图谱 v1 · 阶段二收官", "strategy"),
 ]
+
+# slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
+DATE_OVERRIDES = {
+    "l0009-knowledge-graph-v1-20260813": "2026-08-13",
+}
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
 LINK_MAP = {
@@ -66,11 +72,11 @@ LINK_MAP = {
 }
 
 
-def build_frontmatter(title: str, tag: str) -> str:
+def build_frontmatter(title: str, tag: str, date: str) -> str:
     return (
         f"---\n"
         f"title: {title}\n"
-        f"date: {DATE}\n"
+        f"date: {date}\n"
         f"type: note\n"
         f"tags:\n"
         f"  - onchain-arbitrage\n"
@@ -102,7 +108,8 @@ def main() -> None:
             if len(parts) >= 3:
                 content = parts[2].lstrip("\n")
         body = rewrite_links(content)
-        out = build_frontmatter(title, tag) + body
+        date = DATE_OVERRIDES.get(slug, DATE)
+        out = build_frontmatter(title, tag, date) + body
 
         vpath = os.path.join(VAULT, ddir, title + ".md")
         mpath = os.path.join(MIRROR, ddir, title + ".md")
