@@ -69,6 +69,7 @@ tags:
 - [[套利实战手册]] — LI.FI playbook 文本版：入门三件套（判断→执行→监控）
 - [[监控 Bot 入门]] — 监控脚本是「在场」前提，daily 打卡最易拿证据的产出
 - [[Jito Bundle 提交实战]] — mainnet 首笔落地：encoding 参数缺失 + tip<99 分位两坑；sendBundle 必须带 base64 编码参数、tip 参考 tip_floor 分位数（0.005 SOL 稳定落地）
+- [[Jito Swap Bundle 实战]] — 真实 swap bundle 落地：官方 /swap/v1/swap 端点 + 重签名一次成功；build v2 手动组装 simulate 过但 Jito 拒；未签名交易重建签名、LUT 用 Jupiter 响应自带地址、simulate 带 replaceRecentBlockhash
 
 ## Bot 代码与开源项目
 

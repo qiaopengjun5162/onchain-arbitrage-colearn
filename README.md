@@ -81,6 +81,7 @@
 | **Solana 研究线**（Rust 双实现 + 执行层监控） | `scripts/solana-rs/`（quote/build/swap/spread）· `scripts/solfi-sim/`（LiteSVM 模拟器，含 slippage 完整环）· 执行层 5 哨兵：`priority_fee_monitor.py`（竞价）· `jito_bundle_monitor.py`（MEV tip）· `drift_funding_monitor.py`（链上 funding）· `failed_tx_monitor.py`（失败率）· `jupiter_route_monitor.py`（路由变化）+ `execution_quality_tracker.py`（达成率） |
 | **Jito Bundle mainnet 首笔落地**（D11/D12 主线：bundle_id 0302a15a confirmed；两坑=encoding 参数缺失（默认 base58）+ tip 太低（1000~100000 lamports 全 pending/Invalid，0.005 SOL > 99 分位才落地）；8 轮排查方法论=对照实验隔离 bundle 路径 + tip_floor 分位数定价；脚本已修复可复跑） | `notes/jito-bundle-mainnet-first-land-20260815.md` · `scripts/jito_bundle_demo.py` |
 | **Jito Bundle 管线 v2**（D12 升级：demo→参数化管线——tip 自动定价（现场查 tip_floor 99分位×1.5，下限 0.003/上限 0.01 SOL，实测 tip_floor 2 分钟内 0.0009→0.0035 动态变化）；JSONL 结构化日志 data/jito_bundle_log.jsonl；状态机 getBundleStatuses+getInflightBundleStatuses 双查三态区分；--n-tx/--tip-mode/--dry-run 全参数化） | `scripts/jito_bundle_pipeline.py` |
+| **Jito Swap Bundle 首笔落地**（D13 主线提前：真实 swap bundle——0.01 SOL→USDC confirmed bundle 2248d538；**核心坑：build v2 手动组装 simulate 通过但 Jito Invalid，官方 /swap/v1/swap 端点+重签名一次成功**；官方端点返回未签名交易需 VersionedTransaction(tx.message,[kp]) 重建；LUT 解析三连坑最终用 Jupiter 响应自带地址列表；simulate 需 replaceRecentBlockhash） | `notes/jito-swap-bundle-first-land-20260816.md` · `scripts/jito_swap_bundle.py` · `data/jito_swap_log.jsonl` |
 | **D12 广度回顾：D8-D11 一句话判断**（mempool 排序层=🔴放弃项 / perp funding=🟡观察线 / 聚合器=🟡工具非赛道 / LP 动态调区间=🟢唯一实测方向；横切结论=常驻价差被磨平、肉在事件窗口；喂 D14 三选一决策） | `notes/week2-breadth-review-20260816.md` |
 
 ## 📈 实测发现（2026-08-08）
