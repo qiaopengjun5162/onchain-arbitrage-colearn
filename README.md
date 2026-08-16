@@ -83,6 +83,10 @@
 | **Jito Bundle 管线 v2**（D12 升级：demo→参数化管线——tip 自动定价（现场查 tip_floor 99分位×1.5，下限 0.003/上限 0.01 SOL，实测 tip_floor 2 分钟内 0.0009→0.0035 动态变化）；JSONL 结构化日志 data/jito_bundle_log.jsonl；状态机 getBundleStatuses+getInflightBundleStatuses 双查三态区分；--n-tx/--tip-mode/--dry-run 全参数化） | `scripts/jito_bundle_pipeline.py` |
 | **Jito Swap Bundle 首笔落地**（D13 主线提前：真实 swap bundle——0.01 SOL→USDC confirmed bundle 2248d538；**核心坑：build v2 手动组装 simulate 通过但 Jito Invalid，官方 /swap/v1/swap 端点+重签名一次成功**；官方端点返回未签名交易需 VersionedTransaction(tx.message,[kp]) 重建；LUT 解析三连坑最终用 Jupiter 响应自带地址列表；simulate 需 replaceRecentBlockhash） | `notes/jito-swap-bundle-first-land-20260816.md` · `scripts/jito_swap_bundle.py` · `data/jito_swap_log.jsonl` |
 | **D12 广度回顾：D8-D11 一句话判断**（mempool 排序层=🔴放弃项 / perp funding=🟡观察线 / 聚合器=🟡工具非赛道 / LP 动态调区间=🟢唯一实测方向；横切结论=常驻价差被磨平、肉在事件窗口；喂 D14 三选一决策） | `notes/week2-breadth-review-20260816.md` |
+| **Jito Arb Pipeline 雏形**（D13 剩余：发现→判定→执行三段串——DexScreener 深池→模拟器 Pool 模型跨池搬判定→正利润路径自动接 Jupiter quote→swap→bundle；⚠️ CLMM reserve 字段不可靠改 priceUsd 锚定+流动性反推；DexScreener priceUsd 显示噪音默认价格锚定只评估滑点/费率、--prices 注入真实价差；实测默认 0 信号=常驻价差磨平） | `scripts/jito_arb_pipeline.py` |
+| **HL funding 监控脚本**（D9 广度落地：metaAndAssetCtxs 232 资产 1h funding 快照 + fundingHistory 主流 10 币历史，1h 结算×24×365 换算年化；--snapshot/--history/--top；D15+ 挂 cron 观察窗） | `scripts/hl_funding_monitor.py` · `data/hl_funding_snapshot.csv` |
+| **LP 回测牛市段验证**（D11 笔记补牛段：OKX 2024-06→2025-06 BTC +54.9% 8760 根；上涨月动态输 3.0pct/下跌月赢 1.4pct=互证 D11；全程动态 +49.6% > 死守 +37.3%（fee 5.1x 复利）；持有 +54.9% 最强；结论升级「下跌赢/上涨输/全程累计仍赢」；脚本加 --csv/--days；⚠️ OKX history-candles 分页坑 cursor 取页内最旧一条） | `notes/lp-dynamic-range-backtest-20260815.md` · `data/grid_btc_1h_bull_cache.csv` |
+| **D14 三选一决策材料**（第一条全流程线候选对照：币股闭市漂移★（2494 样本/dev_bps 中位 63bps/97.4%≥30bps，阶段1🔄7/30天）vs 费率事件窗口（等事件）vs PM 事件（容量小）；决策建议+待补数据清单） | `notes/d14-decision-material-20260816.md` |
 
 ## 📈 实测发现（2026-08-08）
 

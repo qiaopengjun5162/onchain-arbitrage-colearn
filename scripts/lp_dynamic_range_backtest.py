@@ -35,7 +35,6 @@ from datetime import datetime, timezone
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "..", "data")
 CACHE_CSV = os.path.join(DATA_DIR, "grid_btc_1h_cache.csv")
-
 # ---------------- 参数 ----------------
 HALF_WIDTH = 0.10            # 区间半宽 ±10%（CLMM 集中流动性典型值）
 FEE_RATE = 0.003             # 池子费率 0.30%（Raydium SOL-USDC 实测反推值）
@@ -49,9 +48,10 @@ VOL_SCALE = 0.038            # ⚠️ 数据源是 OKX CEX 成交量，DEX 池�
 BASE_PRICE = 100_000.0       # 归一化基准价（不依赖真实 BTC 价格水平）
 DAYS = 420                   # 数据窗口天数（10080 根 1h）
 
-def load_candles():
+def load_candles(csv_path=None):
     rows = []
-    for line in open(CACHE_CSV):
+    path = csv_path or CACHE_CSV
+    for line in open(path):
         p = line.strip().split(",")
         rows.append({"ts": int(p[0]), "o": float(p[1]), "h": float(p[2]),
                      "l": float(p[3]), "c": float(p[4]), "v": float(p[5])})
@@ -147,7 +147,13 @@ def halfwidth_sweep(candles):
         print(f"±{hw*100:>4.0f}%  {a['pnl_pct']:>9.1f}{b['pnl_pct']:>9.1f}{diff:>10.1f}{a['out_h']:>12}{fm:>8.1f}")
 
 def main():
-    candles = load_candles()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--csv", type=str, help="自定义 K 线 CSV 路径（默认 data/grid_btc_1h_cache.csv）")
+    ap.add_argument("--days", type=int, default=DAYS, help="数据窗口天数（用于年化换算）")
+    args = ap.parse_args()
+    candles = load_candles(args.csv)
+    days = args.days if args.csv else DAYS
 
     # A. 死守（从不调仓 → trigger=∞）
     a = simulate(candles, HALF_WIDTH, 10**9, FEE_RATE, SHARE, REBAL_COST_BPS)
@@ -158,10 +164,10 @@ def main():
         return f"{v/1000:,.1f}k"
 
     def apr(pnl_pct):
-        return pnl_pct / DAYS * 365
+        return pnl_pct / days * 365
 
     print(f"[data] {len(candles)} candles | 区间 {candles[0]['o']:,.0f} → {candles[-1]['c']:,.0f} "
-          f"({(candles[-1]['c']/candles[0]['o']-1)*100:+.1f}%) | {DAYS} 天")
+          f"({(candles[-1]['c']/candles[0]['o']-1)*100:+.1f}%) | {days} 天")
     print(f"[param] 半宽 ±{HALF_WIDTH*100:.0f}% | 费率 {FEE_RATE*100:.2f}% | 份额 {SHARE*100:.2f}% "
           f"| 调仓成本 {REBAL_COST_BPS}bps | DEX/CEX 量 {VOL_SCALE*100:.0f}%\n")
 
@@ -191,18 +197,16 @@ def main():
     print(f"   最优调仓成本占比: {best[1]['rebal_cost']/max(best[1]['fee'],1e-9)*100:.0f}% of fee")
 
     # 结论
-    print("\n=== 结论（本数据窗口：BTC -40.2% 下跌段，420 天）===")
-    print(f"1. 动态调区间 > 死守：最优({best[0]/100:.1f}%) 净 {best[1]['pnl_pct']:.1f}% "
+    trend_desc = "上涨" if candles[-1]["c"] > candles[0]["o"] else "下跌"
+    trend_pct = (candles[-1]["c"] / candles[0]["o"] - 1) * 100
+    print(f"\n=== 结论（本数据窗口：BTC {trend_pct:+.1f}% {trend_desc}段，{days} 天）===")
+    print(f"1. 动态调区间 vs 死守：最优({best[0]/100:.1f}%) 净 {best[1]['pnl_pct']:.1f}% "
           f"vs 死守 {a['pnl_pct']:.1f}% vs 持有 {c['pnl_pct']:.1f}%")
     print(f"2. fee 收入 {best[1]['fee']/1000:.1f}k vs 死守 {a['fee']/1000:.1f}k "
           f"= {best[1]['fee']/a['fee']:.1f}x —— 动态调区间全程在区间内收 fee（出区间 {best[1]['out_h']}h vs 死守 {a['out_h']}h）")
     print(f"3. 调仓成本占比：最优触发时 {best[1]['rebal_cost']/best[1]['fee']*100:.0f}% of fee；"
           f"触发越频繁成本占比越高（0.5% 触发时 {results[0][1]['rebal_cost']/results[0][1]['fee']*100:.0f}%，反噬）")
-    print(f"4. 下跌段调区间只能减亏（-11.3% 仍是亏），转正要靠上涨段——见 regime 分段")
-    if best[1]["pnl_pct"] > a["pnl_pct"]:
-        print("✅ 动态调区间 > 死守：行情有趋势时调整区间能找回 fee 收入")
-    else:
-        print("❌ 死守 > 动态调区间：调仓成本吃掉了找回的 fee")
+    print(f"4. 关键对比：{trend_desc}段动态调区间的相对价值——见 regime 分段（上涨月 vs 下跌月逐月拆解）")
 
     regime_analysis(candles)
     halfwidth_sweep(candles)

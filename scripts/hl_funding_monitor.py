@@ -1,106 +1,141 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Hyperliquid funding 快照（hl_funding_monitor.py）— 2026-08-13
-=============================================================
-用途：D9 广度「链上 perp 资金费率」的下一步——HL funding 抓取，与 CEX/Drift 并排观察。
-数据源：api.hyperliquid.xyz/info（公开无 key），POST {"type":"metaAndAssetCtxs"}
-产出：data/hl_funding.csv（每小时一条快照，全资产 funding 年化）
+Hyperliquid Funding 抓取（hl_funding_monitor.py）— D12 广度落地（2026-08-16）
+============================================================================
+链上 perp funding 观察窗第一块（D9 广度笔记「下一步」第 1 项）：
+  - 全资产 funding 快照（metaAndAssetCtxs）：232 资产 × 当前 1h funding
+  - BTC/ETH/SOL 等主流 funding 历史（fundingHistory）：可回看跨所价差
+  - 输出：data/hl_funding_snapshot.csv（快照，cron 用）+ data/hl_funding_history.csv（追加历史）
 
-用法：hermes venv python3 scripts/hl_funding_monitor.py [--quiet]
-      挂 cron：no_agent + wrapper，watchdog 模式（异常才报）
+用法：
+  python scripts/hl_funding_monitor.py --snapshot     # 只存当前快照（cron 每 1h）
+  python scripts/hl_funding_monitor.py --history 7d   # 拉近 7 天 BTC/ETH/SOL funding 历史
+  python scripts/hl_funding_monitor.py --top 10       # 只看当前 funding 绝对值 TOP10
+
+依赖：hermes venv python3.11（urllib 即可，无第三方）
 """
-
+import argparse
 import csv
-import datetime as dt
 import json
 import os
 import sys
-import tempfile
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-CSV_PATH = BASE_DIR / "data" / "hl_funding.csv"
-LOCK_PATH = CSV_PATH.with_suffix(".csv.lock")
-API = "https://api.hyperliquid.xyz/info"
 PROXY = os.environ.get("PROXY", "http://127.0.0.1:7890")
-MIN_ANNUAL = 0.50   # 年化 ≥50% 才打印醒目（cron 用，20% 太吵）
-RETRIES = 3         # 网络抖动重试次数（watchdog 场景：失败就丢一次快照，值得重试）
+HL_INFO = "https://api.hyperliquid.xyz/info"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+SNAP_CSV = DATA_DIR / "hl_funding_snapshot.csv"
+HIST_CSV = DATA_DIR / "hl_funding_history.csv"
 
-def fetch():
-    """带指数退避重试的抓取。3 次都失败才抛异常。"""
-    last_err = None
-    for attempt in range(RETRIES):
-        try:
-            opener = urllib.request.build_opener(
-                urllib.request.ProxyHandler({"http": PROXY, "https": PROXY}))
-            req = urllib.request.Request(API, data=json.dumps({"type": "metaAndAssetCtxs"}).encode(),
-                                         headers={"Content-Type": "application/json"})
-            with opener.open(req, timeout=30) as r:
-                return json.loads(r.read().decode())
-        except Exception as e:  # 超时/连接拒绝/HTTP 错误都算
-            last_err = e
-            if attempt < RETRIES - 1:
-                time.sleep(2 ** attempt)
-    raise RuntimeError(f"HL funding 抓取 {RETRIES} 次均失败: {last_err}") if last_err else RuntimeError("HL funding 抓取失败")
+MAINSTREAM = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA", "AVAX", "LINK", "SUI"]
 
-def write_snapshot(uni, asset_ctxs, ts):
-    """追加快照：flock 防并发重复写 + 临时文件原子替换，杜绝半截 CSV。"""
-    import fcntl
-    with open(LOCK_PATH, "w") as lock_fd:
-        fcntl.flock(lock_fd, fcntl.LOCK_EX)
-        try:
-            new = not CSV_PATH.exists()
-            hot = []
-            fd, tmp_name = tempfile.mkstemp(dir=CSV_PATH.parent, suffix=".tmp")
-            try:
-                with os.fdopen(fd, "w", newline="") as f:
-                    w = csv.writer(f)
-                    if new:
-                        w.writerow(["ts", "coin", "funding_hourly", "funding_annual", "markPx", "oiUsd"])
-                    for u, c in zip(uni, asset_ctxs):
-                        fh = float(c.get("funding", 0))
-                        fa = fh * 24 * 365
-                        oi = c.get("openInterest", 0)
-                        px = c.get("markPx", 0)
-                        oi_usd = float(oi) * float(px) if oi and px else 0
-                        w.writerow([ts, u["name"], round(fh, 8), round(fa * 100, 2), px, round(oi_usd, 0)])
-                        if abs(fa) >= MIN_ANNUAL:
-                            hot.append((u["name"], fa))
-                os.replace(tmp_name, CSV_PATH)  # 原子替换，比直接 append 安全
-            finally:
-                if os.path.exists(tmp_name):
-                    os.unlink(tmp_name)
-            return hot
-        finally:
-            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+# ⚠️ 关键换算：HL funding 是 1h 结算，fundingRate 字段是每小时费率（非年化）。
+#    年化 = rate × 24 × 365。文档 https://hyperliquid.gitbook.io/hyperliquid-docs/trading/funding
+FUNDING_HOURS_PER_DAY = 24
+FUNDING_DAYS_PER_YEAR = 365
+
+
+def http_post(url, payload, timeout=30):
+    data = json.dumps(payload).encode()
+    op = urllib.request.build_opener(
+        urllib.request.ProxyHandler({"http": PROXY, "https": PROXY}))
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    try:
+        with op.open(req, timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()[:400] if hasattr(e, "read") else ""
+        raise RuntimeError(f"HTTP {e.code} {e.reason}: {body}") from e
+
+
+def fetch_all_funding():
+    """metaAndAssetCtxs → [{coin, funding_h, funding_apr_pct, mark_px, open_interest}]"""
+    d = http_post(HL_INFO, {"type": "metaAndAssetCtxs"})
+    if not (isinstance(d, list) and len(d) == 2):
+        raise RuntimeError(f"metaAndAssetCtxs 返回异常: {str(d)[:200]}")
+    metas = d[0]["universe"]
+    ctxs = d[1]
+    out = []
+    for m, c in zip(metas, ctxs):
+        funding_h = float(c["funding"])          # 每小时费率（小数，如 0.0000125 = 0.00125%/h）
+        funding_apr = funding_h * FUNDING_HOURS_PER_DAY * FUNDING_DAYS_PER_YEAR * 100  # %
+        out.append({
+            "coin": m["name"],
+            "funding_h": funding_h,
+            "funding_apr_pct": funding_apr,
+            "mark_px": float(c.get("markPx", 0)),
+            "oi_usd": float(c.get("openInterest", 0)) * float(c.get("markPx", 0)),
+        })
+    return out
+
+
+def fetch_history(coin, hours=24 * 7):
+    """fundingHistory 近 N 小时 → [{time, funding_h, premium}]"""
+    end = int(time.time() * 1000)
+    start = end - hours * 3600 * 1000
+    d = http_post(HL_INFO, {"type": "fundingHistory", "coin": coin,
+                            "startTime": start, "endTime": end})
+    if not isinstance(d, list):
+        raise RuntimeError(f"fundingHistory {coin} 异常: {str(d)[:200]}")
+    return d
+
+
+def fmt_ts(ms):
+    return datetime.fromtimestamp(ms / 1000, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
+
+
+def cmd_snapshot(top=None):
+    rows = fetch_all_funding()
+    rows.sort(key=lambda r: -abs(r["funding_apr_pct"]))
+    SNAP_CSV.parent.mkdir(parents=True, exist_ok=True)
+    with open(SNAP_CSV, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["ts", "coin", "funding_h", "funding_apr_pct", "mark_px", "oi_usd"])
+        ts = fmt_ts(int(time.time() * 1000))
+        for r in rows:
+            w.writerow([ts, r["coin"], r["funding_h"], round(r["funding_apr_pct"], 4),
+                        r["mark_px"], round(r["oi_usd"], 0)])
+    print(f"✅ 快照 {len(rows)} 资产 → {SNAP_CSV.name}")
+    print(f"{'币':<8}{'1h费率':>10}{'年化%':>10}{'价格':>12}")
+    for r in rows[: (top or 10)]:
+        print(f"{r['coin']:<8}{r['funding_h']:>10.7f}{r['funding_apr_pct']:>10.2f}{r['mark_px']:>12.2f}")
+
+
+def cmd_history(days=7):
+    hours = days * 24
+    for coin in MAINSTREAM:
+        hist = fetch_history(coin, hours)
+        with open(HIST_CSV, "a", newline="") as f:
+            w = csv.writer(f)
+            for row in hist:
+                w.writerow([fmt_ts(int(row["time"])), coin,
+                            row["fundingRate"], row["premium"]])
+        print(f"✅ {coin}: {len(hist)} 条历史（{days} 天）")
+        time.sleep(0.3)
+    print(f"已追加到 {HIST_CSV.name}")
+
 
 def main():
-    quiet = "--quiet" in sys.argv
-    try:
-        resp = fetch()  # [meta_dict, assetCtxs_list]
-        meta, asset_ctxs = resp[0], resp[1]
-    except Exception as e:
-        print(f"HL funding 抓取失败: {str(e)[:120]}")  # 非 quiet 模式也报（watchdog 需要）
-        return 1
-    uni = meta.get("universe", [])
-    ts = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--snapshot", action="store_true", help="存全资产 funding 快照")
+    ap.add_argument("--history", type=int, help="拉主流币 N 天 funding 历史")
+    ap.add_argument("--top", type=int, default=10, help="快照显示 TOP N（默认 10）")
+    args = ap.parse_args()
 
-    # 数据一致性校验：universe 与 assetCtxs 必须等长，否则 zip 会静默截断写脏数据
-    if len(uni) != len(asset_ctxs):
-        print(f"⚠️ 数据长度不匹配: universe={len(uni)} vs assetCtxs={len(asset_ctxs)}，"
-              f"本次快照将跳过 {len(uni)-len(asset_ctxs) if len(uni)>len(asset_ctxs) else len(asset_ctxs)-len(uni)} 行", file=sys.stderr)
+    if args.history:
+        cmd_history(args.history)
+    elif args.snapshot:
+        cmd_snapshot(args.top)
+    else:
+        # 默认：快照（cron 友好，输出即告警信号）
+        cmd_snapshot(args.top)
 
-    hot = write_snapshot(uni, asset_ctxs, ts)
-    if hot:
-        line = " | ".join(f"{c}: {a*100:+.1f}%/yr" for c, a in sorted(hot, key=lambda x: -abs(x[1])))
-        print(f"⚠️ HL funding 极端: {line}")
-    elif not quiet:
-        print(f"HL funding 快照落盘 {ts}（{len(uni)} 资产，无 ≥{MIN_ANNUAL*100:.0f}% 极端）")
-    return 0
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
