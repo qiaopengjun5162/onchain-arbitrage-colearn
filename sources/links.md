@@ -205,5 +205,6 @@
 ## 共学增量笔记批次
 
 - 2026-08-15 增量 108 篇 digest（SVR/Atlas 89% 清算奖励回收、LVR σ²/8、Qy 庄家行为三层研判、RPC 新鲜度 vs 延迟、PM 争议期）：`notes/icl-incremental-notes-digest-20260815.md`
+- 2026-08-16 增量 90 篇 digest（状态跳变第10类机会、v3 腿 Quoter 纪律、LI.FI 路由每周翻转+USDC.e deny list、funding 躺平证伪+OI 过滤、HL 币股结构性基差、天然价差基线、ADL 剪刀仓）：`notes/icl-incremental-notes-digest-20260816.md`
 
 - [W3「无风险套利教程 @1inch」2026-08-16](https://x.com/w3_888/status/2088821704483377268) — 8.9万views，ETH 1000 USDC→1003.42 USDT(+0.34%)截图；核验：常态价差仅0.045%(CoinGecko 08-16)，0.34%是脱锚事件窗口非常态；扣gas后常态净亏，「每天10U」需$3k+本金+等事件；标题「无风险」有水分（见 notes/oneinch-usdc-usdt-claim-20260816.md）
