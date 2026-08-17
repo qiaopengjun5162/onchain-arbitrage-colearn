@@ -62,8 +62,9 @@ def fetch_pools(symbol_a="SOL", symbol_b="USDC", top_n=6):
     q = urllib.parse.quote(f"{symbol_a} {symbol_b}")
     d = http_get(f"{DEXSCREENER}?q={q}")
     pairs = [p for p in d.get("pairs", [])
-             if p.get("baseToken", {}).get("symbol") == symbol_a
-             and p.get("quoteToken", {}).get("symbol") == symbol_b]
+             if p.get("chainId") == "solana"          # ⚠️ 2026-08-17 修复：不加过滤会混入 Base/BSC/ETH
+             and p.get("baseToken", {}).get("symbol") == symbol_a  # 的 SOL/USDC 池（aerodrome/pancakeswap/uniswap），
+             and p.get("quoteToken", {}).get("symbol") == symbol_b]  # rx/ry 数量级不一致污染跨池判定
     pairs.sort(key=lambda p: float(p.get("liquidity", {}).get("usd", 0) or 0), reverse=True)
     pools = []
     for p in pairs[:top_n]:
