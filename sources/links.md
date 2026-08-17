@@ -208,5 +208,6 @@
 - 2026-08-16 增量 90 篇 digest（状态跳变第10类机会、v3 腿 Quoter 纪律、LI.FI 路由每周翻转+USDC.e deny list、funding 躺平证伪+OI 过滤、HL 币股结构性基差、天然价差基线、ADL 剪刀仓）：`notes/icl-incremental-notes-digest-20260816.md`
 - OKX 闪赚+现货对冲评估（白云 issue #6；Paxon 实测 RE 单币：宣传年化 120%→实际 34%，gross vs net 实证；事件驱动家族，不进主攻）：`notes/okx-flash-earn-hedge-arb-20260817.md`
 - Robinhood Chain FCFS 排序（官方文档：先到先得无 priority auction→拼延迟不拼 gas；互证 0xd7121208 纯延迟竞赛；未来变量=Timeboost 0.5s 竞价）：`notes/robinhood-chain-fcfs-ordering-20260817.md`
+- 套利软件安全实操手册（@web3_LiShengli 笔记05：一键套利软件=私钥即钱包控制权；开源≠安全；GPT 七问拆解代码提示词；签名类攻击 Permit/setApprovalForAll 无 gas 授权；剪贴板地址替换；独立助记词才算隔离）：https://x.com/web3_LiShengli/status/2089256791737798914 → `notes/arb-software-safety-playbook-20260817.md`
 
 - [W3「无风险套利教程 @1inch」2026-08-16](https://x.com/w3_888/status/2088821704483377268) — 8.9万views，ETH 1000 USDC→1003.42 USDT(+0.34%)截图；核验：常态价差仅0.045%(CoinGecko 08-16)，0.34%是脱锚事件窗口非常态；扣gas后常态净亏，「每天10U」需$3k+本金+等事件；标题「无风险」有水分（见 notes/oneinch-usdc-usdt-claim-20260816.md）
