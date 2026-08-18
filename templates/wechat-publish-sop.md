@@ -58,6 +58,10 @@
 | 流程篇 | 100011472（草稿待发布） | 08-12 |
 | D7 gross vs net | 100011499（已发布 08-13，https://mp.weixin.qq.com/s/4tO3pp2KLtWs4JEx5tGNDQ） | 08-13 |
 | D8 机会清单 | 100011547（已发布 08-14，https://mp.weixin.qq.com/s/pqogQ-N7Cg7qvyH5KBrmbQ；弃用版 shortlist 草稿 100011540 已提醒后台删） | 08-14 |
+| D9 知识图谱 | 100011606（已发布 08-15，https://mp.weixin.qq.com/s/ty4dIntIS1aGHMJo48tY2Q） | 08-15 |
+| D10 借贷雷达 | 100011660（已发布 08-16，https://mp.weixin.qq.com/s/wz2pKEe47p_tkGtsZM_mdw） | 08-16 |
+| D11 bundle 首落地 | 100011704（已发布 08-17，https://mp.weixin.qq.com/s/SAC6RNYi1XWL8Yxrd9MZmA） | 08-17 |
+| D12 管线+swap bundle | 100011728（已发布 08-18，https://mp.weixin.qq.com/s/hpLi5YlwqXARHGUzI6WjCw） | 08-18 |
 
 ## 常见坑
 
