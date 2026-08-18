@@ -204,6 +204,7 @@
 
 ## 共学增量笔记批次
 
+- 2026-08-17 增量 91 篇 digest（RWA 基差套利框架 log(P/X)分解+周末价格发现权、资金费短窗口高估9.3倍+换手率判据、Monad gasLimit不退回、测量自我污染滑点指纹、原子性≠执行权竞价让渡95%、OEV/SVR双聚合器机制、充提状态套利、机会评分可审计化、ADR扩散vs收敛=强制收敛机制、三角套利延迟三层优化、Quoter幻觉率99.5%）：`notes/icl-incremental-notes-digest-20260817.md` · `sources/残酷共学_增量笔记_带索引_20260817.pdf`
 - 2026-08-15 增量 108 篇 digest（SVR/Atlas 89% 清算奖励回收、LVR σ²/8、Qy 庄家行为三层研判、RPC 新鲜度 vs 延迟、PM 争议期）：`notes/icl-incremental-notes-digest-20260815.md`
 - 2026-08-16 增量 90 篇 digest（状态跳变第10类机会、v3 腿 Quoter 纪律、LI.FI 路由每周翻转+USDC.e deny list、funding 躺平证伪+OI 过滤、HL 币股结构性基差、天然价差基线、ADL 剪刀仓）：`notes/icl-incremental-notes-digest-20260816.md`
 - OKX 闪赚+现货对冲评估（白云 issue #6；Paxon 实测 RE 单币：宣传年化 120%→实际 34%，gross vs net 实证；事件驱动家族，不进主攻）：`notes/okx-flash-earn-hedge-arb-20260817.md`
