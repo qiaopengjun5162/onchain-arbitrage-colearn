@@ -204,6 +204,7 @@
 
 ## 共学增量笔记批次
 
+- 资金费率监控平台×5（Loris/CoinGlass/Sharpe/PerpFinder/CoinBeacon 全存活实测 200；口径差异教学：PerpFinder 1h vs CoinBeacon 8h vs Sharpe APR 归一化=口径不统一对比即错误）+ Auto-Prediction AI 语义套利 Harness（TraderAlice 仓库真实 8★ pre-alpha、禁实盘、bigint 定点+fail closed 安全设计、settlement contract≠world probability 本体论=PM 结算风险理论化）：https://x.com/WY_mask/status/2089474853317603339 + https://x.com/0xcherry/status/2089351523117715906 → `notes/funding-platforms-and-auto-prediction-20260818.md`
 - 2026-08-17 增量 91 篇 digest（RWA 基差套利框架 log(P/X)分解+周末价格发现权、资金费短窗口高估9.3倍+换手率判据、Monad gasLimit不退回、测量自我污染滑点指纹、原子性≠执行权竞价让渡95%、OEV/SVR双聚合器机制、充提状态套利、机会评分可审计化、ADR扩散vs收敛=强制收敛机制、三角套利延迟三层优化、Quoter幻觉率99.5%）：`notes/icl-incremental-notes-digest-20260817.md` · `sources/残酷共学_增量笔记_带索引_20260817.pdf`
 - 2026-08-15 增量 108 篇 digest（SVR/Atlas 89% 清算奖励回收、LVR σ²/8、Qy 庄家行为三层研判、RPC 新鲜度 vs 延迟、PM 争议期）：`notes/icl-incremental-notes-digest-20260815.md`
 - 2026-08-16 增量 90 篇 digest（状态跳变第10类机会、v3 腿 Quoter 纪律、LI.FI 路由每周翻转+USDC.e deny list、funding 躺平证伪+OI 过滤、HL 币股结构性基差、天然价差基线、ADL 剪刀仓）：`notes/icl-incremental-notes-digest-20260816.md`
