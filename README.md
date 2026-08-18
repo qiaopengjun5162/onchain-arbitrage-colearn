@@ -73,6 +73,8 @@
 | **共学增量笔记 108 篇消化**（SVR/Atlas：Aave L2 已切 SVR 喂价 89% 清算奖励被回收→清算哨兵 aave 优先级有机制级证据；LVR σ²/8 与 LP 回测互证；RPC 新鲜度 vs 延迟双维度验证 rpc_health；Qy 庄家行为三层研判；ARK 9/16 主网上线新公链窗口） | `notes/icl-incremental-notes-digest-20260815.md` |
 | **共学增量笔记 90 篇消化**（状态跳变=第10类机会、v3 腿 Quoter 纪律、LI.FI 路由每周翻转+L2 native USDC deny list、funding 躺平收租回测证伪+OI 过滤、HL 代币化股票结构性基差 52bps、天然价差中位数基线、ADL 剪刀仓风控） | `notes/icl-incremental-notes-digest-20260816.md` · `sources/残酷共学_增量笔记_带索引_20260816.pdf` |
 | **共学增量笔记 91 篇消化**（RWA 基差套利框架=Tokenized Stock×HL HIP-3 log(P/X)分解+周末价格发现权争夺、资金费短窗口高估9.3倍+换手率判据、Monad gasLimit 不退回成本模型、测量自我污染滑点指纹 51bps 作废、原子性≠执行权竞价让渡95%、OEV/SVR 双聚合器机制、充提状态套利、机会评分可审计化、ADR 扩散vs收敛=强制收敛机制） | `notes/icl-incremental-notes-digest-20260817.md` · `sources/残酷共学_增量笔记_带索引_20260817.pdf` |
+| **TencentDB Agent Memory 团队记忆 digest**（协作带宽=权限内可理解可用上下文；四类资产 Chat/Wiki/CodeGraph/Skill × L0-L3 分层 × 渐进式暴露；相关≠可复用 231/22361 强关系；逻辑返工1350>>缺上下文269；SWE-bench 60→80%自报需谨慎；六原则；与 Hermes memory/skills/session_search 对照=个人版已实践；qintopia 团队记忆蓝图） | `notes/tencentdb-agent-memory-team-memory-20260818.md` |
+| **DSH 学习资源合集+插件清单**（姚金刚 12 篇资料书单=官方→Cordis 论文→机制→工程→生态；SuSu 20 插件分类=核心必备5+界面9+能力11+监控14+多Agent 17；Su 长文=四模式选型/一切皆插件 Cordis/创造模式三步/「创造模式不懂自己」早期信号；与 08-15 dsh 实操验证互证） | `notes/dsh-learning-resources-plugins-20260818.md` |
 | **Bitget 资金费逃票查证**（官方规则+实测：主流币 8h 结算钳制 ±0.01%，往返费 0.12% 倒挂→100 期 0 期净正，逃票不成立；长尾币 4h 结算高费率全负费率=事件非策略；文档时点 07/15/23 vs 实测 08/16/00 差 1h——以 API 为准） | `notes/bitget-funding-fare-dodge-verify-20260815.md` |
 | **资金费率信号方法论**（Z-score + OI 交叉） | `notes/funding-rate-signal-engineering-20260808.md` |
 | **币股时钟差**（闭市漂移→开盘收敛） | `notes/tokenized-stock-arbitrage.md` |
