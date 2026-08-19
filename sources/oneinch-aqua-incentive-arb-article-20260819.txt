@@ -1,0 +1,36 @@
+有人靠 1inch 两周赚了 3 万 U：这到底是撸毛，还是套利？（X Article 全文）
+作者：Neo Yun (@NeoWeb3Nova)，X 链接 https://x.com/NeoWeb3Nova/status/2089920914661982670
+发布日期：2026-08-19
+
+大家好，我是 Web3 的尼奥，专注链上 AI 的底层逻辑探索者。
+最近在研究套利，这几天发现一个热帖，@w3_888 他参与的这个活动，底层不是传统意义上的"撸空投"，也不是严格意义上的价差套利，而是「流动性激励 / Liquidity Mining」；
+如果像他那样专门优化头寸去捕获活动补贴，我会把它归到前面说的「Incentive Arbitrage（激励套利）」这一档。
+他到底在参加什么？
+他参加的是 1inch Aqua Maker / LP Incentive Program。7 月底开始连续发 Aqua 内容，明确提到"流动性模型""目标撸 10 万 U"；8 月 11 日又自述"两周收益超过 3 万 U"；8 月 15 日还发了一条标题直接叫"无风险套利教程"。
+这个活动的官方机制非常关键：不是你单纯把钱存进去就拿奖励。
+1inch Aqua 允许你的资产继续留在钱包里，通过 allowance 让同一批资产同时支撑多个做市 Position；只有真实 Swap 命中你的报价时，资产才移动。LP 可以获得成交产生的 Swap Fee。
+而 Aqua Incentive Program 又额外在上面加了一层补贴。官方方案的基础奖励池是 1000 万枚 1INCH，并设计了额外最多 50 万 USDC 的 DAO 激励；最重要的是，奖励不是按照你"锁了多少 TVL"简单分配，而是：
+按照你的 Maker Position 实际承接的 processed volume 来分配。
+也就是说：你的报价真正成交得越多 → 处理的交易量越大 → 获得的激励越多。
+所以它到底属于哪一类？
+传统套利是：Binance ETH = $4,000，Kraken ETH = $4,020，买 Binance 卖 Kraken 赚 $20 价差。利润来源：市场错误定价。
+但是 Aqua 的玩法是：你的成本则是 Impermanent Loss + Inventory Risk + Gas + Opportunity Cost + Bad Pricing / Adverse Selection。
+如果协议为了冷启动 Aqua，暂时"高价购买"流动性和成交量；参与者发现这个补贴定价很高，于是把自己的资金放过去赚取这部分超额收益。这就是 Incentive Arbitrage / 协议激励套利。
+而且官方设计本身几乎把这一逻辑写明了：奖励是按照实际 processed volume 支付，而不是 parked TVL；同时设置 wallet cap、taker-maker exclusion、wash-trading filter，并规定如果某个市场的奖励率高到足以让自交易获利，该市场可以被暂停。
+这句话特别关键。因为它意味着 1inch 自己也知道存在一个临界点：【协议奖励 > 制造成交量的成本】一旦跨过这个点，就可能有人开始"套利奖励机制"。
+为什么会赚得这么多？
+他并不是简单"存进去等收益"。他明显在研究 Aqua 的 LP Pair、资产价格、Position 和奖励机制；他还专门提醒其他参与者领取奖励前处理 LP allowance，否则可能导致资产自动兑换并带来损失。
+这就意味着他的核心问题大概率是：怎么让自己的 Position 获得尽可能多的有效成交，同时把持有另一边资产造成的风险压到最低。
+可以想象两个 LP：
+A：普通撸毛党：拿 $10,000 随便找一个 1INCH/ETH 开 Position，然后等 1INCH Reward。结果 ETH/1INCH 大幅变化。即使拿了 $500 Reward，可能 Inventory Loss = -$800，最终亏 $300。
+B：激励套利玩家：他首先看哪个 Pair 奖励池最大？哪个 Pair 竞争最小？哪个 Pair 成交量最高？我的 processed volume / liquidity 有多高？资产波动率是多少？我的 inventory risk 多大？然后计算，甚至不断移动资金到单位资金能够吃到最多奖励的市场。
+这已经不是"我来撸个 1inch 毛"，而是"我在寻找 1inch 奖励机制中的资金效率最高点"。这非常接近量化策略。
+但有一个词我要纠正：不是"无风险套利"
+他用了"无风险套利教程"这个说法。甚至 1inch 官方自己明确写了：Aqua 不是无风险的。主要风险包括：价格变化、Impermanent Loss、Inventory Risk、Smart Contract Risk，以及 Swap/Fees 根本无法保证。价格变化甚至可能让 LP 最终全部持有交易对中的某一种资产。
+而他其实也遇到过这一点。他 8 月 2 日就发帖提醒 Aqua 活动存在资产价格核对问题，错误创建 LP Pair 可能产生资金损失，并称其为"血泪教训"。
+所以：低风险 ≠ 无风险。
+更重要的是，这个案例刚好可以成为研究套利的核心案例："Web3 中的撸毛算不算套利？"
+传统撸毛的逻辑：做任务→攒交互→等 Snapshot→等 TGE→赌空投
+Aqua：资金→Maker Position→真实成交量→Swap Fee + 确定规则的 Campaign Reward→不断优化 Pair / Position / Capital
+进化路线：Price Arbitrage（最底层）← Incentive Farming ←【1inch Aqua 案例在这里】← Incentive Arbitrage
+个人核心观点：《撸毛的终局，其实是套利》
