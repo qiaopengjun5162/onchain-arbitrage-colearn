@@ -77,6 +77,7 @@ tags:
 
 - [[学习过的开源套利项目]] — Zacholme7 / burberry / sui-mev 三链对照
 - [[Zacholme7 资源归档]] — BaseBuster 时薪 0.02 美元 + Mev-aholic 清单
+- [[Ponytail 规则分发机制]] — 105.6k stars「懒人规则集」：单一规则源 + AGENTS.md 锚点 + plugin/skill/instruction 三级分发 + 指令构建器 + 适配器测试矩阵；Hermes 插件 API 完整范例；多 Agent 框架借鉴清单 8 条
 
 ## 失败复盘
 
