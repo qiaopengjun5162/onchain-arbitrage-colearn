@@ -25,6 +25,16 @@
 3. **不订阅任何付费层**：Nansen/Cielo 的付费功能与自建能力重叠，省下订阅费
 4. **同作者清算热力图合集**（CoinGlass/CoinAnk/Hyblock）可作爆仓监控参考——CoinGlass 已是业界标准，但我们已有 DeFi Sphere 清算哨兵（链上口径），CEX 口径可补充 CoinGlass 免费热力图（不进付费）
 
+## Arkham 免费层实测（2026-08-20 已验证，写入了 onchain-address-forensics skill）
+
+用 HFT 狗庄地址 0x4bfd879f 实测（browser 过 Cloudflare，web_extract 抓不到）：
+
+- ✅ **EXCHANGE USAGE / TOP COUNTERPARTIES**：一页给出 25 天资金流交易所归因——Binance 49% 入金/55% 出金、ChangeNOW 15%、Gate 12%、Coinbase 10%、OKX 7%、Upbit/Bithumb 小额——**正好补我们取证最耗时的实体归因环节**
+- ✅ **对端实体标签**：资金流自动标对手方实体（Quasar/Titan/Eureka Builder 区块构建者），跨链持仓聚合（ETH/Robinhood/BSC/Polygon/Hyperliquid 一页）
+- ✅ PORTFOLIO / BALANCES HISTORY / PROFIT & LOSS / PERFORMANCE 免费可见
+- ⚠️ **边界**：Labels 页需登录；API 需 key；「Change address label」社区标注可被污染 → 实体归因结论仍须链上资金流对账兜底
+- 用法已写进 skill：取证第一步 Arkham 拿实体假设 → 链上 RPC 逐笔对账验证（假设-否证循环）
+
 ## 意义
 
 - 工具评估的判据 = **「我们已有能力的缺口」而不是「工具好不好用」**：Arkham 补实体归因（真缺口），Cielo/Nansen 与自建重叠（不订阅），GMGN 借鉴方法论（胜率定义）
