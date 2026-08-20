@@ -30,6 +30,7 @@ import time
 import urllib.parse
 import urllib.request
 import urllib.error
+from datetime import datetime, timezone
 from pathlib import Path
 
 # 复用同目录脚本
@@ -48,6 +49,18 @@ DEXSCREENER = "https://api.dexscreener.com/latest/dex/search"
 MIN_EDGE_BPS = 2.0          # 判定阈值（与模拟器一致）
 SOL_PRICE_USD = 75.5        # ⚠️ 2026-08-16 实测 SOL ≈ $75.5（模拟器默认 175 是演示值）
 GAS_SOL = 0.000005
+
+LOG_FILE = Path(__file__).resolve().parent.parent / "data" / "jito_arb_pipeline_log.jsonl"
+
+
+def write_log(rec, enabled=True):
+    """JSONL 结构化日志：每次运行 append 一行（D16 pipeline 整合 2）"""
+    if not enabled:
+        return
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "a") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    print(f"📝 日志: {LOG_FILE}")
 
 SOL_MINT = "So11111111111111111111111111111111111111112"
 USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
@@ -89,13 +102,17 @@ def main():
     ap.add_argument("--amount", type=float, default=1.0, help="判定本金（X 数量，SOL）")
     ap.add_argument("--pool-file", type=str, help="从 JSON 文件读池子（替代 DexScreener 拉取）")
     ap.add_argument("--prices", type=str, help="价格偏离注入：name:price,name:price（模拟器原始参数，模拟真实价差）")
+    ap.add_argument("--log", action="store_true", default=True, help="写 JSONL 日志（默认开）")
     args = ap.parse_args()
+
+    t0 = time.time()  # 端到端计时起点（D16 pipeline 整合 2）
 
     # 1) 发现
     if args.pool_file:
         pools_data = json.loads(Path(args.pool_file).read_text())
     else:
         pools_data = fetch_pools(top_n=args.top)
+    t_discover = time.time() - t0
     if not pools_data:
         print("❌ 没拉到池子（DexScreener 可能被限流）")
         sys.exit(1)
@@ -152,6 +169,17 @@ def main():
     if not positives:
         print("→ 0 信号 = 正确输出：主流池常驻价差已被磨平（与知识图谱「14 类剩 3 类活」一致）")
         print("  流程已打通：有正利润路径时本脚本会自动接 Jupiter quote → swap → Jito bundle")
+        write_log({
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "mode": "dry-run",
+            "top": args.top, "amount": args.amount, "pools": len(pools),
+            "t_discover_s": round(t_discover, 3),
+            "t_judge_s": round(time.time() - t0 - t_discover, 3),
+            "t_total_s": round(time.time() - t0, 3),
+            "positives": 0,
+            "signal": "none",
+            "anchor_usd": round(anchor, 2),
+        }, args.log)
         return
 
     # 4) 执行：取最优正利润路径 → Jupiter quote → swap → bundle（或 dry-run 演示）
@@ -159,11 +187,25 @@ def main():
     print(f"\n🎯 正利润路径 {len(positives)} 条，取最优: {label}（net_bps={best['net_bps']:.1f}）")
     if not args.execute:
         print("🔒 --execute 未开，停在 dry-run（真实执行需人工确认）")
+        write_log({
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "mode": "dry-run-positive",
+            "top": args.top, "amount": args.amount, "pools": len(pools),
+            "t_discover_s": round(t_discover, 3),
+            "t_judge_s": round(time.time() - t0 - t_discover, 3),
+            "t_total_s": round(time.time() - t0, 3),
+            "positives": len(positives),
+            "best_path": label,
+            "best_net_bps": round(best["net_bps"], 1),
+            "signal": "positive-stopped",
+            "anchor_usd": round(anchor, 2),
+        }, args.log)
         return
 
     with open(Path.home() / ".config/solana/id.json") as f:
         kp = Keypair.from_bytes(bytes(json.load(f)))
     print(f"🔑 钱包: {kp.pubkey()}")
+    t_exec0 = time.time()  # 执行段计时起点（D16 pipeline 整合 2）
 
     # 5) Jupiter quote → swap 交易 → 重签名
     amount_lamports = int(amt * 1e9)
@@ -197,6 +239,7 @@ def main():
         sys.exit(1)
     bid = d["result"]
     print(f"✅ bundle_id: {bid}")
+    outcome = "pending"
     for i in range(12):
         time.sleep(3)
         st = http_post(ENGINE, {"jsonrpc": "2.0", "id": 1, "method": "getBundleStatuses",
@@ -208,10 +251,12 @@ def main():
             print(f"  [{i}] {conf} err={s.get('err')}")
             if conf in ("finalized", "confirmed"):
                 print(f"🎉 bundle 已确认: https://explorer.jito.wtf/bundle/{bid}")
-                return
+                outcome = conf
+                break
             if s.get("err") is not None:
                 print(f"❌ Invalid: {s.get('err')}")
-                return
+                outcome = f"invalid:{s.get('err')}"
+                break
         else:
             st2 = http_post(ENGINE, {"jsonrpc": "2.0", "id": 1, "method": "getInflightBundleStatuses",
                                      "params": [[bid]]})
@@ -222,8 +267,29 @@ def main():
                     print(f"  [{i}] {s2['status']} slot={s2.get('landed_slot')}")
                     if s2["status"] == "Landed":
                         print(f"🎉 bundle Landed: https://explorer.jito.wtf/bundle/{bid}")
-                    return
-    print("⏳ 轮询超时，手动查 explorer.jito.wtf")
+                        outcome = "landed"
+                    else:
+                        outcome = "invalid"
+                    break
+    else:
+        print("⏳ 轮询超时，手动查 explorer.jito.wtf")
+        outcome = "timeout"
+    write_log({
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "mode": "execute",
+        "top": args.top, "amount": args.amount, "pools": len(pools),
+        "t_discover_s": round(t_discover, 3),
+        "t_judge_s": round(t_exec0 - t0 - t_discover, 3),
+        "t_execute_s": round(time.time() - t_exec0, 3),
+        "t_total_s": round(time.time() - t0, 3),
+        "positives": len(positives),
+        "best_path": label,
+        "best_net_bps": round(best["net_bps"], 1),
+        "bundle_id": bid,
+        "outcome": outcome,
+        "signal": "executed",
+        "anchor_usd": round(anchor, 2),
+    }, args.log)
 
 
 if __name__ == "__main__":
