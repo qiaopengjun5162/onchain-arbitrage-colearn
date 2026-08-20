@@ -1,0 +1,37 @@
+# 6个聪明钱 / 链上钱包监控工具合集（@WY_mask 无颜，2026-08-19）
+
+来源：https://x.com/WY_mask/status/2090217500969750775（8.2K views，61 likes）
+作者同系列：5家清算热力图/爆仓监控平台合集（https://x.com/WY_mask/status/2089873480250486865）
+
+## 正文（fxtwitter 全文）
+
+6个聪明钱 / 链上钱包监控工具合集
+
+1、GMGN @gmgnai
+Meme 赛道最强聪明钱工具，实时盈利钱包排行、跟单雷达、胜率筛选
+https://gmgn.ai/
+
+2、Nansen @nansen_ai
+多链覆盖强，可追踪聪明钱买卖、资金流、Token God Mode
+https://www.nansen.ai/
+
+3、Arkham @arkham
+实体识别最强，免费层就能看钱包归属、资金流向可视化图谱
+https://arkm.com/
+
+4、Cielo Finance @CieloFinance
+专注实时钱包监控 + 警报，自定义追踪列表，Telegram推送及时，适合盯特定聪明钱地址
+https://app.cielo.finance/
+
+5、Bubblemaps @bubblemaps
+适合项目尽调，可视化持仓分布与钱包关联（气泡图），一眼看出集中度、老鼠仓或集群关系
+https://bubblemaps.io/
+
+6、DeBank @DeBankDeFi
+简单好用，输入地址即可看持仓、DeFi仓位、历史交易
+https://debank.com/
+
+## 评论摘要
+
+- @meta9113meta（卓金）：谢谢分享，收藏再慢慢学习
+- @32manb（Helen海倫 TermMax）：这几个工具我都存了
