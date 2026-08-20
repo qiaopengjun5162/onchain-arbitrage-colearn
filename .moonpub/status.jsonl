@@ -56,35 +56,38 @@
 {"slug": "2026-08-12-ai-judgment", "status": "ready", "detail": "100011492"}
 {"slug": "2026-08-11-d7-gross-vs-net", "status": "rendered", "detail": ""}
 {"slug": "2026-08-11-d7-gross-vs-net", "status": "published", "detail": "100011499"}
-{"slug":"2026-08-12-d8-opportunity-list","status":"rendered","detail":""}
-{"slug":"2026-08-12-d8-opportunity-list","status":"ready","detail":"100011519"}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"rendered","detail":""}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"ready","detail":"100011526"}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"rendered","detail":""}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"ready","detail":"100011533"}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"rendered","detail":""}
-{"slug":"2026-08-12-d8-opportunity-shortlist","status":"ready","detail":"100011540"}
-{"slug":"2026-08-12-d8-opportunity-list","status":"rendered","detail":""}
-{"slug":"2026-08-12-d8-opportunity-list","status":"rendered","detail":""}
+{"slug": "2026-08-12-d8-opportunity-list", "status": "rendered", "detail": ""}
+{"slug": "2026-08-12-d8-opportunity-list", "status": "ready", "detail": "100011519"}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "rendered", "detail": ""}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "ready", "detail": "100011526"}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "rendered", "detail": ""}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "ready", "detail": "100011533"}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "rendered", "detail": ""}
+{"slug": "2026-08-12-d8-opportunity-shortlist", "status": "ready", "detail": "100011540"}
+{"slug": "2026-08-12-d8-opportunity-list", "status": "rendered", "detail": ""}
+{"slug": "2026-08-12-d8-opportunity-list", "status": "rendered", "detail": ""}
 {"slug": "2026-08-12-d8-opportunity-list", "status": "published", "detail": "100011547|https://mp.weixin.qq.com/s/pqogQ-N7Cg7qvyH5KBrmbQ"}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"rendered","detail":""}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"ready","detail":"100011606"}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"rendered","detail":""}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"ready","detail":"confirmed"}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"published","detail":"published"}
-{"slug":"_test-intro-card","status":"rendered","detail":""}
-{"slug":"2026-08-13-d9-knowledge-graph","status":"rendered","detail":""}
-{"slug":"2026-08-14-d10-radar-day","status":"rendered","detail":""}
-{"slug":"2026-08-14-d10-radar-day","status":"ready","detail":"100011653"}
-{"slug":"2026-08-14-d10-radar-day","status":"rendered","detail":""}
-{"slug":"2026-08-14-d10-radar-day","status":"ready","detail":"100011660"}
-{"slug":"2026-08-14-d10-radar-day","status":"published","detail":"published"}
-{"slug":"2026-08-15-d11-bundle-first-land","status":"rendered","detail":""}
-{"slug":"2026-08-15-d11-bundle-first-land","status":"rendered","detail":""}
-{"slug":"2026-08-15-d11-bundle-first-land","status":"rendered","detail":""}
-{"slug":"2026-08-15-d11-bundle-first-land","status":"ready","detail":"100011704"}
-{"slug":"2026-08-15-d11-bundle-first-land","status":"published","detail":"published"}
-{"slug":"2026-08-16-d12-pipeline-and-swap-bundle","status":"rendered","detail":""}
-{"slug":"2026-08-16-d12-pipeline-and-swap-bundle","status":"rendered","detail":""}
-{"slug":"2026-08-16-d12-pipeline-and-swap-bundle","status":"ready","detail":"100011728"}
-{"slug":"2026-08-16-d12-pipeline-and-swap-bundle","status":"published","detail":"published"}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "rendered", "detail": ""}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "ready", "detail": "100011606"}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "rendered", "detail": ""}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "ready", "detail": "confirmed"}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "published", "detail": "published"}
+{"slug": "_test-intro-card", "status": "rendered", "detail": ""}
+{"slug": "2026-08-13-d9-knowledge-graph", "status": "rendered", "detail": ""}
+{"slug": "2026-08-14-d10-radar-day", "status": "rendered", "detail": ""}
+{"slug": "2026-08-14-d10-radar-day", "status": "ready", "detail": "100011653"}
+{"slug": "2026-08-14-d10-radar-day", "status": "rendered", "detail": ""}
+{"slug": "2026-08-14-d10-radar-day", "status": "ready", "detail": "100011660"}
+{"slug": "2026-08-14-d10-radar-day", "status": "published", "detail": "published"}
+{"slug": "2026-08-15-d11-bundle-first-land", "status": "rendered", "detail": ""}
+{"slug": "2026-08-15-d11-bundle-first-land", "status": "rendered", "detail": ""}
+{"slug": "2026-08-15-d11-bundle-first-land", "status": "rendered", "detail": ""}
+{"slug": "2026-08-15-d11-bundle-first-land", "status": "ready", "detail": "100011704"}
+{"slug": "2026-08-15-d11-bundle-first-land", "status": "published", "detail": "published"}
+{"slug": "2026-08-16-d12-pipeline-and-swap-bundle", "status": "rendered", "detail": ""}
+{"slug": "2026-08-16-d12-pipeline-and-swap-bundle", "status": "rendered", "detail": ""}
+{"slug": "2026-08-16-d12-pipeline-and-swap-bundle", "status": "ready", "detail": "100011728"}
+{"slug": "2026-08-16-d12-pipeline-and-swap-bundle", "status": "published", "detail": "published"}
+{"slug": "2026-08-17-d13-discover-execute-chain", "status": "rendered", "detail": ""}
+{"slug": "2026-08-17-d13-discover-execute-chain", "status": "rendered", "detail": ""}
+{"slug": "2026-08-17-d13-discover-execute-chain", "status": "published", "detail": "published"}

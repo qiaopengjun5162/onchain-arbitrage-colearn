@@ -62,6 +62,7 @@
 | D10 借贷雷达 | 100011660（已发布 08-16，https://mp.weixin.qq.com/s/wz2pKEe47p_tkGtsZM_mdw） | 08-16 |
 | D11 bundle 首落地 | 100011704（已发布 08-17，https://mp.weixin.qq.com/s/SAC6RNYi1XWL8Yxrd9MZmA） | 08-17 |
 | D12 管线+swap bundle | 100011728（已发布 08-18，https://mp.weixin.qq.com/s/hpLi5YlwqXARHGUzI6WjCw） | 08-18 |
+| D13 发现到执行 | 100011752（已发布 08-19，https://mp.weixin.qq.com/s/kVcOVxnYve2tc5wWfmSf8A） | 08-19 |
 
 ## 常见坑
 
