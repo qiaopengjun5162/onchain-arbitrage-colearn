@@ -54,6 +54,7 @@ env = {"HTTPS_PROXY": "http://127.0.0.1:7890", "HTTP_PROXY": "http://127.0.0.1:7
 | D10 | x.com/qiaopengjun/status/2088975731204517896 | 8（6 正文 + 标签条带 TG 链接 + 公众号链接条） | 08-16 发布 |
 | D11 | x.com/qiaopengjun/status/2089341248033501244 | 9（2/8 拆两条 + 5 正文 + 标签条带 TG + 公众号条） | 08-17 发布 |
 | D12 | x.com/qiaopengjun/status/2089645125786022018 | 9（8 正文 + 末条合并 TG/公众号链接/4 hashtag） | 08-18 发布 |
+| D13 | x.com/qiaopengjun/status/2090354571478786201 | 9（8 正文 + 末条合并 TG/公众号链接/4 hashtag；4/9 LI.FI 被 X 自动链接化为 t.co） | 08-20 发布 |
 
 ## 常见坑
 
