@@ -14,6 +14,9 @@
 |---|---|
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **群分享速记：十老板复盘 + PM bot 标题党核验**（十老板 1万→1.3亿八年复盘「留在牌桌上」=风控通俗版；NFTCPS 吹「PM 套利机器人公开」实为 FrondEnt/PolymarketBTC15mAssistant=TA 交易助手非套利bot，817 stars 真实但公开信号无 edge） | `notes/shiboss-pm-bot-verify-20260821.md` |
+| **Hayden 相关配对 AMM + Cody 实测**（Hayden 2019 来首篇博客《Correlated Pairs》：相关配对降无偿损失/愿持有即免对冲；Cody NVDA/SPY 3 年实测无偿损失 -10.8% 需年化 11.5% 弥补=现阶段 LP 币股跑不通；SEC/DTCC 已批代币化股票=我们🥇币股线方向性利好） | `notes/hayden-correlated-pairs-amm-cody-20260821.md` |
+| **Hermes 插件生态核验**（GitTrend0x 推 5 插件全真实：outsourc-e workspace 6.4k★/SkillClaw 2.4k★ 精品，jdtymothy 拼写笔误已修；装第三方插件先核验） | `notes/hermes-plugin-ecosystem-verify-20260821.md` |
 | **Bruce 投资归因规律 digest**（X 帖：3 年样本归因——观点一致时不发生/没有永赚博主/稳定营收=耐心·不贪·独立思考·仓位·安全，归零=爆仓+被盗；L0008 5 问加第 6 问「共识拥挤度」；4 方向优先级定版：币股漂移🥇/费率事件🥈/消息下架🥉/清算4，常驻跨池出局） | `notes/bruce-investment-rules-20260821.md` |
 | **D17 历史机会回测：跨池价差 11 天分布**（2408 行快照清洗 12 条损坏；**常驻价差=不可执行实锤**——无一次≥80bps，p50=34bps，双腿成本 50/60bps 下 p50 利润仅 5-8bps；机会在事件窗口不在常态；常驻跨池从 4 方向候选划掉） | `notes/d17-corridor-spread-histogram-20260821.md` |
 | **awesome-systematic-trading 合集核验**（X lumxss 推广：97 库/40+ 策略/55 书/23 视频全属实；13.5k stars；价值=工具地图+回测框架选型，非策略金矿；最大可落地=Hummingbot Solana connector（做市）+ HFTBacktest（高精度回测）；先看能力缺口再对号入座） | `notes/awesome-systematic-trading-collection-20260821.md` |
