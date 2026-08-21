@@ -4,6 +4,26 @@
 > 获取方式：fxtwitter API（X 直连反爬被挡，API 镜像成功）
 > 归档日期：2026-08-21 ｜ 关联：D17 广度任务（Bruce 第三周选题框架对照）、`notes/bruce-first-principles-arbitrage-20260810.md`、`notes/profit-claim-verification.md`
 
+## §4 同日第四帖：LI.FI Smart Deposit Addresses（2026-08-21 07:18 附近，17 likes）+ 周会纪要长文
+
+> 来源：https://x.com/brucexu_eth/status/2090699972115382484（周会纪要 article）
+> https://x.com/brucexu_eth/status/2090666094789120230（Smart Deposit）
+
+**帖 4a：周会纪要长文**「套利共学｜周会纪要：从跨所价差、链上竞争到稳定币交易拆解」（2026-08-14 那期，公开群 t.me/arbitrageicl）——与我们 `notes/weekly-meeting-digest-20260814.md` 同源，我们 digest 更细（含 Ethanlxl 框架+API 福利），无增量。
+
+**帖 4b：LI.FI Smart Deposit Addresses**（6 likes）：
+
+> Smart Deposit Addresses 功能上线了，这是我认为的另一个 Web3 UX 极大提升的功能！
+> 简单的说，之前，我们需要调用合约、多次签名、寻找合适的路由、必须持有 gas 等来实现一个 Swap 或者 Bridge。
+> 通过 Smart Deposit Addresses 功能，LI.FI 会为你生成一个临时的 AA 钱包，你只需要一笔转账到这个钱包，就等着在目标钱包里面收款就可以了。将极其复杂的操作简化成了一笔转账。
+
+### 与我们 LI.FI 研究线的关系
+
+- 我们已实测：LI.FI quote 25bps 成本地板 + `integrator=jumper.exchange` 全档归零（L0006 复测）
+- **Smart Deposit Addresses = 执行层 UX 简化**：ERC-4337 AA 临时钱包 + 单笔转账 = swap+bridge+gas 全托管——对跨链搬砖的意义：**少一条腿的签名/持有 gas 约束，执行摩擦再降一档**
+- 与 Bruce 08-14 周会 LI.FI 产品矩阵（ear/composer/intents）同源产品线，本功能属执行层补充
+- 待验证：临时 AA 钱包的资金安全边界（收款前资金在谁手里）+ 是否带额外费用（intents 目前零费，本功能未知）
+
 ## §3 同日第三帖：推荐 Hermes Agent（2026-08-21 06:27，7 likes）
 
 > 来源：https://x.com/brucexu_eth/status/2090687309922578497
