@@ -12,6 +12,7 @@
 
 | 想了解 | 去哪 |
 |---|---|
+| **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **Taoli Tools 套利角度清单 + dsh 实操验证**（X @aliez_ren 9 类套利角度对照我们研究——7 类已覆盖、2 新线索（Bitget 资金费逃票/BNB IDO 前后）；dsh 三大宣称全部实测属实+顺手修 2 脚本） | `notes/taoli-tools-arb-angles-dsh-verify-20260815.md` |
 | **链上取证方法论**（怎么分析一个套利地址） | `notes/aave-liquidator-0x8d64d775-address-research-20260808.md` · `notes/robinhood-arb-0xd7121208-address-research-20260808.md` |
 | **EVM 实战案例：闪贷灌金库 + oracle/DEX 价差**（Morpho 0 费闪贷 $27.7M 灌 Lulo 金库→allocator 铺 3 市场；V4 近空池 $0.686 扫 sNUSD vs oracle $1.0638 → 满额 91.5% LTV 借出，单笔净赚 ~$297/gas $0.87；含 `idToMarketParams()` + ChainlinkOracleV2 vault 模式取证新动作） | `notes/morpho-flashloan-vault-snusd-arb-case-20260813.md` |
