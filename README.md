@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **Jito BAM 拍卖 50ms→35ms 变更**（核验生效：getEpochInfo epoch=1020 进度 12.1%=已生效；背景=350ms 时隙时序；**Block Engine 拍卖仍 50ms=我们 pipeline 不受影响**；未来接 BAM 需适配 35ms 窗口；BAM=块空间拍卖重构（SEV-SNP/第三方节点扩展期）；350ms 时隙=延迟竞争升级） | `notes/jito-bam-35ms-20260821.md` |
 | **SOL 巨鲸浮盈核验——软造假第三例**（Ai 姨帖：SOL 20x 51.7 万枚持仓/浮盈 596 万全真，但 totalRawUsd=-3870 万累计亏损被隐藏（净亏 3270 万）；与 HYPE(-8368万)/ETH(-2907万)同款套路=「浮盈真+累计亏隐藏」是巨鲸浮盈帖标准手法；HL 三板斧 10 秒定生死） | `notes/sol-whale-verify-20260821.md` |
 | **周会实录：TUT 爆仓一手复盘 + 群友策略地图**（Ethanlxl 复盘 TUT/BICO 狗庄屠宰=费率诱导→时仓积累→几分钟拉 50-80%→爆仓→BG/GT 罕见赔付（按爆仓前 3 点价）；「压路机前捡钢镚」/杠杆 0.2-0.5x 才安全/价差 50-80% 捡尸体=一单顶三月/币安限制开仓=最强信号；king W3 USD 荷兰拍吃磨损（公开即死）；feiye 废弃合约捡漏（无机器人竞争）；=执行框架实盘验证+新候选方向） | `notes/weekly-meeting-tut-postmortem-20260821.md` |
 | **DUSD 地址核验**（MachineShare 合约=Makina Finance 收益稳定币份额（USDC 记账/queued exits）；价格 $1.036 溢价 3.6% 但 24h 量仅 $19.5+退出排队=账面溢价不可套；ATH $1.39→1.036 溢价是波动非稳定；与 sUSDe/USDL 同族；地址核验流程跑通：RPC code→blockscout 合约名→CoinGecko 市场→Pharos 画像） | `notes/dusd-addr-verify-20260821.md` |
