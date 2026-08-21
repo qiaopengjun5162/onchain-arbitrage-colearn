@@ -63,6 +63,7 @@
 | D11 bundle 首落地 | 100011704（已发布 08-17，https://mp.weixin.qq.com/s/SAC6RNYi1XWL8Yxrd9MZmA） | 08-17 |
 | D12 管线+swap bundle | 100011728（已发布 08-18，https://mp.weixin.qq.com/s/hpLi5YlwqXARHGUzI6WjCw） | 08-18 |
 | D13 发现到执行 | 100011752（已发布 08-19，https://mp.weixin.qq.com/s/kVcOVxnYve2tc5wWfmSf8A） | 08-19 |
+| D14 五条铁律+周认知 | 100011786（已发布 08-20，https://mp.weixin.qq.com/s/osswOFlr7SPw2vg_DF3wvw） | 08-20 |
 
 ## 常见坑
 
