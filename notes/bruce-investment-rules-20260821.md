@@ -4,6 +4,22 @@
 > 获取方式：fxtwitter API（X 直连反爬被挡，API 镜像成功）
 > 归档日期：2026-08-21 ｜ 关联：D17 广度任务（Bruce 第三周选题框架对照）、`notes/bruce-first-principles-arbitrage-20260810.md`、`notes/profit-claim-verification.md`
 
+## §3 同日第三帖：推荐 Hermes Agent（2026-08-21 06:27，7 likes）
+
+> 来源：https://x.com/brucexu_eth/status/2090687309922578497
+
+Hermes Agent 可以的，先连接好多个模型，告诉它就可以了，它会自己拆分任务，创建 sub agent 来执行。
+
+甚至还直接内置了 moa 混合 agent 功能，不过这个有点高级了，我还没用过 https://hermes-agent.nousresearch.com/docs/user-guide/features/mixture-of-agents
+
+cc @hermescn_org
+
+### 意义
+
+- **Bruce 公开推荐我们正在用的工具**（Hermes Agent）——共学导师层验证了工具选型
+- 提到的能力全部属实（本会话就在用）：多模型连接、任务拆分、subagent 执行、MoA（mixture-of-agents）
+- 对我们的启示：把 Hermes 的能力边界摸清（尤其 MoA），工具本身就是 edge 的一部分（第 4 级「写不出高性能脚本」的反面——AI 补技术短板）
+
 ## §2 同日第二帖：Web3 套利 6 级淘汰制（2026-08-21 05:00，59 likes）
 
 > 来源：https://x.com/brucexu_eth/status/2090665319606137187
