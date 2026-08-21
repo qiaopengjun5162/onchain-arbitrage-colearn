@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **Aave V3 批量清算取证 + 龙王地址核验**（ETH 交易=闪贷清算 bot 一笔清 6 仓位（LiquidationCall 指纹+0.1gwei flashbots+dust 全清），=我们清算方向实证样本；龙王=真实盈利账户（累计+210 万，BTC 长空吃资金费+CXMT/UNITREE pre-IPO 主战场），「资金费吃得比仓位大」=套费率不套方向活案例） | `notes/aave-v3-batch-liquidation-forensics-20260821.md` + `notes/dragon-addr-verify-20260821.md` |
 | **巨鲸情报/浮盈双核验**（Ai 姨 135k 囤 ETH 情报=链上余额当场验证 ✅ 真（3092/7201/1045 ETH 全吻合）但本质=情报+Bitget 广告；鸟哥 ETH 巨鲸浮盈=同 HYPE 帖同款软造假（浮盈 918 万真但累计亏 2907 万隐藏）；方法论=情报帖查余额/浮盈帖查 totalRawUsd） | `notes/whale-intel-verify-20260821.md` |
 | **桂林交易心法 + 普通人量化路线图**（qinbafrank 154k 引陈桂林：系统战胜不了人性/最完善系统=最大限度战胜情绪/技术简单控制最重要=机器执行人只定阈值同构；Mr.RC 5984 likes 长文：五阶段数学底座（概率→统计→线代→凸优化→随机微积分）+「估计误差是敌人/工具民主化确信度没有/数学是护城河」；阶段5=币股期权前置课程） | `notes/guilin-trading-mindset-quant-roadmap-20260821.md` |
 | **金融知识体系终极指南 digest**（Vincent 1.2 万字六章：经济vs金融本质/基础产品+衍生工具四大特征（杠杆=合约价值/保证金、零和博弈例外=套保/做市/税收套利）/市场层级+监管/学习路径/2008 危机链/行为偏差应对；「为什么别人愿意和你交易」5 问=套利豪仔付费方+L0008 共识拥挤度同一核心=找付费方找限制；fxtwitter article.content 抓 X 长文方法） | `notes/finance-knowledge-system-digest-20260821.md` |
