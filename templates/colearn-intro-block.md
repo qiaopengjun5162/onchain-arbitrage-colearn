@@ -11,13 +11,13 @@ label: 📌 关于本次共学
 
 本系列来自「**链上套利残酷共学**」——由 Bruce Xu 发起的 **21 天实践型共学**（2026.08.05–08.26），**692 位伙伴**围绕机会发现、成本验证、策略构建、信号监控与执行复盘，用真实证据逼近答案，不做只听概念不落地的学习。
 
-🔗 活动详情：[intensivecolearn.ing/programs/b43d2e97…](https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205)
+🔗 活动详情 https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
 :::
 
 ## 注意事项
 
 - 文案数字（人数/周期）会过时：692 人是 08-13 抓取快照，发布前如隔多日先 curl 活动页核对
-- 链接用短文本即可，moonpub 渲染会自动转可点击链接（`…` 是手写省略，别删）
+- **活动链接必须显示完整 URL**（2026-08-20 用户明确要求）：不要用省略号截断显示文本，直接写完整 `https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205`；moonpub 渲染会自动转可点击链接
 - 定位偏「学习记录 + 活动导流」，不涉及任何投资建议表述
 - 渲染验证：`render` 后 HTML 应含 `border-radius:10px` 的 callout section + 标签条「关于本次共学」；ship 前跑 preflight
 - 排版历史：v1 纯文本（D8 用了，D9 漏了）→ v2 callout 卡片（2026-08-16 定稿，D10 起生效）
