@@ -30,11 +30,15 @@ MANIFEST = [
     ("defi-arbitrage-capital-guide", "03 策略假设", "套利资本指南", "strategy"),
     ("monitoring-bot-quickstart", "04 工具与协议", "监控 Bot 入门", "tool"),
     ("l0009-knowledge-graph-v1-20260813", "03 策略假设", "知识图谱 v1 · 阶段二收官", "strategy"),
+    ("ai-agent-workflow-tools-20260821", "04 工具与协议", "AI Agent 工作流工具（Ailu + 微信 CLI）", "tool"),
+    ("qqq-tqqq-15yr-verify-20260821", "02 市场地图", "QQQ-TQQQ 十五年核验与被动基准", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
 DATE_OVERRIDES = {
     "l0009-knowledge-graph-v1-20260813": "2026-08-13",
+    "ai-agent-workflow-tools-20260821": "2026-08-21",
+    "qqq-tqqq-15yr-verify-20260821": "2026-08-21",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
