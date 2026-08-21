@@ -64,6 +64,8 @@ MANIFEST = [
     ("bsc-redeem-collateral-forensics-20260821", "02 市场地图", "BSC redeemCollateral 抵押品赎回取证", "market-map"),
     ("bsc-flashloan-repay-forensics-20260821", "02 市场地图", "BSC execute 闪贷还贷取证", "market-map"),
     ("pm-yesno-lock-verify-20260821", "07 共学群友", "Crypto老鹰 PM 锁利机器人核验", "colearners"),
+    ("solana-explorer-update-20260821", "04 工具与协议", "Solana Explorer 新功能", "tool"),
+    ("rise-chain-ecosystem-20260821", "02 市场地图", "RISE 链生态观察", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
