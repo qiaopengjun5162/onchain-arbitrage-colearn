@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **扫链方法论（HunterOnlyETH 32.8k）**（meme 扫链两维度=速度×准确度（反应力+中英阅读理解）；纪昌学射三阶段练习=不断练习琢磨反思迭代；真实经验=与母语英语者比扫链的劣势/新市场前十天空窗；对我们的映射=速度=延迟竞争（BAM 35ms）/准确度=付费方五问，「机器执行+人定阈值」比单人扫链更结构化） | `notes/chain-scanning-method-hunter-20260821.md` |
 | **VolaSet 协议观察 + Solana 官方两帖**（VolaSet=波动率结算基础设施化（任何 ERC-20 建 Pool/Pool Edge 0-5%=统计优势）=卖保险家族新样本（观察级）；@solana 官方：①Solana School 秋季班（8/31-10/16 可申请）②新韩资管 KRW 代币化基金（BUIDL 模式，四方 MOU=Solana RWA 生态扩张=币股方向宏观利好）） | `notes/volaset-solana-official-20260821.md` |
 | **Jito BAM 拍卖 50ms→35ms 变更**（核验生效：getEpochInfo epoch=1020 进度 12.1%=已生效；背景=350ms 时隙时序；**Block Engine 拍卖仍 50ms=我们 pipeline 不受影响**；未来接 BAM 需适配 35ms 窗口；BAM=块空间拍卖重构（SEV-SNP/第三方节点扩展期）；350ms 时隙=延迟竞争升级） | `notes/jito-bam-35ms-20260821.md` |
 | **SOL 巨鲸浮盈核验——软造假第三例**（Ai 姨帖：SOL 20x 51.7 万枚持仓/浮盈 596 万全真，但 totalRawUsd=-3870 万累计亏损被隐藏（净亏 3270 万）；与 HYPE(-8368万)/ETH(-2907万)同款套路=「浮盈真+累计亏隐藏」是巨鲸浮盈帖标准手法；HL 三板斧 10 秒定生死） | `notes/sol-whale-verify-20260821.md` |
