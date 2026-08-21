@@ -14,6 +14,7 @@
 |---|---|
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **D17 历史机会回测：跨池价差 11 天分布**（2408 行快照清洗 12 条损坏；**常驻价差=不可执行实锤**——无一次≥80bps，p50=34bps，双腿成本 50/60bps 下 p50 利润仅 5-8bps；机会在事件窗口不在常态；常驻跨池从 4 方向候选划掉） | `notes/d17-corridor-spread-histogram-20260821.md` |
 | **awesome-systematic-trading 合集核验**（X lumxss 推广：97 库/40+ 策略/55 书/23 视频全属实；13.5k stars；价值=工具地图+回测框架选型，非策略金矿；最大可落地=Hummingbot Solana connector（做市）+ HFTBacktest（高精度回测）；先看能力缺口再对号入座） | `notes/awesome-systematic-trading-collection-20260821.md` |
 | **Solana 盲套利 Bot 取证：R32xAccFis**（WEN 生态：自研程序 7obtMdiXQ + Orca + Meteora DYN + DLMM 多池；Custom 6004=利润保护主动放弃非 bug；75% 失败率是设计——每次探测 $0.0013 成功一次回本；18 slots 连发 20 笔=窗口内高频探测；circular.fi=Solana 版 Arkham） | `notes/solana-blind-arb-bot-R32xAccFis-20260821.md` |
 | **Taoli Tools 套利角度清单 + dsh 实操验证**（X @aliez_ren 9 类套利角度对照我们研究——7 类已覆盖、2 新线索（Bitget 资金费逃票/BNB IDO 前后）；dsh 三大宣称全部实测属实+顺手修 2 脚本） | `notes/taoli-tools-arb-angles-dsh-verify-20260815.md` |
