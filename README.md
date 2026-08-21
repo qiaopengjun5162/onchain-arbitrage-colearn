@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **HIP-3 Pre-IPO Perps + Entropy 核验**（NFTCPS 返佣推广帖：HIP-3 框架真实且巨大=$120-290B 累计量/Cerebras 定价<3%/Anthropic·SpaceX·OpenAI 都有 perps；但数字注水（50万 HYPE 按旧价 $62 折算，现价 $74）不采信空投叙事；=币股闭市漂移新战场+pre-IPO 事件窗口候选） | `notes/hip3-preipo-perps-entropy-20260821.md` |
 | **群分享速记：十老板复盘 + PM bot 标题党核验**（十老板 1万→1.3亿八年复盘「留在牌桌上」=风控通俗版；NFTCPS 吹「PM 套利机器人公开」实为 FrondEnt/PolymarketBTC15mAssistant=TA 交易助手非套利bot，817 stars 真实但公开信号无 edge） | `notes/shiboss-pm-bot-verify-20260821.md` |
 | **Hayden 相关配对 AMM + Cody 实测**（Hayden 2019 来首篇博客《Correlated Pairs》：相关配对降无偿损失/愿持有即免对冲；Cody NVDA/SPY 3 年实测无偿损失 -10.8% 需年化 11.5% 弥补=现阶段 LP 币股跑不通；SEC/DTCC 已批代币化股票=我们🥇币股线方向性利好） | `notes/hayden-correlated-pairs-amm-cody-20260821.md` |
 | **Hermes 插件生态核验**（GitTrend0x 推 5 插件全真实：outsourc-e workspace 6.4k★/SkillClaw 2.4k★ 精品，jdtymothy 拼写笔误已修；装第三方插件先核验） | `notes/hermes-plugin-ecosystem-verify-20260821.md` |
