@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **BSC redeemCollateral 交易取证**（4byte 签名定罪 `redeemCollateral`=抵押品赎回非套利：540.556 USDL burn→0.919 WBNB 协议费 3.7%，无循环/闪贷/比价；BEP-20 Transfer 变体签名 `c2b068` 一字节差异坑；BSCScan V1 废弃走公共 RPC） | `notes/bsc-redeem-collateral-forensics-20260821.md` |
 | **HIP-3 市场实测 + CSOP 海力士 ETF 套利**（OAK 直抓 119 市场/XYZ 占 100% 量；**跨 deployer 同标价差实测 <0.02% = 已磨平**（UNITREE XYZ vs Paragon 0.01%/SNDK XYZ vs Entropy 0.02%）——与 Solana 跨池同构，机会只在 pre-IPO 事件窗口（SPCX $177.9M OI 最大）；0xJA 海力士 ETF：弹性杠杆 7/27 生效/平均 1.8x/三时钟错位/swap 跟踪误差/1.6% 管理费=产品参数可改同族案例） | `notes/hip3-market-scan-csop-etf-20260821.md` |
 | **HIP-3 Pre-IPO Perps + Entropy 核验**（NFTCPS 返佣推广帖：HIP-3 框架真实且巨大=$120-290B 累计量/Cerebras 定价<3%/Anthropic·SpaceX·OpenAI 都有 perps；但数字注水（50万 HYPE 按旧价 $62 折算，现价 $74）不采信空投叙事；=币股闭市漂移新战场+pre-IPO 事件窗口候选） | `notes/hip3-preipo-perps-entropy-20260821.md` |
 | **群分享速记：十老板复盘 + PM bot 标题党核验**（十老板 1万→1.3亿八年复盘「留在牌桌上」=风控通俗版；NFTCPS 吹「PM 套利机器人公开」实为 FrondEnt/PolymarketBTC15mAssistant=TA 交易助手非套利bot，817 stars 真实但公开信号无 edge） | `notes/shiboss-pm-bot-verify-20260821.md` |
