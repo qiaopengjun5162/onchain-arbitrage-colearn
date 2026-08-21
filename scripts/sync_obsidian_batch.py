@@ -32,6 +32,18 @@ MANIFEST = [
     ("l0009-knowledge-graph-v1-20260813", "03 策略假设", "知识图谱 v1 · 阶段二收官", "strategy"),
     ("ai-agent-workflow-tools-20260821", "04 工具与协议", "AI Agent 工作流工具（Ailu + 微信 CLI）", "tool"),
     ("qqq-tqqq-15yr-verify-20260821", "02 市场地图", "QQQ-TQQQ 十五年核验与被动基准", "market-map"),
+    ("coolshell-outperform-most-people-20260821", "01 角色与配置", "学习方法论：如何超过大多数人", "methodology"),
+    ("funding-arb-execution-delta-spread-20260821", "03 策略假设", "资金费套利执行认知（价差是生死线）", "strategy"),
+    ("d17-corridor-spread-histogram-20260821", "02 市场地图", "D17 跨池价差 11 天分布回测", "market-map"),
+    ("d18-backtest-event-window-20260821", "02 市场地图", "D18 回测事件窗口标注 v0", "market-map"),
+    ("bruce-investment-rules-20260821", "07 共学群友", "Bruce 投资归因规律与套利六级淘汰", "colearners"),
+    ("solana-blind-arb-bot-R32xAccFis-20260821", "02 市场地图", "Solana 盲套利 Bot R32xAccFis 取证", "market-map"),
+    ("awesome-systematic-trading-collection-20260821", "04 工具与协议", "awesome-systematic-trading 合集核验", "tool"),
+    ("hayden-correlated-pairs-amm-cody-20260821", "02 市场地图", "Hayden 相关配对 AMM 与 Cody 实测", "market-map"),
+    ("hermes-plugin-ecosystem-verify-20260821", "04 工具与协议", "Hermes 插件生态核验", "tool"),
+    ("shiboss-pm-bot-verify-20260821", "07 共学群友", "十老板复盘与 PM bot 标题党核验", "colearners"),
+    ("hip3-preipo-perps-entropy-20260821", "02 市场地图", "HIP-3 Pre-IPO Perps 与 Entropy 核验", "market-map"),
+    ("hip3-market-scan-csop-etf-20260821", "02 市场地图", "HIP-3 市场实测与 CSOP 海力士 ETF 套利", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -39,6 +51,18 @@ DATE_OVERRIDES = {
     "l0009-knowledge-graph-v1-20260813": "2026-08-13",
     "ai-agent-workflow-tools-20260821": "2026-08-21",
     "qqq-tqqq-15yr-verify-20260821": "2026-08-21",
+    "coolshell-outperform-most-people-20260821": "2026-08-21",
+    "funding-arb-execution-delta-spread-20260821": "2026-08-21",
+    "d17-corridor-spread-histogram-20260821": "2026-08-21",
+    "d18-backtest-event-window-20260821": "2026-08-21",
+    "bruce-investment-rules-20260821": "2026-08-21",
+    "solana-blind-arb-bot-R32xAccFis-20260821": "2026-08-21",
+    "awesome-systematic-trading-collection-20260821": "2026-08-21",
+    "hayden-correlated-pairs-amm-cody-20260821": "2026-08-21",
+    "hermes-plugin-ecosystem-verify-20260821": "2026-08-21",
+    "shiboss-pm-bot-verify-20260821": "2026-08-21",
+    "hip3-preipo-perps-entropy-20260821": "2026-08-21",
+    "hip3-market-scan-csop-etf-20260821": "2026-08-21",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
@@ -73,6 +97,18 @@ LINK_MAP = {
     "arbitrage-playbook-text-version": "套利实战手册",
     "defi-arbitrage-capital-guide": "套利资本指南",
     "monitoring-bot-quickstart": "监控 Bot 入门",
+    "coolshell-outperform-most-people-20260821": "学习方法论：如何超过大多数人",
+    "funding-arb-execution-delta-spread-20260821": "资金费套利执行认知（价差是生死线）",
+    "d17-corridor-spread-histogram-20260821": "D17 跨池价差 11 天分布回测",
+    "d18-backtest-event-window-20260821": "D18 回测事件窗口标注 v0",
+    "bruce-investment-rules-20260821": "Bruce 投资归因规律与套利六级淘汰",
+    "solana-blind-arb-bot-R32xAccFis-20260821": "Solana 盲套利 Bot R32xAccFis 取证",
+    "awesome-systematic-trading-collection-20260821": "awesome-systematic-trading 合集核验",
+    "hayden-correlated-pairs-amm-cody-20260821": "Hayden 相关配对 AMM 与 Cody 实测",
+    "hermes-plugin-ecosystem-verify-20260821": "Hermes 插件生态核验",
+    "shiboss-pm-bot-verify-20260821": "十老板复盘与 PM bot 标题党核验",
+    "hip3-preipo-perps-entropy-20260821": "HIP-3 Pre-IPO Perps 与 Entropy 核验",
+    "hip3-market-scan-csop-etf-20260821": "HIP-3 市场实测与 CSOP 海力士 ETF 套利",
 }
 
 

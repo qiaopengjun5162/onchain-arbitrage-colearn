@@ -1,0 +1,36 @@
+---
+title: 十老板复盘与 PM bot 标题党核验
+date: 2026-08-21
+type: note
+tags:
+  - onchain-arbitrage
+  - colearners
+---
+
+# 群分享速记：十老板八年复盘 + Polymarket bot 标题党核验（2026-08-21）
+
+## 1. Foresight：十老板 1 万 → 1.3 亿八年复盘（心态线素材）
+
+> 来源：https://x.com/Foresight_News/status/2090719751308030117
+> 全文：ForesightNews 深度专栏 2026-08-21 16:24（foresightnews.pro，JS 渲染站抓不到全文，标题+预览已够定性）
+
+- 标题：🔭深度丨对话十老板：本金 1 万到 1.3 亿，一个交易员的八年交易复盘
+- 核心引言：「留在牌桌上，就还有希望。」
+- 意义：与 Bruce 今日帖（耐心等/半年不开张一次吃一年/6 级淘汰）同一心态线——**幸存者叙事样本 +1**；「留在牌桌上」= 我们风控总纲的通俗版（不爆仓 = 一直有资格等下一次）
+- 待办：全文值得读（1 万→1.3 亿的路径细节，看是运气还是机制），找到镜像再补
+
+## 2. NFTCPS「Polymarket 套利机器人公开」——标题党实锤
+
+> 来源：https://x.com/NFTCPS/status/2090664709012038040（2026-08-21，配图 OCR 定位 repo）
+
+- 帖子宣称：「Polymarket 的套利机器人被人扒出来公开了，GitHub 完整仓库手把手教你自己搭」
+- **核验结果（GitHub API + 配图 OCR）**：
+  - repo = `FrondEnt/PolymarketBTC15mAssistant`（817 stars，2026-01 创建，今天还在更新，JS）
+  - **实际是「BTC 15 分钟市场 TA 交易助手」**：多市场选择 + Chainlink 价格 + 币安现货参考 + Heiken Ashi/RSI/MACD/VWAP TA 快照 + 做多/做空百分比预测——**是信号工具，不是套利机器人**
+- 定性：标题党（套利机器人 → TA 助手），且**免费开源的 TA 工具 = 公开信号，无 edge**（对照 Bruce 规律 2/3：公开分享的策略是滞后信息）
+- 与我们 PM 线的关系：不构成套利参考；我们 PM 研究（rebalancing 扫描器/Probabilistic Forest 论文）已远超这个工具
+
+## 结论
+
+- 两条都是「叙事 vs 事实」的对照样本：十老板（幸存者叙事，看机制别看数字）、PM bot（标题党，公开工具无 edge）
+- 无新研究动作；十老板全文找到后再补
