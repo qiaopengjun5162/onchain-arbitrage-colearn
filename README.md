@@ -16,6 +16,7 @@
 | **QQQ/TQQQ 十五年核验：数字真实逻辑有诈**（yfinance 实测 QQQ +1512%/年化 20.4% 吻合、TQQQ 229x 属合理区间偏保守；硬伤=起点即答案/−79% 回撤反人性/卖保险文导向券商流量；对照系=QQQ 是被动基准 20%、TQQQ 是每日重置复利极限=赌单边与我们吃横盘相反） | `notes/qqq-tqqq-15yr-verify-20260821.md` |
 | **陈皓《如何超过大多数人》digest**（思维模型类分享：反向陷阱清单 14 条自查 + 认知→知识→技能→领导力四层超越模型；与共学机制映射：费曼复述/知识图谱/证据体系=对抗碎片化·收藏家·「知道≠做到」三大坑） | `notes/coolshell-outperform-most-people-20260821.md` |
 | **资金费套利执行认知**（Paxon 群分享：利润=费率收入−价差恶化−手续费−滑点；费率=慢变量/价差=快变量→价差是生死线；机器执行=价差恶化即跑人只定阈值；当前场景「价差5点+费率差1h1点」双模式：套收敛/套费率；混合模式=风险叠加非对冲） | `notes/funding-arb-execution-delta-spread-20260821.md` |
+| **RISE 链生态应用首波上线**（Galaxy 支持的 ETH L2「交易链」（Vitalik+Stani 站台）：订单簿=原生 EVM 原语/5 Ggas·50k TPS·1ms 更新；RISEx=全链上订单簿 perps（portfolio margin/AutoYield）；=HL 直接竞争者（三板斧可迁移）+跨所价差候选（观察级）；附带：x402 官方数据 2 亿笔/$50B 量） | `notes/rise-chain-ecosystem-20260821.md` |
 | **Solana Explorer 新功能（@solana_devs 87.9k）**（Verified Programs 搜索 + 原生程序 IDL 包 + RPCv2 指令预览 + Verified Builds V2——取证效率提升：未知名程序直接查 IDL/搜索验证；工具类更新无策略含义） | `notes/solana-explorer-update-20260821.md` |
 | **Ramp × x402：Agent 支付接入企业账本**（@solana 官方 BREAKING：agent 钱包注资 + x402 支付 + 企业级记账/支出控制；x402 已结算 3500 万+ 笔=生态非概念验证；🔴 直接相关 Paxon 的 Agent×Payments Hackathon 方向=「可审计结算」层现成组件，做架构时直接参考） | `notes/ramp-x402-agent-payments-20260821.md` |
 | **扫链方法论（HunterOnlyETH 32.8k）**（meme 扫链两维度=速度×准确度（反应力+中英阅读理解）；纪昌学射三阶段练习=不断练习琢磨反思迭代；真实经验=与母语英语者比扫链的劣势/新市场前十天空窗；对我们的映射=速度=延迟竞争（BAM 35ms）/准确度=付费方五问，「机器执行+人定阈值」比单人扫链更结构化） | `notes/chain-scanning-method-hunter-20260821.md` |
