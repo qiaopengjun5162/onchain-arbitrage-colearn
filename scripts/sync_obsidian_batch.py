@@ -35,6 +35,7 @@ MANIFEST = [
     ("coolshell-outperform-most-people-20260821", "01 角色与配置", "学习方法论：如何超过大多数人", "methodology"),
     ("funding-arb-execution-delta-spread-20260821", "03 策略假设", "资金费套利执行认知（价差是生死线）", "strategy"),
     ("first-sf-trade-rehearsal-20260822", "03 策略假设", "实操第一课：筛选流水线（牛市叙事→算账→结论）", "strategy"),
+    ("mistaken-limit-order-arb-line-20260822", "03 策略假设", "错误限价单事件：别人的错误=我们的猎物", "strategy"),
     ("d17-corridor-spread-histogram-20260821", "02 市场地图", "D17 跨池价差 11 天分布回测", "market-map"),
     ("d18-backtest-event-window-20260821", "02 市场地图", "D18 回测事件窗口标注 v0", "market-map"),
     ("bruce-investment-rules-20260821", "07 共学群友", "Bruce 投资归因规律与套利六级淘汰", "colearners"),
