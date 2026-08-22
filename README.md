@@ -204,6 +204,7 @@ Solana 单独作为一条研究线：先研究交易结构、DEX/perp、Jito/MEV
 
 - `scripts/funding_basis_viz.py` — 历史费率×基差可视化（Bybit 公开 API）：`python scripts/funding_basis_viz.py --symbols BTC,ETH,SOL --days 30`，输出图+文字摘要（当前值/区间/分位）
 - `scripts/bstock_convergence_watchdog.py` — bStock 开盘收敛异常监控（cron ba79519e36cb，周一至五 21:00-22:55 每 15 分钟，≥150bps 才推）
+- `scripts/anomalous_order_radar.py` — CEX 异常挂单雷达（错误单套利线第 1 档）：扫 Bybit+Binance 40 币现货深盘 500 档，找偏离中价 ≥2% 且名义 ≥$5K 的折价卖单/溢价买单，`--quiet` watchdog 模式挂 cron；弱信号（≥1%/$3K）落盘 `data/anomalous_order_scan.jsonl` 统计频率；首次实测（08-22）主流+中盘全干净 = 错误单稀有，价值在波动窗口
 
 官网打卡入口：
 
