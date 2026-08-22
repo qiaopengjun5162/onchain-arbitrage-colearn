@@ -202,7 +202,8 @@ Solana 单独作为一条研究线：先研究交易结构、DEX/perp、Jito/MEV
 
 ## 工具（2026-08-22 新增）
 
-- `scripts/funding_basis_viz.py` — 历史费率×基差可视化（Bybit 公开 API）：`python scripts/funding_basis_viz.py --symbols BTC,ETH,SOL --days 30`，输出图+文字摘要（当前值/区间/分位）
+- `scripts/funding_basis_viz.py` — 历史费率×基差可视化（OKX 公开 API）：`python scripts/funding_basis_viz.py --symbols BTC,ETH,SOL --days 30`，输出图+文字摘要（当前值/区间/分位）；cron `a8e4a979cdb0` 每周一 9:00 自动推三巨头面板
+- `scripts/abnormal_order_radar.py` — CEX 异常挂单雷达（错误单扫描第 1 档）：`python scripts/abnormal_order_radar.py --threshold-pct 2.0 --min-usd 5000`；实测结论=CEX 主流币深盘无错误单（做市商维护干净），主战场在链上订单簿/暴涨窗口，脚本保留复用
 - `scripts/bstock_convergence_watchdog.py` — bStock 开盘收敛异常监控（cron ba79519e36cb，周一至五 21:00-22:55 每 15 分钟，≥150bps 才推）
 - `scripts/anomalous_order_radar.py` — CEX 异常挂单雷达（错误单套利线第 1 档）：扫 Bybit 永续 + Binance 现货 40 币深盘 500 档，三级分类——L1 穿价单（ask≤best_bid，瞬间可吃）/ L2 近中价偏离（卖低于中价/买高于中价，≥$3K）/ L3 远墙（偏离≥2% 且名义≥$5K，常驻鲸鱼墙只落盘不推送）；`--quiet` watchdog 挂 cron（每 15 分钟，有 L1/L2 才推）；落盘 `data/anomalous_order_scan.jsonl`（L2 频率）+ `data/anomalous_walls.jsonl`（L3 聚合 top10，自动轮转）；实测（08-22）平静市况 L1/L2≈0、L3 常驻（SOL ±2-5% 有数百万美元墙）——雷达价值在波动窗口
 

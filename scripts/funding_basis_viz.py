@@ -46,44 +46,45 @@ def http_json(url, timeout=30):
     return json.loads(opener.open(req, timeout=timeout).read())
 
 
-def fetch_bybit_funding(symbol: str, limit: int = 500):
-    """Bybit 永续历史资金费率（linear）。返回 [(ts, rate_8h)] 升序。"""
-    sym = f"{symbol}USDT"
+def fetch_okx_funding(symbol: str, limit: int = 500):
+    """OKX 永续历史资金费率。返回 [(ts, rate_8h)] 升序。"""
+    inst = f"{symbol}-USDT-SWAP"
     out = []
-    cursor = None
+    before = None
     while len(out) < limit:
-        url = (f"https://api.bybit.com/v5/market/funding/history?category=linear"
-               f"&symbol={sym}&limit=200")
-        if cursor:
-            url += f"&cursor={cursor}"
+        url = "https://www.okx.com/api/v5/public/funding-rate-history?instId=" + inst + "&limit=100"
+        if before:
+            url += f"&before={before}"
         try:
             d = http_json(url)
-        except Exception as e:
+        except Exception:
             break
-        if d.get("retCode") != 0:
+        if d.get("code") != "0":
             break
-        rows = d["result"]["list"]
+        rows = d.get("data", [])
         if not rows:
             break
         for r in rows:
-            out.append((int(r["fundingRateTimestamp"]) / 1000, float(r["fundingRate"])))
-        cursor = d["result"].get("nextPageCursor")
-        if not cursor or len(rows) < 200:
+            out.append((int(r["fundingTime"]) / 1000, float(r["realizedRate"])))
+        before = rows[-1]["fundingTime"]
+        if len(rows) < 100:
             break
     out.sort()
     return out[-limit:]
 
 
-def fetch_bybit_klines(symbol: str, interval: str = "60", limit: int = 720):
-    """Bybit K线（linear 永续 / spot 现货）。返回 [(ts, close)] 升序。"""
-    def one(category):
-        url = (f"https://api.bybit.com/v5/market/kline?category={category}"
-               f"&symbol={symbol}USDT&interval={interval}&limit={limit}")
+def fetch_okx_klines(symbol: str, interval: str = "1H", limit: int = 720):
+    """OKX K线（SWAP 永续 / SPOT 现货）。返回 [(ts, close)] 升序。"""
+    def one(inst):
+        url = (f"https://www.okx.com/api/v5/market/candles?instId={inst}"
+               f"&bar={interval}&limit={limit}")
         d = http_json(url)
-        if d.get("retCode") != 0:
+        if d.get("code") != "0":
             return []
-        return [(int(r[0]) / 1000, float(r[4])) for r in d["result"]["list"]]
-    return one("linear"), one("spot")
+        # OKX 返回倒序 [ts, o, h, l, c, ...]
+        rows = d.get("data", [])
+        return [(int(r[0]) / 1000, float(r[4])) for r in rows]
+    return one(f"{symbol}-USDT-SWAP"), one(f"{symbol}-USDT")
 
 
 def percentile(v, series):
@@ -110,7 +111,7 @@ def main():
         ax_f, ax_b = axes[0][col], axes[1][col]
 
         # ---- 费率历史 ----
-        rates = fetch_bybit_funding(sym, limit=max(90, args.days * 3))
+        rates = fetch_okx_funding(sym, limit=max(90, args.days * 3))
         if not rates:
             summary_lines.append(f"{sym}: 费率历史拉取失败")
             ax_f.set_title(f"{sym}（无数据）")
@@ -133,7 +134,7 @@ def main():
         ax_f.tick_params(labelsize=9)
 
         # ---- 基差历史 ----
-        perp, spot = fetch_bybit_klines(sym)
+        perp, spot = fetch_okx_klines(sym)
         if perp and spot:
             common_ts = {p[0] for p in perp} & {s[0] for s in spot}
             pp = {t: c for t, c in perp if t in common_ts}
@@ -169,7 +170,7 @@ def main():
             f"区间 [{min(r_f):+.4f}, {max(r_f):+.4f}]%/8h | 分位 {pct_f:.0f}% | "
             f"观测 {len(r_f)} 期")
 
-    fig.suptitle(f"历史费率×基差面板（Bybit，截至 {dt.datetime.now(tz=dt.timezone.utc):%Y-%m-%d %H:%M} UTC）",
+    fig.suptitle(f"历史费率×基差面板（OKX，截至 {dt.datetime.now(tz=dt.timezone.utc):%Y-%m-%d %H:%M} UTC）",
                  fontsize=14, y=0.99)
     fig.tight_layout(rect=(0, 0, 1, 0.97))
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
