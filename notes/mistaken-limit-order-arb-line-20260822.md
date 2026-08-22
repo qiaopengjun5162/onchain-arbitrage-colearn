@@ -37,6 +37,6 @@
 
 ## 下一步
 
-- ✅ **2026-08-22 已落地第 1 档**：`scripts/anomalous_order_radar.py`（Bybit+Binance 40 币现货深盘 500 档，严格线=偏离中价 ≥2% 且名义 ≥$5K；`--quiet` watchdog 挂 cron；弱信号落盘 `data/anomalous_order_scan.jsonl`）
-- 首轮实测：80 本订单簿 0 严格信号 —— 平静市况主流+中盘深盘干净，深位大单基本是灰尘单（最大 $1.8K）；错误单稀有短命，雷达价值在暴涨/暴跌波动窗口
+- ✅ **2026-08-22 已落地第 1 档**：`scripts/anomalous_order_radar.py` v2（Bybit 永续 + Binance 现货 40 币深盘 500 档；L1 穿价 / L2 近中价≥$3K 推送 / L3 远墙≥2%/$5K 只落盘；`--quiet` watchdog 挂 cron 每 15 分钟；落盘 `data/anomalous_order_scan.jsonl` + `data/anomalous_walls.jsonl` 自动轮转）
+- 首轮实测：L1/L2≈0（平静市况错误单稀有短命）；L3 远墙常驻——SOL 永续 ±2-5% 有 $2.5M 买墙/$5.4M 卖墙，XRP/SUI/1INCH 各有大墙；雷达价值在暴涨/暴跌波动窗口（L1/L2 集中出现）
 - 跑 1-2 周频率数据后决定：是否加第 2 档（Phoenix/OpenBook 链上订单簿）/ 第 3 档（暴涨触发窗口 combo）
