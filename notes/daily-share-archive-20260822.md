@@ -69,3 +69,19 @@
   - 价格分布与帖称玩法不符：≥60 分买单 2550 笔（帖称「20-60 分就跑」），大量 >60 分持仓
 - **结论：声称不可信**——「177u→98 万」是拿百万级账户 3 天批量操作的结果包装成小本金神话引流；策略框架（低价进高价出+纪律）本身是老生常谈，无可复制性。**不跟随，推广帖**
 - 方法沉淀：PM 收益声称核验三步（时间戳聚合 → 资金量级重建 → 返佣/via 检查），与 `pm-yesno-lock-verify-20260821.md` 互证
+
+## 9. Solana 官方周报 @solana（229 likes，40k views）— 生态快照
+
+- 内容（官方周报 Read/Watch/Listen 三栏）：
+  - **Read**：Securitize+Neuberger 新代币化固收基金 / 韩国新韩银行×Solana Foundation×Etherfuse×Orca 代币化基金发行 / **Solana Agave 4.2：租金削减 90% + 迈向 200ms 时隙** / Cash App 通过 MoonPay 支持代币购买 / **Solana 代币化股票市场规模达 $465M（Sunrise 上线医疗股）** / Ramp×x402 AI Agent 支付
+  - Watch/Listen：MoneyGram CEO 访谈、AI Agent 经济、欧稳定币等（宏观，略）
+- **与我们方向的关系**：
+  1. **代币化股票 $465M + Sunrise 医疗股** = 股票 RWA 线继续扩张（今天的 bStock 线互证：Coinbase 等巨头 bStock 已有百万级日量）
+  2. **Agave 4.2 租金削减 + 200ms 时隙** = 与我们监控相关（350ms→200ms 时隙是延迟竞争升级，BAM 35ms 已核验过）
+  3. x402 数据（之前已归档）
+- 核验：官方账号发布，生态数据权威；$465M 数字为官方口径
+
+## 汇总更新（09/09 全部归档）
+
+- 今日共 9 条分享全部处理：4 条归档在主体笔记（HL 面板/NautilusTrader/Hermes 生态/交易哲学）+ 5 条追加（Lighter 工具/行情频道/EmberCN/鸟哥 PM 核验/Solana 官方周报）
+- 其中 2 条核验出真伪：EmberCN（真，链上可查）、鸟哥 177u 滚 98 万（假，返佣矩阵）
