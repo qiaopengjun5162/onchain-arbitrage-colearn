@@ -24,6 +24,7 @@
 | **Jito BAM 拍卖 50ms→35ms 变更**（核验生效：getEpochInfo epoch=1020 进度 12.1%=已生效；背景=350ms 时隙时序；**Block Engine 拍卖仍 50ms=我们 pipeline 不受影响**；未来接 BAM 需适配 35ms 窗口；BAM=块空间拍卖重构（SEV-SNP/第三方节点扩展期）；350ms 时隙=延迟竞争升级） | `notes/jito-bam-35ms-20260821.md` |
 | **SOL 巨鲸浮盈核验——软造假第三例**（Ai 姨帖：SOL 20x 51.7 万枚持仓/浮盈 596 万全真，但 totalRawUsd=-3870 万累计亏损被隐藏（净亏 3270 万）；与 HYPE(-8368万)/ETH(-2907万)同款套路=「浮盈真+累计亏隐藏」是巨鲸浮盈帖标准手法；HL 三板斧 10 秒定生死） | `notes/sol-whale-verify-20260821.md` |
 | **实操第一课：从「牛市来了」到完整筛选流水线**（Paxon 要实操：全市场扫描 960 币无合格候选→BTC/ETH/SOL 费率 0.01%/8h 年化 11% 离进场线差 5 倍→$10K 算账回本 4 天=给交易所打工→BTW7 面板否决（四所无现货只能裸空）→COINX 否决（Gate 受限+深度 $1.8K 玩具仓）→bStock 线可用（COIN +222bps 是合理定价非错价，机会在开盘收敛异常）；沉淀进场三条件+操作五步；新上线 bstock_conv 开盘收敛监控（周一至五 21:00-22:55 每 15 分钟，≥150bps 才推）） | `notes/first-sf-trade-rehearsal-20260822.md` |
+| **错误限价单事件：别人的错误=我们的猎物**（1inch 用户挂限价单忘关，转币瞬间以低于市价 5-6% 成交亏 300U；Paxon 观点「有人犯错就有套利机会」→ 提炼错误单雷达三档：CEX 深盘僵尸单（可立即做）/Solana 订单簿 DEX/暴涨触发窗口；泼冷水=单子存在时间极短必须机器扫，本质是价差唬人镜像） | `notes/mistaken-limit-order-arb-line-20260822.md` |
 | **周会实录：TUT 爆仓一手复盘 + 群友策略地图**（Ethanlxl 复盘 TUT/BICO 狗庄屠宰=费率诱导→时仓积累→几分钟拉 50-80%→爆仓→BG/GT 罕见赔付（按爆仓前 3 点价）；「压路机前捡钢镚」/杠杆 0.2-0.5x 才安全/价差 50-80% 捡尸体=一单顶三月/币安限制开仓=最强信号；king W3 USD 荷兰拍吃磨损（公开即死）；feiye 废弃合约捡漏（无机器人竞争）；=执行框架实盘验证+新候选方向） | `notes/weekly-meeting-tut-postmortem-20260821.md` |
 | **DUSD 地址核验**（MachineShare 合约=Makina Finance 收益稳定币份额（USDC 记账/queued exits）；价格 $1.036 溢价 3.6% 但 24h 量仅 $19.5+退出排队=账面溢价不可套；ATH $1.39→1.036 溢价是波动非稳定；与 sUSDe/USDL 同族；地址核验流程跑通：RPC code→blockscout 合约名→CoinGecko 市场→Pharos 画像） | `notes/dusd-addr-verify-20260821.md` |
 | **Aave V3 批量清算取证 + 龙王地址核验**（ETH 交易=闪贷清算 bot 一笔清 6 仓位（LiquidationCall 指纹+0.1gwei flashbots+dust 全清），=我们清算方向实证样本；龙王=真实盈利账户（累计+210 万，BTC 长空吃资金费+CXMT/UNITREE pre-IPO 主战场），「资金费吃得比仓位大」=套费率不套方向活案例） | `notes/aave-v3-batch-liquidation-forensics-20260821.md` + `notes/dragon-addr-verify-20260821.md` |
@@ -198,6 +199,11 @@
 Solana 单独作为一条研究线：先研究交易结构、DEX/perp、Jito/MEV、priority fee、CU、数据索引、RPC/Geyser 和路由聚合，不急着实盘执行。
 
 入口：[notes/solana/README.md](notes/solana/README.md)
+
+## 工具（2026-08-22 新增）
+
+- `scripts/funding_basis_viz.py` — 历史费率×基差可视化（Bybit 公开 API）：`python scripts/funding_basis_viz.py --symbols BTC,ETH,SOL --days 30`，输出图+文字摘要（当前值/区间/分位）
+- `scripts/bstock_convergence_watchdog.py` — bStock 开盘收敛异常监控（cron ba79519e36cb，周一至五 21:00-22:55 每 15 分钟，≥150bps 才推）
 
 官网打卡入口：
 
