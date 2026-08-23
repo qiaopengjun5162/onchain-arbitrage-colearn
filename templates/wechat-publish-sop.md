@@ -65,7 +65,7 @@
 | D13 发现到执行 | 100011752（已发布 08-19，https://mp.weixin.qq.com/s/kVcOVxnYve2tc5wWfmSf8A） | 08-19 |
 | D14 五条铁律+周认知 | 100011786（已发布 08-20，https://mp.weixin.qq.com/s/osswOFlr7SPw2vg_DF3wvw） | 08-20 |
 | D15 事件窗口套利 | 100011805（已发布 08-21，https://mp.weixin.qq.com/s/7UmyXsWtRtprDbKRTfkO8w） | 08-21 |
-| D16 资金费风控框架 | 100011854（已发布 08-22，链接待补） | 08-22 |
+| D16 资金费风控框架 | 100011854（已发布 08-22，https://mp.weixin.qq.com/s/AcB7jSyjtj2f8Pjl03rNVA） | 08-22 |
 | D17 跨池价差11天回测 | 100011895（已发布 08-23，https://mp.weixin.qq.com/s/7AHHoFNQ_OkictmqjR8BXA） | 08-23 |
 
 ## 常见坑
