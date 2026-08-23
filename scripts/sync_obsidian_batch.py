@@ -70,6 +70,13 @@ MANIFEST = [
     ("pm-yesno-lock-verify-20260821", "07 共学群友", "Crypto老鹰 PM 锁利机器人核验", "colearners"),
     ("solana-explorer-update-20260821", "04 工具与协议", "Solana Explorer 新功能", "tool"),
     ("rise-chain-ecosystem-20260821", "02 市场地图", "RISE 链生态观察", "market-map"),
+    ("d19-four-direction-comparison-20260823", "03 策略假设", "D19 四方向深度对比表 v1", "strategy"),
+    ("binance-etf-contract-arb-20260823", "03 策略假设", "币安 ETF 合约套利（周末窗口）", "strategy"),
+    ("cost-model-template-gas-semantic-20260823", "04 工具与协议", "成本模型模板（含 gas 语义检查）", "tool"),
+    ("group-share-five-verify-20260823", "07 共学群友", "群分享五连核验（Lighter/筛选法/窄赛道/归集/逆势）", "colearners"),
+    ("group-share-triple-verify-20260823", "07 共学群友", "群分享三连核验（ETF套利/a-stock-data/Boros）", "colearners"),
+    ("support-resistance-tutorial-20260823", "06 失败复盘", "48K纯白 支撑压力位教程", "postmortem"),
+    ("sec-supply-side-reform-20260823", "02 市场地图", "加密供给侧改革与 SEC 代币融资豁免", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -110,6 +117,13 @@ DATE_OVERRIDES = {
     "bsc-redeem-collateral-forensics-20260821": "2026-08-21",
     "bsc-flashloan-repay-forensics-20260821": "2026-08-21",
     "pm-yesno-lock-verify-20260821": "2026-08-21",
+    "d19-four-direction-comparison-20260823": "2026-08-23",
+    "binance-etf-contract-arb-20260823": "2026-08-23",
+    "cost-model-template-gas-semantic-20260823": "2026-08-23",
+    "group-share-five-verify-20260823": "2026-08-23",
+    "group-share-triple-verify-20260823": "2026-08-23",
+    "support-resistance-tutorial-20260823": "2026-08-23",
+    "sec-supply-side-reform-20260823": "2026-08-23",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
