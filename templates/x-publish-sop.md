@@ -55,6 +55,10 @@ env = {"HTTPS_PROXY": "http://127.0.0.1:7890", "HTTP_PROXY": "http://127.0.0.1:7
 | D11 | x.com/qiaopengjun/status/2089341248033501244 | 9（2/8 拆两条 + 5 正文 + 标签条带 TG + 公众号条） | 08-17 发布 |
 | D12 | x.com/qiaopengjun/status/2089645125786022018 | 9（8 正文 + 末条合并 TG/公众号链接/4 hashtag） | 08-18 发布 |
 | D13 | x.com/qiaopengjun/status/2090354571478786201 | 9（8 正文 + 末条合并 TG/公众号链接/4 hashtag；4/9 LI.FI 被 X 自动链接化为 t.co） | 08-20 发布 |
+| D14 | x.com/qiaopengjun/status/2090742711175549337 | 9（末条合并公众号链接+TG+4 hashtag，链接自动 t.co） | 08-21 发布 |
+| D15 | （草稿已出，未见发布记录，疑似未发） | - | - |
+| D16 | x.com/qiaopengjun/status/2091158131988664454 | 10（草稿 9 条，用户发布时拆 5/9 成两条；末条 TG+公众号+4 hashtag，用户去掉 TG+2 hashtag 留 #Solana #Web3） | 08-22 发布 |
+| D17 | x.com/qiaopengjun/status/2091445980784968115 | 10（与草稿 1-10 完全一致无拆分；末条公众号链接+TG+4 hashtag 全保留） | 08-23 发布 |
 
 ## 常见坑
 
