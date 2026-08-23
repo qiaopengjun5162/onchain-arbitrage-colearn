@@ -78,6 +78,17 @@ MANIFEST = [
     ("support-resistance-tutorial-20260823", "06 失败复盘", "48K纯白 支撑压力位教程", "postmortem"),
     ("sec-supply-side-reform-20260823", "02 市场地图", "加密供给侧改革与 SEC 代币融资豁免", "market-map"),
     ("hermes-tailscale-server-init-20260823", "04 工具与协议", "Hermes + Tailscale 服务器初始化工作流", "tool"),
+    ("hermes-telegram-workstation-20260823", "04 工具与协议", "Hermes + Telegram 多任务工作台", "tool"),
+    ("laoying-pm-5min-script-verify-20260823", "07 共学群友", "Crypto老鹰 PM 5min 脚本推广核验（返佣矩阵#1）", "colearners"),
+    ("pm-winners-behavior-20260823", "03 策略假设", "PM 赢家行为研究：14,441 地址筛出 12 赢家", "strategy"),
+    ("pm-position-building-20260823", "03 策略假设", "PM 仓位构建：50% 胜率怎么赢", "strategy"),
+    ("laoying-pm-15min-assistant-verify-20260823", "07 共学群友", "Crypto老鹰 PM 15min 助手推广核验（返佣矩阵#2）", "colearners"),
+    ("skew-kurtosis-trading-20260823", "03 策略假设", "偏度/曲率交易：事件窗口=尾部收益化", "strategy"),
+    ("pm-concentrated-betting-20260823", "03 策略假设", "PM 极简重注案例：确定性>出手次数", "strategy"),
+    ("laoying-pm-news-arb-verify-20260823", "07 共学群友", "Crypto老鹰 PM 新闻套利推广核验（返佣矩阵#3）", "colearners"),
+    ("zcash-state-bloat-trump-trades-20260823", "02 市场地图", "Zcash 屏蔽池数据爆炸 + 特朗普账户程序化交易", "market-map"),
+    ("term-finance-governance-attack-forensics-20260823", "02 市场地图", "Term Finance 治理攻击取证（份额质押投票权俘获）", "market-map"),
+    ("solana-weekly-20260823", "02 市场地图", "Solana 官方周报：币股 RWA 三连击", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -126,6 +137,17 @@ DATE_OVERRIDES = {
     "support-resistance-tutorial-20260823": "2026-08-23",
     "sec-supply-side-reform-20260823": "2026-08-23",
     "hermes-tailscale-server-init-20260823": "2026-08-23",
+    "hermes-telegram-workstation-20260823": "2026-08-23",
+    "laoying-pm-5min-script-verify-20260823": "2026-08-23",
+    "pm-winners-behavior-20260823": "2026-08-23",
+    "pm-position-building-20260823": "2026-08-23",
+    "laoying-pm-15min-assistant-verify-20260823": "2026-08-23",
+    "skew-kurtosis-trading-20260823": "2026-08-23",
+    "pm-concentrated-betting-20260823": "2026-08-23",
+    "laoying-pm-news-arb-verify-20260823": "2026-08-23",
+    "zcash-state-bloat-trump-trades-20260823": "2026-08-23",
+    "term-finance-governance-attack-forensics-20260823": "2026-08-23",
+    "solana-weekly-20260823": "2026-08-23",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
