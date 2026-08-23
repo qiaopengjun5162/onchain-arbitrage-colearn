@@ -77,6 +77,7 @@ MANIFEST = [
     ("group-share-triple-verify-20260823", "07 共学群友", "群分享三连核验（ETF套利/a-stock-data/Boros）", "colearners"),
     ("support-resistance-tutorial-20260823", "06 失败复盘", "48K纯白 支撑压力位教程", "postmortem"),
     ("sec-supply-side-reform-20260823", "02 市场地图", "加密供给侧改革与 SEC 代币融资豁免", "market-map"),
+    ("hermes-tailscale-server-init-20260823", "04 工具与协议", "Hermes + Tailscale 服务器初始化工作流", "tool"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -124,6 +125,7 @@ DATE_OVERRIDES = {
     "group-share-triple-verify-20260823": "2026-08-23",
     "support-resistance-tutorial-20260823": "2026-08-23",
     "sec-supply-side-reform-20260823": "2026-08-23",
+    "hermes-tailscale-server-init-20260823": "2026-08-23",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
