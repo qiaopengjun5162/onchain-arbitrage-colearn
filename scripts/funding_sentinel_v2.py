@@ -58,7 +58,13 @@ def build_exchange(name: str):
 
 
 def fetch_funding_zscore(exchange, swap_sym: str, lookback: int = 30) -> dict:
-    """拉历史 funding → 计算当前值相对滚动历史的 Z-score。"""
+    """拉历史 funding → 计算当前值相对滚动历史的 Z-score。
+
+    v2.1（2026-08-23 D19 补缺，052/057 教训）：短窗口系统性骗人——
+    BILL 4 天窗口 +126% 同号 100%，拉满 88 天仅 +13.57%（高估 9.3 倍）；
+    SKR/WLFI/WLD 长窗口符号反转。因此同时算短窗口(8次=~3天)和长窗口(30次=~10天)，
+    并加「换手率」：短窗口 sign 相对长窗口 sign 的变化率，>50% = 筛的是噪音。
+    """
     try:
         hist = exchange.fetch_funding_rate_history(swap_sym, limit=lookback + 5)
         if len(hist) < 10:
@@ -72,7 +78,33 @@ def fetch_funding_zscore(exchange, swap_sym: str, lookback: int = 30) -> dict:
         mean = statistics.mean(past)
         stdev = statistics.stdev(past) if len(past) > 1 else 0
         z = (cur - mean) / stdev if stdev > 0 else 0
-        return {"funding": cur, "mean": mean, "stdev": stdev, "zscore": z, "n": len(rates)}
+
+        # ---- 双窗口对比（052/057）----
+        short_n = min(8, len(past))    # 短窗口：近 8 次结算（~3 天）
+        long_n = min(30, len(past))    # 长窗口：近 30 次（~10 天）
+        short_rates = past[-short_n:]
+        long_rates = past[-long_n:]
+        short_mean = statistics.mean(short_rates) if short_rates else 0
+        long_mean = statistics.mean(long_rates) if long_rates else 0
+        # 短 vs 长 同号率（同号 = 稳定；异号 = 反转风险）
+        def sign_of(v):
+            return 1 if v > 0 else (-1 if v < 0 else 0)
+        s_sign = sign_of(short_mean)
+        l_sign = sign_of(long_mean)
+        same_sign = (s_sign == l_sign)
+        # 换手率：短窗口内 sign 变化次数 / (n-1)（052: 换手 >50% = 噪音）
+        if len(short_rates) >= 3:
+            sign_changes = sum(1 for i in range(1, len(short_rates))
+                               if sign_of(short_rates[i]) != sign_of(short_rates[i-1]))
+            turnover = sign_changes / (len(short_rates) - 1)
+        else:
+            turnover = 0.0
+        # 短窗口高估倍数（|短均值| / |长均值|，同号时才计算）
+        inflation = abs(short_mean) / abs(long_mean) if long_mean != 0 and same_sign else None
+
+        return {"funding": cur, "mean": mean, "stdev": stdev, "zscore": z, "n": len(rates),
+                "short_mean": short_mean, "long_mean": long_mean,
+                "same_sign": same_sign, "turnover": turnover, "inflation": inflation}
     except Exception:
         return {}
 
@@ -170,6 +202,9 @@ def collect_snapshot(symbols: list) -> list:
                     "funding": fz["funding"], "zscore": fz["zscore"],
                     "mean": fz["mean"], "oi": oi, "price": price, "pct": pct,
                     "basis": basis, "basis_pctile": basis_p,
+                    "short_mean": fz.get("short_mean"), "long_mean": fz.get("long_mean"),
+                    "same_sign": fz.get("same_sign"), "turnover": fz.get("turnover"),
+                    "inflation": fz.get("inflation"),
                 })
             except Exception:
                 continue
@@ -208,6 +243,10 @@ def aggregate(rows: list) -> list:
         prices = [i["price"] for i in items if i.get("price")]
         pcts = [i["pct"] for i in items if i.get("pct") is not None]
         ois = [i["oi"] for i in items if i.get("oi")]
+        # 双窗口指标：取 turnover 最高（最不稳的所）+ inflation 最高（最骗人的所）
+        turnovers = [i["turnover"] for i in items if i.get("turnover") is not None]
+        inflations = [i["inflation"] for i in items if i.get("inflation") is not None]
+        same_signs = [i["same_sign"] for i in items if i.get("same_sign") is not None]
         # basis 聚合：均值 + 最高分位（单所高即高——接盘信号取最拥挤的所）
         basis_items = [i for i in items if i.get("basis") is not None]
         basis_p_items = [i for i in items if i.get("basis_pctile") is not None]
@@ -220,6 +259,9 @@ def aggregate(rows: list) -> list:
             "pct": statistics.mean(pcts) if pcts else None,
             "basis_avg": statistics.mean(i["basis"] for i in basis_items) if basis_items else None,
             "basis_max_pctile": max(i["basis_pctile"] for i in basis_p_items) if basis_p_items else None,
+            "turnover_max": max(turnovers) if turnovers else None,
+            "inflation_max": max(inflations) if inflations else None,
+            "same_sign_all": all(same_signs) if same_signs else None,
             "ex_count": len(items),
         })
     # 横截面 rank：按 z-score 排序（正 = 高于自身基线）
@@ -230,15 +272,23 @@ def aggregate(rows: list) -> list:
 
 
 def classify(row: dict) -> str:
-    """三态分类：拥挤积累 / 拥挤出清 / 被动扛单 / 正常（+ basis 分位交叉）"""
+    """三态分类：拥挤积累 / 拥挤出清 / 被动扛单 / 正常（+ basis 分位交叉）
+
+    v2.1（2026-08-23）：加双窗口过滤——换手率 >50% = 噪音（052 教训），
+    高费率但 sign 在短窗口内乱翻的不算「拥挤积累」，降级为「高费率(高换手=噪音)」。
+    """
     z = abs(row.get("max_z", row.get("zscore", 0)))
     pct = row["pct"] if row["pct"] is not None else 0
     basis_high = (row.get("basis_max_pctile") or 0) >= BASIS_PCTILE_HIGH
+    turnover = row.get("turnover_max")
+    noisy = turnover is not None and turnover > 0.5
     # 疑似诱盘：跨所 funding 差 ≥ 阈值（TUT 案例：bg/gate 2%/4h vs binance≈0）
     # 巨大资金费差吸引套利者做空高费所 → 插针收割。最高优先级，优先于一切信号。
     if (row.get("funding_spread") or 0) >= FUNDING_SPREAD_ALERT:
         return "疑似诱盘"   # 跨所资金费差异常 = 价差可能是诱饵（notes/tut-funding-trap）
     if z >= ZSCORE_HIGH:
+        if noisy:
+            return "高费率(高换手=噪音)"   # 052：sign 乱翻 = 筛的是噪音，非拥挤
         if row.get("oi_avg") and abs(pct) < PRICE_FLAT_PCT:
             return "被动扛单"   # 高费率 + 价格不动 = 多单死扛
         if row.get("oi_avg") is None:
@@ -277,17 +327,21 @@ def main():
                     w.writerow({**r, "class": classify(r)})
         if signals:
             print(f"\n=== {datetime.now(timezone.utc).strftime('%H:%M:%S')} UTC 资金费率信号 ===")
-            print(f"{'币种':<8}{'OI加权funding':>16}{'Z-avg':>8}{'Z-max':>8}{'Rank':>6}{'24h%':>8}{'basis分位':>9}  分类")
+            print(f"{'币种':<8}{'OI加权funding':>16}{'Z-avg':>8}{'Z-max':>8}{'Rank':>6}{'24h%':>8}{'basis分位':>9}{'换手':>7}{'高估':>7}  分类")
             for r in agg:  # 显示全部排名，标出显著
                 cls = classify(r)
                 bp = r.get("basis_max_pctile")
                 bp_s = f"{bp:.2f}" if bp is not None else "  -"
+                to = r.get("turnover_max")
+                to_s = f"{to:.2f}" if to is not None else "  -"
+                inf = r.get("inflation_max")
+                inf_s = f"{inf:.1f}x" if inf is not None else "  -"
                 mark = " ★" if abs(r.get("max_z", r.get("zscore", 0))) >= ZSCORE_HIGH else ""
                 if cls == "疑似诱盘":
                     mark = " ⚠️"   # 诱盘优先警示
                 print(f"{r['symbol']:<8}{r['funding']*100:>13.4f}%{r['zscore']:>8.2f}"
                       f"{r['max_z']:>8.2f}{r['rank']:>6}"
-                      f"{r['pct'] if r['pct'] is not None else 0:>7.2f}%{bp_s:>9}  {cls}{mark}")
+                      f"{r['pct'] if r['pct'] is not None else 0:>7.2f}%{bp_s:>9}{to_s:>7}{inf_s:>7}  {cls}{mark}")
         elif not args.quiet:
             print(f"[{datetime.now(timezone.utc).strftime('%H:%M:%S')} UTC] 无显著 funding 信号 ({len(symbols)} 币 × {len(EXCHANGES)} 所)")
 
