@@ -89,6 +89,8 @@ MANIFEST = [
     ("zcash-state-bloat-trump-trades-20260823", "02 市场地图", "Zcash 屏蔽池数据爆炸 + 特朗普账户程序化交易", "market-map"),
     ("term-finance-governance-attack-forensics-20260823", "02 市场地图", "Term Finance 治理攻击取证（份额质押投票权俘获）", "market-map"),
     ("solana-weekly-20260823", "02 市场地图", "Solana 官方周报：币股 RWA 三连击", "market-map"),
+    ("solana-native-bstock-lly-mrna-20260823", "03 策略假设", "Solana 原生币股：LLY/MRNA 闭市漂移实测", "strategy"),
+    ("taoli-tools-practice-cognition-20260823", "03 策略假设", "taoli tools 实操认知：大部分时间不成交", "strategy"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -148,6 +150,8 @@ DATE_OVERRIDES = {
     "zcash-state-bloat-trump-trades-20260823": "2026-08-23",
     "term-finance-governance-attack-forensics-20260823": "2026-08-23",
     "solana-weekly-20260823": "2026-08-23",
+    "solana-native-bstock-lly-mrna-20260823": "2026-08-23",
+    "taoli-tools-practice-cognition-20260823": "2026-08-23",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
