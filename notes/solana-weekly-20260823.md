@@ -29,7 +29,7 @@
 ## 判定
 
 归档。**币股 RWA 线宏观利好第 4 条证据链**（SEC 批代币化股票 → HIP-3 pre-IPO → 供给侧改革 → 本周 3 条）。可执行项：
-- [ ] 币股监控（binance_etf_spread_monitor）考虑加 $LLY/$MRNA（若现货/永续可交易）
+- [x] 币股监控加 $LLY/$MRNA —— **已执行**（2026-08-23）：价差核验 + 开盘收敛 watchdog 部署，见 `notes/solana-native-bstock-lly-mrna-20260823.md`（结论：深度玩具仓不进场，监控已上线 cron `1da3deea43ef`）
 - [ ] 350ms slot 对 Jito 管线的影响评估 → D20 主网迁移清单
 - [ ] HINC / KRW 基金持续跟踪（代币化基金 = 未来闭市漂移/净值价差新标的）
 
