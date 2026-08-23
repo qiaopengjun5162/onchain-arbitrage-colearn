@@ -1,12 +1,12 @@
 ---
-title: Solana 官方周报全文翻译：350ms 区块、40 亿 RWA、礼来莫德纳上链，附链上实测数据
-wechat_title: Solana 官方周报全文翻译：350ms 区块、40 亿 RWA、礼来莫德纳上链，附链上实测数据
+title: Solana 的钟走得更快了：350ms 区块、礼来莫德纳上链、40 亿 RWA 周报全解读
+wechat_title: Solana 的钟走得更快了：350ms 区块、礼来莫德纳上链、40 亿 RWA 周报全解读
 digest: Solana 官方 8 月 23 日周报全文中文翻译。350ms 区块首次削减，链上 RWA 破 40 亿，礼来莫德纳股票代币上线。翻译之外做了数据测试，莫德纳链上比美股贵 210bps，两个代币流动性都还很薄，规模不大。
 author: Paxon Qiao
 wechat_author: Paxon Qiao
 ---
 
-# Solana 官方周报全文翻译：350ms 区块、40 亿 RWA、礼来莫德纳上链，附链上实测数据
+# Solana 的钟走得更快了：350ms 区块、礼来莫德纳上链、40 亿 RWA 周报全解读
 
 > 原文：https://x.com/solana/status/2091504345216860553（Solana 官方账号，2026-08-23）
 
