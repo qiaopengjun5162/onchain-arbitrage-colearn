@@ -102,7 +102,7 @@
 {"slug": "2026-08-22-d16-first-rehearsal", "status": "rendered", "detail": ""}
 {"slug": "2026-08-22-d16-first-rehearsal", "status": "ready", "detail": "100011826"}
 {"slug": "2026-08-22-d18-first-rehearsal", "status": "rendered", "detail": ""}
-{"slug": "2026-08-22-d18-first-rehearsal", "status": "ready", "detail": "100011833"}
+{"slug": "2026-08-22-d18-first-rehearsal", "status": "superseded", "detail": "100011833 (replaced by 100011915)"}
 {"slug": "2026-08-20-d16-funding-arb-risk", "status": "rendered", "detail": ""}
 {"slug": "2026-08-20-d16-funding-arb-risk", "status": "ready", "detail": "100011840"}
 {"slug": "2026-08-20-d16-funding-arb-risk", "status": "rendered", "detail": ""}
@@ -117,3 +117,7 @@
 {"slug": "2026-08-21-d17-corridor-backtest", "status": "ready", "detail": "100011888"}
 {"slug": "2026-08-21-d17-corridor-backtest", "status": "rendered", "detail": ""}
 {"slug": "2026-08-21-d17-corridor-backtest", "status": "published", "detail": "100011895"}
+{"slug": "2026-08-22-d18-first-rehearsal", "status": "rendered", "detail": ""}
+{"slug": "2026-08-22-d18-first-rehearsal", "status": "ready", "detail": "100011915"}
+{"slug": "2026-08-22-d18-first-rehearsal", "status": "rendered", "detail": ""}
+{"slug": "2026-08-22-d18-first-rehearsal", "status": "ready", "detail": "100011915"}
