@@ -52,12 +52,13 @@ def fetch_ohlcv(ex_name, symbol, timeframe, days):
     return out
 
 
-def build_series(symbol, days):
-    """拉取并构建价差序列（Bybit−OKX close 价，bps）。"""
-    print(f"拉取 {symbol} 永续 5m kline（近 {days} 天）：Bybit + OKX ...")
-    by = fetch_ohlcv("bybit", symbol, "5m", days)
-    ok = fetch_ohlcv("okx", symbol, "5m", days)
-    print(f"  Bybit {len(by)} 根 / OKX {len(ok)} 根")
+def build_series(symbol, days, ex_pair=("bybit", "okx")):
+    """拉取并构建价差序列（ex_pair[0] − ex_pair[1] close 价，bps）。"""
+    ea, eb = ex_pair
+    print(f"拉取 {symbol} 永续 5m kline（近 {days} 天）：{ea} + {eb} ...")
+    by = fetch_ohlcv(ea, symbol, "5m", days)
+    ok = fetch_ohlcv(eb, symbol, "5m", days)
+    print(f"  {ea} {len(by)} 根 / {eb} {len(ok)} 根")
     bm = {b[0]: b for b in by}
     om = {b[0]: b for b in ok}
     common = sorted(set(bm) & set(om))
@@ -74,14 +75,14 @@ def build_series(symbol, days):
     return series
 
 
-def run_event_mode(symbol, days):
+def run_event_mode(symbol, days, ex_pair=("bybit", "okx")):
     """事件窗口测试：5m 内 |Δspread| ≥ JUMP 记一次瞬态事件，测其后 H 分钟内收敛率。
 
     假设：常驻价差不收敛（已验证），但瞬态突变（大单冲击/流动性失衡）后收敛。
     """
     JUMP = 50       # 5m 内 |Δspread| ≥ 50bps = 瞬态事件
     HORIZONS = [30, 60, 120]
-    series = build_series(symbol, days)
+    series = build_series(symbol, days, ex_pair)
     n = len(series)
     events = []
     for i in range(1, n):
@@ -122,11 +123,14 @@ def main():
     ap.add_argument("--days", type=int, default=14)
     ap.add_argument("--event-mode", action="store_true",
                     help="事件窗口测试：5m 内 |Δspread| ≥50bps 突变后收敛率")
+    ap.add_argument("--exchanges", default="bybit,okx",
+                    help="交易所对（逗号分隔，默认 bybit,okx；如 bybit,gate）")
     args = ap.parse_args()
+    ex_pair = tuple(args.exchanges.split(",")[:2])
     if args.event_mode:
-        run_event_mode(args.symbol, args.days)
+        run_event_mode(args.symbol, args.days, ex_pair)
         return 0
-    series = build_series(args.symbol, args.days)
+    series = build_series(args.symbol, args.days, ex_pair)
 
     # 事件 → 收敛判定
     n = len(series)
