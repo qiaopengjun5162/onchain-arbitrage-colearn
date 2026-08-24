@@ -52,23 +52,16 @@ def fetch_ohlcv(ex_name, symbol, timeframe, days):
     return out
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--symbol", default="SOL/USDT:USDT", help="永续符号（默认 SOL）")
-    ap.add_argument("--days", type=int, default=14)
-    args = ap.parse_args()
-
-    print(f"拉取 {args.symbol} 永续 5m kline（近 {args.days} 天）：Bybit + OKX ...")
-    by = fetch_ohlcv("bybit", args.symbol, "5m", args.days)
-    ok = fetch_ohlcv("okx", args.symbol, "5m", args.days)
+def build_series(symbol, days):
+    """拉取并构建价差序列（Bybit−OKX close 价，bps）。"""
+    print(f"拉取 {symbol} 永续 5m kline（近 {days} 天）：Bybit + OKX ...")
+    by = fetch_ohlcv("bybit", symbol, "5m", days)
+    ok = fetch_ohlcv("okx", symbol, "5m", days)
     print(f"  Bybit {len(by)} 根 / OKX {len(ok)} 根")
-
     bm = {b[0]: b for b in by}
     om = {b[0]: b for b in ok}
     common = sorted(set(bm) & set(om))
     print(f"  对齐 {len(common)} 根")
-
-    # 价差序列（用 close 价）
     series = []
     for ts in common:
         pb = bm[ts][4]
@@ -78,6 +71,62 @@ def main():
     print(f"  价差样本 {len(series)} 个，"
           f"min={min(s[1] for s in series):.1f} max={max(s[1] for s in series):.1f} bps "
           f"p50={sorted(s[1] for s in series)[len(series)//2]:.1f} bps")
+    return series
+
+
+def run_event_mode(symbol, days):
+    """事件窗口测试：5m 内 |Δspread| ≥ JUMP 记一次瞬态事件，测其后 H 分钟内收敛率。
+
+    假设：常驻价差不收敛（已验证），但瞬态突变（大单冲击/流动性失衡）后收敛。
+    """
+    JUMP = 50       # 5m 内 |Δspread| ≥ 50bps = 瞬态事件
+    HORIZONS = [30, 60, 120]
+    series = build_series(symbol, days)
+    n = len(series)
+    events = []
+    for i in range(1, n):
+        d = abs(series[i][1] - series[i - 1][1])
+        if d >= JUMP:
+            events.append((i, series[i][1], d))
+    print(f"\n=== 事件窗口测试（{symbol}，5m 突变 ≥{JUMP}bps）===")
+    print(f"瞬态事件数：{len(events)}")
+    if not events:
+        print("无事件——该币价差从不突变（完全高效）")
+        return
+    for H in HORIZONS:
+        n_conv = 0
+        n_half = 0
+        for (i, entry, jump) in events:
+            end_ts = series[i][0] + H * 60 * 1000
+            j = i
+            min_abs = abs(entry)
+            while j < n and series[j][0] <= end_ts:
+                min_abs = min(min_abs, abs(series[j][1]))
+                j += 1
+            if min_abs < 10:  # 回到走廊内
+                n_conv += 1
+            if min_abs <= abs(entry) * 0.5:  # 收窄一半（覆盖成本口径）
+                n_half += 1
+        print(f"  {H}min 内收敛回 <10bps：{n_conv}/{len(events)} = {n_conv/len(events)*100:.0f}%"
+              f" ｜ 收窄≥一半：{n_half}/{len(events)} = {n_half/len(events)*100:.0f}%")
+    # 突变方向示例（修时间戳 bug：ms→s）
+    for (i, entry, jump) in events[:5]:
+        t = series[i][0] // 1000
+        print(f"  例: {time.strftime('%m-%d %H:%M', time.gmtime(t))} UTC 突变 {jump:.0f}bps → 价差 {entry:+.0f}bps")
+    print("\n对照：常驻事件（上穿 30bps 后 4h 严格收敛率 0%）——若瞬态收敛率显著更高，事件驱动假设成立")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--symbol", default="SOL/USDT:USDT", help="永续符号（默认 SOL）")
+    ap.add_argument("--days", type=int, default=14)
+    ap.add_argument("--event-mode", action="store_true",
+                    help="事件窗口测试：5m 内 |Δspread| ≥50bps 突变后收敛率")
+    args = ap.parse_args()
+    if args.event_mode:
+        run_event_mode(args.symbol, args.days)
+        return 0
+    series = build_series(args.symbol, args.days)
 
     # 事件 → 收敛判定
     n = len(series)
