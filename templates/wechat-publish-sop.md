@@ -67,6 +67,7 @@
 | D15 事件窗口套利 | 100011805（已发布 08-21，https://mp.weixin.qq.com/s/7UmyXsWtRtprDbKRTfkO8w） | 08-21 |
 | D16 资金费风控框架 | 100011854（已发布 08-22，https://mp.weixin.qq.com/s/AcB7jSyjtj2f8Pjl03rNVA） | 08-22 |
 | D17 跨池价差11天回测 | 100011895（已发布 08-23，https://mp.weixin.qq.com/s/7AHHoFNQ_OkictmqjR8BXA） | 08-23 |
+| D18 牛市来了960币无一合格 | 100011915（已发布 08-24，https://mp.weixin.qq.com/s/JiPQ3AA7-snP9pYq-fTi8A） | 08-24 |
 
 ## 常见坑
 
