@@ -39,6 +39,8 @@ WATCH_HF = 1.2            # watchdog：HF ≤ 1.2 才算临近
 WATCH_COLLATERAL = 1_000_000  # watchdog：抵押品 ≥ $1M
 WATCH_TRIGGER = 0.02      # watchdog：触发跌幅 ≤ 2% 才报
 DEDUP_HOURS = 24          # 同 (user, market) 24h 去重
+USDE_BASE = "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34"
+DEPEG_ALERT = 0.995       # USDe 现货跌破 0.995 触发脱锚预警
 LOG_PATH = Path(__file__).resolve().parent.parent / "data" / "morpho_hf.jsonl"
 STATE_PATH = Path(__file__).resolve().parent.parent / "data" / "morpho_hf_state.json"
 
@@ -94,6 +96,26 @@ def scan(keys, max_hf, min_collateral):
     return out
 
 
+def usde_spot():
+    """USDe 现货价（DeFiLlama）。失败返回 None。"""
+    try:
+        r = requests.get(f"https://coins.llama.fi/prices/current/base:{USDE_BASE}",
+                         headers={"User-Agent": UA}, proxies=PROXIES, timeout=15)
+        coins = r.json().get("coins", {})
+        return coins.get(f"base:{USDE_BASE}", {}).get("price")
+    except Exception:
+        return None
+
+
+def depeg_ladder(rows):
+    """USDe 触发阶梯：按触发跌幅排序的 (跌幅, 累计清算规模)。"""
+    usde = [r for r in rows if r["market"] == "USDe→USDC"]
+    out = []
+    for r in sorted(usde, key=lambda x: x["trigger_drop_pct"] or 99):
+        out.append((r["trigger_drop_pct"], r["collateral_usd"]))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-hf", type=float, default=DEFAULT_HF)
@@ -103,6 +125,9 @@ def main():
 
     keys = base_market_keys()
     rows = scan(keys, args.max_hf, args.min_collateral)
+    usde = usde_spot()
+    depeg = usde is not None and usde < DEPEG_ALERT
+    ladder = depeg_ladder(rows) if depeg else []
 
     try:
         LOG_PATH.parent.mkdir(exist_ok=True)
@@ -113,6 +138,11 @@ def main():
         pass
 
     if args.quiet:
+        if depeg:
+            total = sum(c for _, c in ladder) / 1e6
+            print(f"⚠️ [USDe 脱锚] 现货 ${usde:.4f} < {DEPEG_ALERT}——清算触发阶梯（跌 {ladder[0][0]}% → ${ladder[0][1]/1e6:.1f}M 起，"
+                  f"至 {ladder[-1][0]}% 累计 ${total:.0f}M）："
+                  + " ".join(f"{p}%→${c/1e6:.1f}M" for p, c in ladder[:4]))
         hits = [r for r in rows if r["hf"] <= WATCH_HF
                 and r["collateral_usd"] >= WATCH_COLLATERAL
                 and (r["trigger_drop_pct"] is None or r["trigger_drop_pct"] <= WATCH_TRIGGER * 100)]
@@ -147,6 +177,13 @@ def main():
 
     print(f"=== Morpho HF 清算触发扫描 @ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC "
           f"(HF≤{args.max_hf}, collateral≥${args.min_collateral/1e3:.0f}K) ===")
+    if usde is not None:
+        print(f"USDe 现货 ${usde:.4f}{' ⚠️ 已脱锚' if depeg else '（正常）'}")
+    if depeg:
+        total = sum(c for _, c in ladder) / 1e6
+        print(f"⚠️ USDe 触发阶梯（现货已 ${usde:.4f}，相对现价再跌 {ladder[0][0]}% 触发 ${ladder[0][1]/1e6:.1f}M）："
+              + " ".join(f"{p}%→${c/1e6:.1f}M" for p, c in ladder[:6])
+              + (f" …… 至 {ladder[-1][0]}% 累计 ${total:.0f}M" if len(ladder) > 6 else ""))
     if not rows:
         print("无临近清算大仓")
         return 0
