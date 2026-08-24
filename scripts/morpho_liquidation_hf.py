@@ -116,12 +116,50 @@ def depeg_ladder(rows):
     return out
 
 
+def whale_trend(n=24):
+    """鲸鱼仓 HF 趋势：读 morpho_hf.jsonl，提取大仓（collateral ≥ $10M）的 HF 时间序列。"""
+    try:
+        lines = LOG_PATH.read_text().splitlines()
+    except Exception:
+        return {}
+    seen = {}
+    for ln in lines[-2000:]:
+        try:
+            r = json.loads(ln)
+        except Exception:
+            continue
+        if (r.get("collateral_usd") or 0) < 10_000_000:
+            continue
+        key = f"{r['user'][:10]} {r['market']}"
+        seen.setdefault(key, []).append((r["ts"], r["hf"], r["trigger_drop_pct"]))
+    out = {}
+    for k, v in seen.items():
+        out[k] = v[-n:]
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-hf", type=float, default=DEFAULT_HF)
     ap.add_argument("--min-collateral", type=float, default=MIN_COLLATERAL)
     ap.add_argument("--quiet", action="store_true", help="watchdog：仅临近清算大仓才输出")
+    ap.add_argument("--whale-trend", type=int, default=0, metavar="N",
+                    help="鲸鱼仓 HF 趋势：输出最近 N 次扫描（读 jsonl，不请求）")
     args = ap.parse_args()
+
+    if args.whale_trend:
+        trend = whale_trend(args.whale_trend)
+        if not trend:
+            print("暂无鲸鱼仓数据（等 cron 攒几轮）")
+            return 0
+        print(f"=== 鲸鱼仓 HF 趋势（collateral ≥ $10M，最近 {args.whale_trend} 次扫描）===")
+        for k, v in sorted(trend.items(), key=lambda x: x[1][-1][1]):
+            print(f"\n{k}:")
+            for ts, hf, trig in v:
+                t = ts[11:16] if len(ts) > 16 else ts
+                tr = f"{trig}%" if trig is not None else "?"
+                print(f"  {t} HF={hf:.3f} 触发跌幅 {tr}")
+        return 0
 
     keys = base_market_keys()
     rows = scan(keys, args.max_hf, args.min_collateral)
