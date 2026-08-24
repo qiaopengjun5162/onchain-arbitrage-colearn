@@ -38,6 +38,6 @@
 
 ## 可执行项
 
-- [ ] USDe 脱锚监控联动：USDe/USD 现货价跌破 $0.995 即对照本触发阶梯预警（DeFiLlama 已有 USDe 价）
-- [ ] 鲸鱼仓 0x7bee8D37（$125M）专项观察：其 HF 变化 = 市场风向标
+- [x] **USDe 脱锚监控联动（已落地 efb9285）**：USDe/USD 现货价跌破 $0.995 即输出清算触发阶梯预警（DeFiLlama USDe 价，地址 0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34；模拟脱锚验证通过，与 30min cron 合一）
+- [x] **鲸鱼仓 0x7bee8D37 专项观察（已落地 8494789）**：`--whale-trend N` 读 morpho_hf.jsonl 输出 collateral≥$10M 仓位的 HF 时间序列（0x7bee8D37 $125M 仓在列，04:45→05:00 实测 HF 稳定 1.019）
 - [ ] Flashblocks 200ms 决胜层（010 第 3 步）：触发前 30s 内进场路径设计（暂不执行，只研究）
