@@ -50,6 +50,6 @@
 
 ## 下一步
 
-- [x] 双模式判定函数 v1（2026-08-24 落地）：`scripts/funding_mode_decision.py`——输入（价差/价差中位/年化费率差/价差波动/持仓小时）→ 输出（套收敛/套费率/不进场）+ 机器执行退出线（持仓×费率×1.2）；5 内置场景全测（文档 5%/1bp/h 场景判套收敛+双候选、横盘 15%/yr 判套费率+退出线 14.79bps、妖币高波动/费率不足/中间模糊判不进场）
+- [x] 双模式判定函数（D19 08-23 已落地，commit 71aef87）：`scripts/funding_dual_mode_decision.py`——decision() 纯函数（套收敛/套费率/不进场/danger 风暴四模式 + stability<0.6 诱饵过滤）+ exit_rule() 机器执行退出纪律（价差恶化 ≥ 费率积累×1.5）+ --from-json 批量判定 + --exit-check；已接入 `run_funding_spread.sh` cron watchdog。⚠️ 2026-08-24 上午 Hermes 重复实现了 `funding_mode_decision.py`（接口更弱无 danger 模式），已删除，统一以 dual_mode 为准
 - [ ] 把「价差恶化退出」落成脚本参数：`funding_spread_scanner.py` 加 spread-exit 触发（价差突破阈值 → 告警平仓）——退出线公式已在判定函数内，接 scanner 时直接复用
 - [ ] CrossEx 看板数据源：反爬被挡，找 API 或人工核对替代（已改走同所统一账户 Bybit/OKX Unified）
