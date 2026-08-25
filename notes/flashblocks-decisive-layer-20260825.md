@@ -63,6 +63,25 @@
 - **Base 官方公共 RPC 已暴露 Flashblocks 相关 pending 状态**——不接 Chainstack 也能拿到「下一个桶」的部分视图，但它是快照不是 200ms 逐桶流
 - 结论：验证门槛比预期低——先用 `mainnet.base.org` pending 轮询（~500ms 级）就能跑通清算信号 demo；逐桶 WS 流是第二阶段优化
 
+### 第一步验证已完成（2026-08-25，原型 `scripts/base_flashblocks_probe.py`）
+
+实测 30 轮 / 34.8s：
+- **pending 可见性确认**：18 个滚动块号（≈1s 级）——公共 RPC 能追踪下一个 2s 区块的构建过程
+- **Morpho liquidate selector 已算**：`0xe72c76fe`（keccak("liquidate(address,address,address,uint256,bytes)")[:4]），可做交易匹配
+- **清算交易 0 命中**：合理（010 手册 ~1 笔/小时），30s 窗口命中概率≈0
+
+**关键设计结论**：信号策略**不能等清算交易**（太稀有）——正确链路 =
+1. 监听 **Chainlink 预言机更新交易**（~30s 一次，高频可捕捉）
+2. 命中后按 HF 预计算（触发阶梯）判断「本轮更新是否把候选仓打到 HF<1」
+3. 若命中 → 下一个 Flashblock 窗口内轮询/提交清算交易
+
+**⚠️ 信号策略修正（2026-08-25 补充实测，`base_flashblocks_probe.py` 扩展）**：
+- 40 轮 / 43.1s 检测 Chainlink transmit + oracle 地址，**预言机更新 0 命中** → Chainlink 更新是**事件驱动**（偏离超阈值 + 心跳），平稳市况可能数小时一次，010 的「30s 节奏」是波动期特例
+- Morpho oracle = ChainlinkOracle **包装合约**，更新交易发往底层 aggregator（≠ oracle 地址）——按 oracle 地址匹配无效
+- **修正后的信号链**：高频轮询（1s 级）现货价 vs oracle 价偏离（prey radar 思路提速 1800 倍）→ 偏离突变 = 预言机即将更新 = 清算窗口临近；比监听预言机交易更直接
+
+下一步候选：识别 Chainlink 聚合器地址 + transmit selector，把预言机更新检测接入原型。
+
 ## 五、风险与门槛（为什么暂不实盘）
 
 1. **抢输纯亏 gas**：010 手册 $1-36 残渣扣 $6 gas 几乎全赔——错误预判的代价是每笔 $6
