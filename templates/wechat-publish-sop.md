@@ -78,4 +78,4 @@
 - **二进制过期**（2026-08-09）：`--style geek-black` 静默 fallback 成 literary 封面 → ship 前 `cargo build --release` + OCR 确认 BUILD NOTES
 - **正文主题**：`moonpub.toml theme` 控制（当前 `geek` 浅色，用户定稿）；与 `--style`（封面）独立
 - **已发布文章别重 ship**：查 `.moonpub/status.jsonl`，误推用 `delete-draft <media_id>` 删
-| D19 四方向对比只有两条能打 | 100011955（重推 08-25 二修：快报清理其他天引用，旧稿 100011948 已删） | 08-24 |
+| D19 四方向对比只有两条能打 | 100011955（重推 08-25 二修，08-25 22:56 发布，https://mp.weixin.qq.com/s/EYEO9FyLgAgu6eqB6cD_rA） | 08-25 |
