@@ -48,12 +48,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--months", default=",".join(DEFAULT_MONTHS),
                     help="月度事件 slug 后缀（逗号分隔）")
+    ap.add_argument("--asset", default="bitcoin", choices=["bitcoin", "ethereum"],
+                    help="标的（bitcoin/ethereum，决定阶梯盘 slug 前缀）")
     args = ap.parse_args()
     months = args.months.split(",")
+    prefix = "what-price-will-ethereum-hit-in" if args.asset == "ethereum" else "what-price-will-bitcoin-hit-in"
 
     rows = []
     for m in months:
-        d = get(f"{GAMMA}/events?slug=what-price-will-bitcoin-hit-in-{m}")
+        d = get(f"{GAMMA}/events?slug={prefix}-{m}")
         if not d:
             print(f"[!] {m}: 事件未找到")
             continue
