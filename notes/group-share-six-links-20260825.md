@@ -55,3 +55,11 @@
 
 - ② 是返佣帖（via=YINGGE888 + PolyCop ref），「2200 刀/周」「月赚一万刀」数字不采信；机制（机场站锚定）经核验属实可研究
 - ① 的攻击「危害不亚于 MEV 夹子且更隐蔽」——聚合器 quote 污染类风险的机制级认知
+
+## ② 深核验补记（天气套利机制验证完成）
+
+`notes/pm-weather-arb-verify-20260825.md`：
+- **温差实测（open-meteo 30 天）**：Chicago +4.0°F（机场更热）、LA -10.8°F（机场更冷）、NYC +0.1°F（无差）——老鹰「3-8°F」属实,LA 更大
+- PM 天气市场确认存在且活跃（11 bin 日结,slug=highest-temperature-in-{city}-on-{date}-2026,规则锚定 NOAA 机场站）
+- ⚠️ open-meteo ≠ NOAA 站点实测（Chicago 8-20:PM 结算 76-77 vs open-meteo ORD 79）——温差结论必须用 NOAA 源重验
+- 下一步：逐城市确认锚定站点 + NOAA 重算 + CLOB 定价历史偏差统计

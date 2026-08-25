@@ -252,3 +252,4 @@ https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
 
 - `scripts/funding_dual_mode_decision.py` + `scripts/funding_spread_scanner.py` — 费率双模式判定（D21 收尾）：scanner 补测现货↔永续真基差（`basis_bps`），每候选行带「模式（套费率/套收敛/不进场/危险）+ 退出线」；退出线 = 持仓期积累费率 × 1.5（机器执行，价差恶化≥阈值即平仓）；cron `e5c61dedb11b` 每 8h 自动带判定推送
 - `notes/group-share-six-links-20260825.md` — 群分享六连发核验：①Bruce v4 Hook 恶意池机制深挖（gas 环境区分模拟/执行=报价核验第 4 指纹）②Crypto老鹰天气套利=返佣帖但机制属实（PM 天气市场锚定 NOAA 机场站 vs 市中心温差，数据源确定性套利候选）③Bruce 周会纪要（捡尸体/Agent 自动化）④Solana 官方 agent tokenization ⑤Lighter 200U→2U 小实盘 ⑥perpdexlist 平台合集（JS 渲染待核验）
+- `notes/pm-weather-arb-verify-20260825.md` — PM 天气套利机制核验：open-meteo 30 天实测 Chicago +4°F/LA -10.8°F/NYC ~0（老鹰「3-8°F」属实）；PM 天气市场 11 bin 日结锚定 NOAA 机场站；⚠️ open-meteo≠NOAA 需重验；下一步=逐城确认站点+CLOB 定价偏差
