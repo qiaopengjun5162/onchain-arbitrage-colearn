@@ -34,20 +34,23 @@ VOL_FLAT_BPS = 300          # 24h 波动 <3% = 横盘（套费率安全区）
 VOL_STORM_BPS = 1000        # 24h 波动 >10% = 风暴（两种模式都危险）
 # 价差恶化退出阈值（机器执行纪律：价差恶化 ≥ 已积累费率 × 系数即跑）
 SPREAD_EXIT_MULT = 1.5      # 价差恶化量 ≥ 费率收入 × 1.5 → 退出
+# 持仓周期数默认值（套费率退出线用）：1 周期 = 1 次资金费结算（8h）；默认持 3 个结算周期 = 24h
+HOLD_PERIODS_DEFAULT = 3
 
 ROOT = Path(__file__).resolve().parent.parent
 SCAN_LOG = ROOT / "data" / "funding_spread_scan.jsonl"
 
 
-def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0):
+def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0, hold_periods=HOLD_PERIODS_DEFAULT):
     """
     纯函数：三输入 → 模式判定。
-    返回 dict：{mode, reason, entry_params, exit_rule, confidence}
+    返回 dict：{mode, reason, exit_trigger_bps, confidence}
     mode: 'convergence'(套收敛) / 'funding'(套费率) / 'no_entry'(不进场) / 'danger'(危险勿动)
+    exit_trigger_bps: 套费率模式的机器退出线 = 已积累费率收入(每周期 rate_diff_bps × 持仓周期数) × 1.5
     """
     # 0. 数据有效性
     if spread_bps is None or rate_diff_bps is None or vol_bps is None:
-        return {"mode": "no_entry", "reason": "输入缺失", "confidence": 0.0}
+        return {"mode": "no_entry", "reason": "输入缺失", "confidence": 0.0, "exit_trigger_bps": None}
 
     # 1. 风暴检查：波动率 >10% 直接 danger（单边行情里所有价差/资金费中性策略都会死）
     if vol_bps > VOL_STORM_BPS:
@@ -55,31 +58,38 @@ def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0):
             "mode": "danger",
             "reason": f"24h 波动 {vol_bps}bps > 风暴线 {VOL_STORM_BPS}bps：单边行情，价差不收敛反而扩大，双腿不同步变裸仓",
             "confidence": 0.9,
+            "exit_trigger_bps": None,
         }
 
+    # 基差带符号（正=永续升水），极端/正常判断看绝对值，符号只决定方向
+    spread_abs = abs(spread_bps)
+
     # 2. 套收敛：价差极端（≥5%）→ 赌回归（但要价差在收窄方向）
-    if spread_bps >= SPREAD_EXTREME_BPS:
+    if spread_abs >= SPREAD_EXTREME_BPS:
         if rate_diff_bps < RATE_DIFF_MIN_BPS:
             return {
                 "mode": "convergence",
                 "reason": f"价差 {spread_bps}bps 极端（≥{SPREAD_EXTREME_BPS}bps），费率差 {rate_diff_bps}bps 不诱人 → 纯套收敛（赌回归），"
                           f"注意：极端价差 = 妖币/单边信号，退出纪律必须写死",
                 "confidence": 0.7,
+                "exit_trigger_bps": None,
             }
         return {
             "mode": "convergence",
             "reason": f"价差 {spread_bps}bps 极端且费率差 {rate_diff_bps}bps 可观 → 混合：主套收敛 + 顺带吃费率",
             "confidence": 0.75,
+            "exit_trigger_bps": None,
         }
 
     # 3. 套费率：价差正常 + 波动小（横盘）+ 费率差覆盖成本 + 费率稳定
-    if spread_bps <= SPREAD_NORMAL_BPS and vol_bps <= VOL_FLAT_BPS:
+    if spread_abs <= SPREAD_NORMAL_BPS and vol_bps <= VOL_FLAT_BPS:
         if rate_diff_bps < RATE_DIFF_MIN_BPS:
             return {
                 "mode": "no_entry",
                 "reason": f"价差 {spread_bps}bps 正常、波动 {vol_bps}bps 横盘，但费率差 {rate_diff_bps}bps "
                           f"< 成本线 {RATE_DIFF_MIN_BPS}bps → 进场给交易所打工",
                 "confidence": 0.85,
+                "exit_trigger_bps": None,
             }
         if stability < 0.6:
             return {
@@ -87,12 +97,19 @@ def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0):
                 "reason": f"费率差 {rate_diff_bps}bps 达标但稳定性 {stability:.2f} < 0.6（费率乱跳=诱饵嫌疑，"
                           f"TUT/BTW 屠宰场剧本）→ 不进场",
                 "confidence": 0.8,
+                "exit_trigger_bps": None,
             }
+        # 机器执行退出线 = 持仓期内已积累费率收入 × 安全系数（价差恶化超过即平仓，人只定阈值）
+        income_bps = rate_diff_bps * hold_periods
+        exit_trigger_bps = round(income_bps * SPREAD_EXIT_MULT, 1)
         return {
             "mode": "funding",
             "reason": f"横盘（波动 {vol_bps}bps）+ 价差正常（{spread_bps}bps）+ 费率差 {rate_diff_bps}bps "
-                      f"覆盖成本 + 稳定性 {stability:.2f} → 卖保险，只收租不赌方向",
+                      f"覆盖成本 + 稳定性 {stability:.2f} → 卖保险，只收租不赌方向；"
+                      f"退出线 = {hold_periods}周期积累费率 {income_bps:.0f}bps × {SPREAD_EXIT_MULT} "
+                      f"= 价差恶化 ≥{exit_trigger_bps}bps 即平仓",
             "confidence": 0.9,
+            "exit_trigger_bps": exit_trigger_bps,
         }
 
     # 4. 中间地带：价差在 50-500bps 之间，或波动在 3-10% 之间 → 不进场（观察）
@@ -101,6 +118,7 @@ def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0):
         "reason": f"价差 {spread_bps}bps / 波动 {vol_bps}bps 处于中间地带（非横盘非极端）→ "
                   f"等横盘（套费率）或等极端（套收敛），现在进场两头不靠",
         "confidence": 0.6,
+        "exit_trigger_bps": None,
     }
 
 
@@ -131,12 +149,16 @@ def from_scan_log(limit=20, min_spread=20.0):
                 rows.append(r)
     out = []
     for r in rows[-limit:]:
-        # spread_bps 已是跨所费率差；波动率用 history 极差近似；stability 直接用
+        # spread_bps 是跨所费率差（收入端）；波动率用 history 极差近似；stability 直接用
         hist = r.get("history", [])
         vol = (max(hist) - min(hist)) * 1e4 if hist else 0
-        d = decision(r["spread_bps"], r["spread_bps"], vol, r.get("stability", 0))
+        # 价差（生死线）：scanner 新增 basis_bps（现货↔永续基差）优先；旧数据无基差时退回费率差近似（标注近似）
+        basis = r.get("basis_bps")
+        spread_input = basis if basis is not None else r.get("spread_bps")
+        d = decision(spread_input, r["spread_bps"], vol, r.get("stability", 0))
         d["base"] = r["base"]
         d["spread_bps"] = r["spread_bps"]
+        d["basis_bps"] = basis if basis is not None else "approx(费率差)"
         d["has_spot"] = r.get("has_spot", False)
         out.append(d)
     return out
@@ -168,12 +190,14 @@ def main():
                 print(f"🔴 资金费双模式判定: {len(exec_mode)} 个可执行候选")
                 for r in exec_mode:
                     spot = "现货✓" if r.get("has_spot") else "无现货✗"
-                    print(f"  {r['base']:<10} {r['mode']:<12} 价差{r['spread_bps']:.0f}bps {spot}")
+                    ext = f" 退出线{r['exit_trigger_bps']}bps" if r.get("exit_trigger_bps") else ""
+                    print(f"  {r['base']:<10} {r['mode']:<12} 价差{r['spread_bps']:.0f}bps {spot}{ext}")
             return
         print(f"=== 资金费双模式判定（最近 {len(results)} 候选）===")
         for r in results:
-            print(f"\n{r.get('base','?'):<10} [{r['mode']}]")
-            print(f"  价差 {r['spread_bps']:.0f}bps | {r['reason']}")
+            ext = f" | 退出线 {r['exit_trigger_bps']}bps" if r.get("exit_trigger_bps") else ""
+            print(f"\n{r.get('base','?'):<10} [{r['mode']}]{ext}")
+            print(f"  基差 {r.get('basis_bps')}bps | {r['reason']}")
         return
 
     if not (args.spread_bps is not None and args.rate_diff_bps is not None and args.vol_bps is not None):

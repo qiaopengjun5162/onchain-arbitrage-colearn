@@ -244,3 +244,5 @@ Solana 单独作为一条研究线：先研究交易结构、DEX/perp、Jito/MEV
 官网打卡入口：
 
 https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
+
+- `scripts/funding_dual_mode_decision.py` + `scripts/funding_spread_scanner.py` — 费率双模式判定（D21 收尾）：scanner 补测现货↔永续真基差（`basis_bps`），每候选行带「模式（套费率/套收敛/不进场/危险）+ 退出线」；退出线 = 持仓期积累费率 × 1.5（机器执行，价差恶化≥阈值即平仓）；cron `e5c61dedb11b` 每 8h 自动带判定推送

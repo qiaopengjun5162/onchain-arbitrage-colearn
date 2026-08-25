@@ -27,6 +27,10 @@ from pathlib import Path
 
 import ccxt
 
+# 双模式判定函数（D19 Codex 版 + D21 收尾：退出线接入数据流）
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from funding_dual_mode_decision import decision as dual_mode_decision
+
 PROXY = "http://127.0.0.1:7890"
 LOG_FILE = Path(__file__).resolve().parent.parent / "data" / "funding_spread_scan.jsonl"
 EXCHANGES = ["binance", "bybit", "okx"]
@@ -98,6 +102,21 @@ def fetch_depth_usd(ex, name, base, limit=10):
         mid = (bids[0][0] + asks[0][0]) / 2
         spread_bps = (asks[0][0] / bids[0][0] - 1) * 10000
         return bid_usd, ask_usd, spread_bps, mid
+    except Exception:
+        return None
+
+
+def fetch_perp_basis(ex, name, base):
+    """现货↔永续基差（生死线）：永续价 vs 现货价。返回基差 bps（正=永续升水）。"""
+    try:
+        perp_sym = f"{base}/USDT:USDT"
+        spot_sym = f"{base}/USDT"
+        t_p = ex.fetch_ticker(perp_sym)
+        t_s = ex.fetch_ticker(spot_sym)
+        pp, sp = t_p.get("last") or t_p.get("close"), t_s.get("last") or t_s.get("close")
+        if not pp or not sp:
+            return None
+        return round((pp / sp - 1) * 10000, 1)
     except Exception:
         return None
 
@@ -193,28 +212,46 @@ def main():
         top_ex = max(rates, key=lambda n: rates[n])
         hist = fetch_funding_history(exchanges[top_ex], top_ex, base, args.history)
         stab = stability_score(hist)
+        # 基差（生死线）：用第一个有现货的所测现货↔永续基差
+        basis = None
+        if has_spot:
+            for n in EXCHANGES:
+                if base in spot[n]:
+                    basis = fetch_perp_basis(exchanges[n], n, base)
+                    if basis is not None:
+                        break
+        # 双模式判定：价差输入=真基差（无现货/失败退回费率差近似）；费率差=跨所费率差；波动=费率历史极差近似
+        spread_val = round(spread * 10000, 1)
+        hist_vol = (max(hist) - min(hist)) * 1e4 if hist else 0
+        d = dual_mode_decision(basis if basis is not None else spread_val, spread_val, hist_vol, stab)
         rows.append({
             "base": base, "rates": {n: round(r, 6) for n, r in rates.items()},
-            "spread_bps": round(spread * 10000, 1),
+            "spread_bps": spread_val,
+            "basis_bps": basis,
             "has_spot": has_spot, "stability": round(stab, 2),
             "top_ex": top_ex, "history": [round(r, 4) for r in hist[-6:]],
+            "mode": d["mode"], "exit_trigger_bps": d["exit_trigger_bps"],
         })
         checked += 1
         if checked % 50 == 0:
             out(f"    ...已检查 {checked} 个")
 
-    out("=" * 90)
-    # 排序：稳定性 > 价差
-    rows.sort(key=lambda r: (-r["stability"], -r["spread_bps"]))
-    out(f"{'币':<12}{'费率差bps':>10}{'各所费率%':<28}{'现货':>6}{'稳定':>6}  历史(近6次)")
-    out("-" * 90)
+    out("=" * 100)
+    # 排序：可执行模式（套费率/套收敛）优先 > 稳定性 > 费率差
+    mode_rank = {"funding": 0, "convergence": 0, "no_entry": 1, "danger": 2}
+    rows.sort(key=lambda r: (mode_rank.get(r["mode"], 1), -r["stability"], -r["spread_bps"]))
+    out(f"{'币':<12}{'费率差bps':>10}{'基差bps':>8}{'现货':>6}{'稳定':>6}  {'模式':<8}{'退出线':>8}  历史(近6次)")
+    out("-" * 100)
     shown = 0
     for r in rows[:args.top]:
         rates_s = " ".join(f"{n}:{r['rates'][n]*100:.2f}" for n in EXCHANGES if n in r["rates"])
         hist_s = " ".join(f"{h*100:+.2f}" for h in r["history"]) if r["history"] else "N/A"
         flag = "✅" if (r["has_spot"] and r["stability"] >= 0.6) else ("👀" if r["has_spot"] else "⚠️无现货")
-        out(f"{r['base']:<12}{r['spread_bps']:>10.1f}  {rates_s:<28}{'Y' if r['has_spot'] else 'N':>6}"
-            f"{r['stability']:>6.2f}  {hist_s}  {flag}")
+        mode_cn = {"funding": "套费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
+        ext = f"{r['exit_trigger_bps']:.0f}bps" if r.get("exit_trigger_bps") else "-"
+        basis_s = f"{r['basis_bps']:.0f}" if r.get("basis_bps") is not None else "n/a"
+        out(f"{r['base']:<12}{r['spread_bps']:>10.1f}{basis_s:>8}{'Y' if r['has_spot'] else 'N':>6}"
+            f"{r['stability']:>6.2f}  {mode_cn:<8}{ext:>8}  {hist_s}  {flag}")
         shown += 1
 
     rec = {
@@ -238,7 +275,11 @@ def main():
         for r in signals[:args.top]:
             rates_s = " ".join(f"{n}:{r['rates'][n]*100:.2f}" for n in EXCHANGES if n in r["rates"])
             hist_s = " ".join(f"{h*100:+.2f}" for h in r["history"]) if r["history"] else "N/A"
+            mode_cn = {"funding": "套费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
+            ext = f"退出线{r['exit_trigger_bps']:.0f}bps" if r.get("exit_trigger_bps") else "无退出线"
+            basis_s = f"基差{r['basis_bps']:.0f}bps" if r.get("basis_bps") is not None else "基差n/a"
             print(f"  {r['base']:<10} 费率差 {r['spread_bps']:.1f}bps | {rates_s} | 稳定 {r['stability']:.2f}")
+            print(f"      {basis_s} | {mode_cn} | {ext}")
             print(f"      历史: {hist_s}")
         print("提示：进场前查深度/现货流动性，按风控框架（蚂蚁仓/抗2倍涨幅/1倍强平）执行")
         return
