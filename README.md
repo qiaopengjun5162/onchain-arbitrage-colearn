@@ -259,3 +259,4 @@ https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
 - `notes/group-share-x-four-links-20260826.md` — X 四连发核验：①Qi8888btc Hook 撞池玩法（找 Hook 参数错配=LP分成0案例，主动侦察与我们撞预言机同族）②cnfinancewatch 十大量化系统科普（低相关备查）③0xLogicLog 游击捡漏叙事+配图 OCR=TUT 08-25 又插针(-7.61%/振幅12.16%)入档 ④Solana_zh Virtuals×Solana AI智能体代币化上线（官方，agent tokenization 落地）
 - `notes/manifold-cex-dex-arb-memoir-20260826.md` — Manifold Trading 联创量化回忆录 digest（CEX-DEX arb）：选牌桌/领先-滞后原理/gas bit packing/PGA 竞价/Hydra v2 链上借贷再平衡/alpha 生命周期；2025底该策略衰减=我们否决 CEX-DEX 的第三方印证；数字不可复制（2021 窗口期）
 - `notes/wquguru-ai-collab-method-20260826.md` — WquGuru 方法论帖 digest：AI 协作三条规矩（规划前置/拒绝黑盒验收/AI当执行者不当架构师）；「链上延迟 vs oracle 时滞/滑点模拟/清算断崖」= prey radar v2 同题；与 AGENTS.md 协作模式完全互证
+- `notes/group-share-x-links-batch2-20260826.md` — X 第 2 批：⑤laoyingkhq PM 机器人返佣帖（同 repo FrondEnt/PolymarketBTC15mAssistant 08-21 已核验联动返佣 campaign，数字不采信）⑥yourQuantGuy entropy 框架开源预热+套利扫盲（刨根问底清单=利润公式互证，门槛论=系统理解；tier4 邀请码引流不点，框架开源值得对照）
