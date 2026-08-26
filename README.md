@@ -257,3 +257,4 @@ https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
 - `notes/group-share-taoli-why-20260826.md` — 群分享归档：Taoli.Tools「为什么我使用」科普文（期现基差/两永续费差/跨所库存+统一公式）。核验：与已有框架 100% 重合无新信息；工具决策不变（不装，scanner+dual_mode 已覆盖发现层）；吸收安全建议=交易所 API 只开读取+交易+IP 白名单；模型4跨所库存=08-24 已否决方向
 - `notes/group-share-taoli-deploy-20260826.md` — Taoli.Tools 部署教程归档（续篇）：Telegram 登录/VIP0 免费/多所 API 配置/IP 白名单/CORS 插件故障排查/单标签页 DB 限制/日本 VPS(Vultr 返佣链接不点)；判定=与 08-23 实操认知一致不部署不付费，若试用=免费5ku本地+只读key+白名单+独立Profile
 - `notes/group-share-x-four-links-20260826.md` — X 四连发核验：①Qi8888btc Hook 撞池玩法（找 Hook 参数错配=LP分成0案例，主动侦察与我们撞预言机同族）②cnfinancewatch 十大量化系统科普（低相关备查）③0xLogicLog 游击捡漏叙事+配图 OCR=TUT 08-25 又插针(-7.61%/振幅12.16%)入档 ④Solana_zh Virtuals×Solana AI智能体代币化上线（官方，agent tokenization 落地）
+- `notes/manifold-cex-dex-arb-memoir-20260826.md` — Manifold Trading 联创量化回忆录 digest（CEX-DEX arb）：选牌桌/领先-滞后原理/gas bit packing/PGA 竞价/Hydra v2 链上借贷再平衡/alpha 生命周期；2025底该策略衰减=我们否决 CEX-DEX 的第三方印证；数字不可复制（2021 窗口期）
