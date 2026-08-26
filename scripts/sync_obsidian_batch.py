@@ -91,6 +91,18 @@ MANIFEST = [
     ("solana-weekly-20260823", "02 市场地图", "Solana 官方周报：币股 RWA 三连击", "market-map"),
     ("solana-native-bstock-lly-mrna-20260823", "03 策略假设", "Solana 原生币股：LLY/MRNA 闭市漂移实测", "strategy"),
     ("taoli-tools-practice-cognition-20260823", "03 策略假设", "taoli tools 实操认知：大部分时间不成交", "strategy"),
+    # ===== 2026-08-24（D20）=====
+    ("icl-incremental-notes-digest-20260824", "03 策略假设", "共学增量笔记 132 篇消化：为什么赚不到", "strategy"),
+    ("l0021-knowledge-graph-v2-20260824", "03 策略假设", "知识图谱 v2 · 结营收官", "strategy"),
+    ("cross-exchange-convergence-test-20260824", "03 策略假设", "跨所永续价差收敛率回测", "strategy"),
+    ("pm-ladder-no-calibration-20260824", "03 策略假设", "PM 阶梯盘卖 No 定价校准", "strategy"),
+    ("group-share-four-links-20260824", "07 共学群友", "群分享四连核验（AI量化·HL面板·卖No·fomoscan）", "colearners"),
+    ("brucexu-arbitrage-series-1-reverse-hedge-20260824", "07 共学群友", "Bruce 套利系列①：跨所反向对冲", "colearners"),
+    ("bintang-wallet-verify-20260824", "07 共学群友", "0xBinTang PM 双买钱包核验", "colearners"),
+    ("morpho-prey-radar-v1-20260824", "04 工具与协议", "猎物雷达 v1（预言机偏离哨兵）", "tool"),
+    ("morpho-hf-liquidation-scanner-20260824", "04 工具与协议", "Morpho HF 清算触发扫描器", "tool"),
+    ("pm-binary-dual-buy-20260824", "04 工具与协议", "PM 5 分钟双买检测器", "tool"),
+    ("corridor-exit-duration-20260824", "02 市场地图", "小池价差持续性分析（14 天零持续出轨）", "market-map"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -152,6 +164,17 @@ DATE_OVERRIDES = {
     "solana-weekly-20260823": "2026-08-23",
     "solana-native-bstock-lly-mrna-20260823": "2026-08-23",
     "taoli-tools-practice-cognition-20260823": "2026-08-23",
+    "icl-incremental-notes-digest-20260824": "2026-08-24",
+    "l0021-knowledge-graph-v2-20260824": "2026-08-24",
+    "cross-exchange-convergence-test-20260824": "2026-08-24",
+    "pm-ladder-no-calibration-20260824": "2026-08-24",
+    "group-share-four-links-20260824": "2026-08-24",
+    "brucexu-arbitrage-series-1-reverse-hedge-20260824": "2026-08-24",
+    "bintang-wallet-verify-20260824": "2026-08-24",
+    "morpho-prey-radar-v1-20260824": "2026-08-24",
+    "morpho-hf-liquidation-scanner-20260824": "2026-08-24",
+    "pm-binary-dual-buy-20260824": "2026-08-24",
+    "corridor-exit-duration-20260824": "2026-08-24",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
@@ -219,6 +242,18 @@ LINK_MAP = {
     "bsc-redeem-collateral-forensics-20260821": "BSC redeemCollateral 抵押品赎回取证",
     "bsc-flashloan-repay-forensics-20260821": "BSC execute 闪贷还贷取证",
     "pm-yesno-lock-verify-20260821": "Crypto老鹰 PM 锁利机器人核验",
+    "icl-incremental-notes-digest-20260824": "共学增量笔记 132 篇消化：为什么赚不到",
+    "l0021-knowledge-graph-v2-20260824": "知识图谱 v2 · 结营收官",
+    "cross-exchange-convergence-test-20260824": "跨所永续价差收敛率回测",
+    "pm-ladder-no-calibration-20260824": "PM 阶梯盘卖 No 定价校准",
+    "group-share-four-links-20260824": "群分享四连核验（AI量化·HL面板·卖No·fomoscan）",
+    "brucexu-arbitrage-series-1-reverse-hedge-20260824": "Bruce 套利系列①：跨所反向对冲",
+    "bintang-wallet-verify-20260824": "0xBinTang PM 双买钱包核验",
+    "morpho-prey-radar-v1-20260824": "猎物雷达 v1（预言机偏离哨兵）",
+    "morpho-hf-liquidation-scanner-20260824": "Morpho HF 清算触发扫描器",
+    "pm-binary-dual-buy-20260824": "PM 5 分钟双买检测器",
+    "corridor-exit-duration-20260824": "小池价差持续性分析（14 天零持续出轨）",
+    "morpho-discovery-monitoring-digest-20260814": "Morpho 监测方案与猎物雷达",
 }
 
 
@@ -246,6 +281,8 @@ def main() -> None:
     synced, missed = [], []
     for slug, ddir, title, tag in MANIFEST:
         src = os.path.join(NOTES, slug + ".md")
+        if not os.path.exists(src):
+            src = os.path.join(NOTES, "solana", slug + ".md")
         if not os.path.exists(src):
             missed.append(slug)
             print(f"[MISS] {slug}")
