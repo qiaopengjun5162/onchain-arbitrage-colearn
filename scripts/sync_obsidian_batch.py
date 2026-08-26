@@ -103,6 +103,14 @@ MANIFEST = [
     ("morpho-hf-liquidation-scanner-20260824", "04 工具与协议", "Morpho HF 清算触发扫描器", "tool"),
     ("pm-binary-dual-buy-20260824", "04 工具与协议", "PM 5 分钟双买检测器", "tool"),
     ("corridor-exit-duration-20260824", "02 市场地图", "小池价差持续性分析（14 天零持续出轨）", "market-map"),
+    ("prey-radar-v2-highfreq-20260826", "04 工具与协议", "prey radar v2 高频偏离轮询原型", "tool"),
+    ("manifold-cex-dex-arb-memoir-20260826", "02 市场地图", "Manifold CEX-DEX 套利回忆录", "market-map"),
+    ("wquguru-ai-collab-method-20260826", "01 角色与配置", "AI 协作三条规矩（WquGuru）", "methodology"),
+    ("group-share-x-four-links-20260826", "07 共学群友", "X 四连发核验（Hook撞池/TUT插针/Virtuals）", "colearners"),
+    ("group-share-x-links-batch2-20260826", "07 共学群友", "X 第2批（老鹰返佣帖/entropy 预热）", "colearners"),
+    ("group-share-x-links-batch3-20260826", "07 共学群友", "X 第3批（Entropy 工具/Hermes 生态）", "colearners"),
+    ("group-share-taoli-why-20260826", "04 工具与协议", "Taoli.Tools 科普文归档", "tool"),
+    ("group-share-taoli-deploy-20260826", "04 工具与协议", "Taoli.Tools 部署教程+开源核验", "tool"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -175,6 +183,14 @@ DATE_OVERRIDES = {
     "morpho-hf-liquidation-scanner-20260824": "2026-08-24",
     "pm-binary-dual-buy-20260824": "2026-08-24",
     "corridor-exit-duration-20260824": "2026-08-24",
+    "prey-radar-v2-highfreq-20260826": "2026-08-26",
+    "manifold-cex-dex-arb-memoir-20260826": "2026-08-26",
+    "wquguru-ai-collab-method-20260826": "2026-08-26",
+    "group-share-x-four-links-20260826": "2026-08-26",
+    "group-share-x-links-batch2-20260826": "2026-08-26",
+    "group-share-x-links-batch3-20260826": "2026-08-26",
+    "group-share-taoli-why-20260826": "2026-08-26",
+    "group-share-taoli-deploy-20260826": "2026-08-26",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
