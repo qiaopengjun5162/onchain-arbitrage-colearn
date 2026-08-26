@@ -1,6 +1,6 @@
 # Manifold CEX-DEX 套利回忆录 digest（2026-08-26）
 
-> 来源：X 链接 @mev15_eth/status/2092228360571150450（青十五转述）→ 原文 Jae Chung @_jaechung《Starting a quantitative trading firm with 0 experience》（2026-08-19）
+> 来源：X 链接 @mev15_eth/status/2092228360571150450（青十五转述）→ 原文 Jae Chung @_jaechung《Starting a quantitative trading firm with 0 experience》（2026-08-19）｜ **原文链接：https://jaechung.net/writings/starting-a-quant-trading-firm/（用户 08-26 晚补充）**
 > 触发：用户 08-26 分享（第 5 个 X 链接）
 > 方法：fxtwitter 全文（133 blocks / 7084 字）
 > 关联：`cross-exchange-convergence-test-20260824.md`（跨所收敛否决）、`dos-bridge-arb`（跨链桥费吃光空间）、21 天总结（CEX-DEX 基差❌恒负）、Solana 排序层/Jito 研究
@@ -39,3 +39,9 @@
 
 - 收益数字（100%+ 年化/单日六位数/无亏损日）为自述+转述，无第三方核验——机制可学，数字当背景
 - 文章本质是 Manifold 的品牌叙事（招人/募资语境），「我们很牛」属性天然存在
+
+## 用户补充引用（08-26 晚，原文金句）
+
+> 「不同区块链安排和提交交易的架构各不相同，因此也存在类似或相邻的技术。区块链会不断改变规则与机制，试图让更多价值沉淀给用户、协议或区块链本身；套利者则必须不断适应这些变化。」
+
+**解读（库内互证）**：规则变更是套利机会的**永续来源**（每次机制变更=新的错配窗口：新链上线/新 DEX/新 oracle/新费用结构），也是**风险源**（我们的教训：Polymarket 官方朝令夕改、机制性漏洞=一次性策略、Bitget 逃票待查证）。「机会永远是有的」成立，但可执行的前提仍是：前置情报 + 执行基建（21 天总结两条主线）——prey radar v2 就是这个方向的第一步（监视规则/预言机变动的雷达）。
