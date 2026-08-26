@@ -70,3 +70,22 @@
 4. **价差不一定收敛**：可能长期保持甚至扩大（流动性下降/交易暂停/限仓/交易所故障）
 
 **判定**：四条全部与系列①核验表逐条互证（08-24 已核验），无新信息。FAQ1 的「用自己真实费率+数量计算+paper+小额实践」与我们方法论完全一致（真实费率优先于页面价差）。归档完毕，全教程链闭环。
+
+## 开源核验：Taoli Tools Extension（2026-08-26 GitHub API + 源码审读）
+
+**仓库事实**：`github.com/taoli-tools/taoli-tools-extension` — created 2025-09-30, **1 star / 4 forks**, **无 license**, README 24B 空壳, 全部代码 <4KB（background.js 2.4KB + content.js 0.6KB + injected.js 53B + manifest）
+
+**代码行为核验（源码逐行审读）**：
+- manifest：MV3，权限 `declarativeNetRequest` + `host_permissions *://*/*`；content_scripts **只注入 taoli.tools 和 localhost:5173**（不在其他网站活动）
+- background.js：`EXTENSION_PROXY_FETCH` 消息代理 = 页面请求→扩展 fetch 代发（绕过 CORS），10s 超时，**请求透传、无存储、无第三方上传、无数据收集逻辑**
+- urlFilters 覆盖主流交易所域名（binance/okx/bybit/gate/bitget/mexc/coinbase/backpack/apex/grvt/larksuite 等）= declarativeNetRequest 跨域放行规则
+- action 点击只打开 taoli.tools
+
+**判定**：
+1. **扩展代码干净可审计**：标准 CORS 代理，key 由浏览器直接发交易所（请求头透传），扩展不碰不存不传——修正之前「完全闭源」的笼统表述
+2. **「开源」名不副实打折看**：只开源了扩展骨架（4KB），**主应用（交易对/下单逻辑）仍闭源**；无 license = 法律上不可自由使用；1 star = 零社区审查
+3. **风险实质不变**：主应用闭源 = 页面内逻辑不可审计；任何第三方工具的同等风险级。安全姿势照旧：只读 key + IP 白名单 + 无提现 + 独立 Profile + 不用时停用插件
+
+**参考资料（教程原文链接，2026-08-26）**：
+- 使用手册 https://docs.taoli.tools/ ｜ 快速开始 /quick-start ｜ Binance 设置 /exchange-setup/binance ｜ CORS /disable-browser-cors/ ｜ 扩展源码 https://github.com/taoli-tools/taoli-tools-extension
+- Bruce 第一性原理 X 帖 https://x.com/brucexu_eth/status/2086652810905751610 → **08-10 已归档** `notes/bruce-first-principles-arbitrage-20260810.md`
