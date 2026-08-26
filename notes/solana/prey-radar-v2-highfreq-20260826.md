@@ -49,15 +49,15 @@ v1 是 30min cron 全市场扫描（200 市场串行 eth_call + DeFiLlama）。�
 
 ## 四、已知限制（原型诚实清单）
 
-1. **cbBTC→EURC 类 EUR 报价预言机未解析**（oracle 是 EUR 价，对 USD 现货 >10% 不吻合 → scale?）——需 EUR/USD 交叉汇率，v1 同样没处理
+1. ~~cbBTC→EURC 类 EUR 报价预言机未解析~~ **已修复（08-26）**：loan 现货交叉转换，12/12 全解析
 2. 节奏受公共 RPC 往返限制（2-3s），非真 1s——Flashblocks WS 逐桶流是执行前置
 3. DeFiLlama 现货有 ~1.9s 延迟 + 5s 缓存——极端闪崩时 spot 采样滞后 ~5-7s（比 30min 好 400 倍，仍非实时）
 4. 未接 HF scanner 联动（检测到偏离/更新后应自动触发持仓级 HF 计算）
 
 ## 五、下一步（清算事件线）
 
-- [ ] 挂 cron：`--duration 300 --quiet` 每 5 分钟跑窗口（或常驻进程），偏离突变即报警
+- [x] 挂 cron：`7954368ea467` 每 15 分钟跑 9 分钟窗口（--duration 540 --quiet），19:15 首跑 status ok 无报警（安静期契约正确）
 - [ ] Flashblocks WS 端点（Chainstack 类）→ 真 <200ms 节奏 + 预言机更新逐桶流
-- [ ] EUR 报价预言机交叉汇率处理（cbBTC→EURC 类市场补齐）
+- [x] **EUR 报价预言机交叉汇率处理（2026-08-26 晚完成）**：resolve 加 loan_usd 交叉转换（spot_loan=spot/loan_usd 探测 → oracle_usd=raw/10^s×loan_usd）；实测 cbBTC→EURC 从 scale? → -1.5bps，与 cbBTC→USDC 市场完全一致（交叉正确性验证）→ **12/12 市场全解析**
 - [ ] 联动 `morpho_liquidation_hf.py`：偏离突变 → 自动算 watchlist 持仓 HF + 触发跌幅
 - [ ] 攒 24h 高频数据后：统计偏离分布基线（正常漂移 vs 突变阈值校准，20bps/tick 是否合理）

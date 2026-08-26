@@ -134,8 +134,13 @@ def batch_spot_prices(addresses, chunk=8):
     return out
 
 
-def resolve_oracle_usd(raw, spot, weth_spot, loan_symbol):
-    """缩放档自动探测（v1 逻辑）+ WETH 比值预言机兜底。返回 (oracle_usd, scale)。"""
+def resolve_oracle_usd(raw, spot, weth_spot, loan_symbol, loan_usd=None):
+    """缩放档自动探测（v1 逻辑）+ WETH 比值预言机兜底 + 非 USD 计价 loan 交叉转换。
+    返回 (oracle_usd, scale)。
+
+    EURC 类市场（cbBTC→EURC）：oracle price() 报的是抵押品的 loan 计价价（EUR 价），
+    对 USD 现货 >10% 不吻合 → 用 loan 现货交叉：spot_loan = spot_usd / loan_usd，
+    探测 raw/10^s ≈ spot_loan → oracle_usd = raw/10^s × loan_usd。"""
     if not raw or raw <= 0 or not spot or spot <= 0:
         # WETH 报价市场（wstETH→WETH/cbETH→WETH）：oracle 36 位 = 相对比率 × WETH 现货
         if loan_symbol == "WETH" and raw and weth_spot:
@@ -157,6 +162,16 @@ def resolve_oracle_usd(raw, spot, weth_spot, loan_symbol):
         ratio = raw / 1e36
         if 0.01 < ratio < 100:
             return ratio * weth_spot, 36
+    # 非 USD 计价 loan（EURC 类）：oracle 报 loan 计价价 → loan 现货交叉转换
+    if loan_usd and loan_usd > 0:
+        spot_loan = spot / loan_usd
+        for s in SCALES:
+            v = raw / (10 ** s)
+            if v <= 0:
+                continue
+            dev = abs(v - spot_loan) / spot_loan
+            if dev < FIT_TOL:
+                return v * loan_usd, s
     return None, None
 
 
@@ -178,9 +193,10 @@ def main():
         print("[!] watchlist 为空", file=sys.stderr)
         return 1
 
-    # 预取现货集合：全部抵押品 + WETH（比值预言机需要）。⚠️ 统一小写——DeFiLlama key 是小写，
+    # 预取现货集合：全部抵押品 + 全部借出资产 + WETH。⚠️ 统一小写——DeFiLlama key 是小写，
     # GraphQL 是 checksum 地址，不统一会 cache miss（实测 WETH 因天然小写才命中）
-    spot_addrs = {m["collateralAsset"]["address"].lower() for m in markets} | {WETH_BASE}
+    spot_addrs = {m["collateralAsset"]["address"].lower() for m in markets} \
+        | {m["loanAsset"]["address"].lower() for m in markets} | {WETH_BASE}
     spot_cache = {}        # addr -> (ts, usd)
     last_sample = {}       # marketId -> 上一条记录（delta 计算 + 日志降采样）
     last_alert = {}        # key -> ts（报警去重）
@@ -222,9 +238,10 @@ def main():
             st = m.get("state") or {}
             raw = raws.get(m["marketId"])
             spot = spot_cache.get(col["address"].lower(), (0, None))[1]
+            loan_usd = spot_cache.get(loan["address"].lower(), (0, None))[1]
             prev = last_sample.get(m["marketId"])
             oracle_usd, scale = resolve_oracle_usd(
-                raw, spot, weth_spot, loan["symbol"]) if (raw or prev) else (None, None)
+                raw, spot, weth_spot, loan["symbol"], loan_usd) if (raw or prev) else (None, None)
 
             rec = {
                 "ts": utcnow(), "chain": args.chain, "market": m["marketId"][:10],
