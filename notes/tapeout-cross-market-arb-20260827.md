@@ -73,3 +73,23 @@
 **落地**：`scripts/firsto_cross_market_scan.py`（5 官方市场 × NAND/LATCH，分 venue 算价差，净价差≥1.5% 且金额≥0.1 BNB 报警）+ cron `2c8dc44b4cac` 每 15 分钟 watchdog
 
 **含义**：价差是动态的，用户「3 BNB 一次 10%」发生在特定时刻（Firsto 高价买单深的时候）——雷达的价值 = 持续监控，价差扩大瞬间报警，机器盯盘替代手动刷两个页面
+
+## 八、矿机线（721 电路 NFT）API 探明（2026-08-27 深夜）
+
+**结论：电路市场无 REST 查询端点，数据源 = SSE 实时流**
+
+- `stream-api-tapeout.firsto.ai/v1/stream/circuits`（EventSource）——心跳帧含关键合约：
+  - `circuit_collections: 0x68224f668083c29e9800be2a646d42d18cedf7e2`（= factoryAddress）
+  - `official_circuit_market: 0x6feebbebc07bcb90bd1ac8b0cf9baa4f0ff2b46f`
+  - `circuit_exchange: 0xb17d0f8487123774f430d3b5708c7bb4143b68d8`
+- 电路订单 = 签名卖单（signed asks）+ 出价池（bid pools），POST /v1/circuit-bids|asks 发布
+- /v1/book 与 /v1/market 对电路合约地址全部 400 → 不能像元件线那样直接拉订单簿
+
+**元件 vs 电路 API 对比**：
+| | 元件（1155 NAND/LATCH） | 电路（721 NFT） |
+|---|---|---|
+| 行情查询 | REST /v1/book + /v1/market ✓ | 无 REST，SSE 流 |
+| 订单类型 | venue=official/ours 聚合 | signed asks + bid pools |
+| 自动化 | ✅ 雷达已上线 | 需 SSE 长连收集器 |
+
+**下一步（未完成）**：电路 SSE 收集器——后台长连挂 /v1/stream/circuits，收电路集合/出价池/签名卖单存 JSONL，建矿机行情库 → 才能算「矿机价 vs 元件成本（NAND+LATCH+流片费）」的组装套利空间（用户大头线）
