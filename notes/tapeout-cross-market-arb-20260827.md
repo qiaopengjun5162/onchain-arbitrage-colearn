@@ -52,3 +52,24 @@
 
 - 早期项目 + 高波动（NAND 地板 100x）→ 接盘风险
 - 官方规则变更可随时消灭信息差（如官方补双边挂单）→ 信息差套利是**快变量**，雷达要抢在规则变化前
+
+## 七、跨市场价差雷达已落地（2026-08-27 夜）
+
+**API 地图（spa-api-scraping 挖出）**：
+- `GET https://api-tapeout.firsto.ai/health` — 官方市场地址 0xA6a8...16E4、810 市场、619 开放买单
+- `GET /v1/markets` — 810 市场（cpu 721 合约 + transistors 1155 合约 + assets 带最新价）
+- `GET /v1/book/{transistors_addr}/{tokenId}` — **聚合订单簿**（官方+Firsto），每单带 `venue: official|ours` ← 核心
+- `GET /v1/market/{addr}/{tokenId}/overview?limit=100` — 行情+成交
+- `GET /v1/account/{addr}/...` — 公开账户查询（balances/orders/portfolio）
+- `POST /v1/circuit-bids|asks|order-request|quote` — 交易操作（发布挂单）
+- `wss stream-api-tapeout.firsto.ai` — 实时流
+
+**关键发现**：
+1. **官方市场卖单 = 0**（LATCH asks 全 venue=ours）——「官方只有买单侧」实锤
+2. 官方买单深度碾压 Firsto：TapeOut/LATCH 官方 37 档/23.6万个 vs Firsto 最优 0.00790 仅 1 个量（Top3 加权后 Firsto 反而 -28%）
+3. 810 市场仅 41 个有成交价；不同市场的 NAND 是不同 1155 合约，**不可跨市场搬**——套利只发生在同市场的官方场 vs Firsto 场
+4. 快照时刻（22:15）主市场无肉：TapeOut/NAND 净 -519bps、Blonskr_No1/NAND 平价；唯一正差 Genesis/LATCH +1894bps 但金额灰尘级（0.009 BNB）
+
+**落地**：`scripts/firsto_cross_market_scan.py`（5 官方市场 × NAND/LATCH，分 venue 算价差，净价差≥1.5% 且金额≥0.1 BNB 报警）+ cron `2c8dc44b4cac` 每 15 分钟 watchdog
+
+**含义**：价差是动态的，用户「3 BNB 一次 10%」发生在特定时刻（Firsto 高价买单深的时候）——雷达的价值 = 持续监控，价差扩大瞬间报警，机器盯盘替代手动刷两个页面
