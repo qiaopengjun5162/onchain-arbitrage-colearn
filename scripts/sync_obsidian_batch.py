@@ -111,6 +111,8 @@ MANIFEST = [
     ("group-share-x-links-batch3-20260826", "07 共学群友", "X 第3批（Entropy 工具/Hermes 生态）", "colearners"),
     ("group-share-taoli-why-20260826", "04 工具与协议", "Taoli.Tools 科普文归档", "tool"),
     ("group-share-taoli-deploy-20260826", "04 工具与协议", "Taoli.Tools 部署教程+开源核验", "tool"),
+    ("yourquantguy-entropy-arb-code-20260828", "04 工具与协议", "yourQuantGuy entropy-arb 代码核验（风控骨架 5 件套）", "tool"),
+    ("group-share-ema-chart-reading-20260828", "07 共学群友", "EMA 读图教学帖（强弱决策信号分层）", "colearners"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
@@ -191,6 +193,8 @@ DATE_OVERRIDES = {
     "group-share-x-links-batch3-20260826": "2026-08-26",
     "group-share-taoli-why-20260826": "2026-08-26",
     "group-share-taoli-deploy-20260826": "2026-08-26",
+    "yourquantguy-entropy-arb-code-20260828": "2026-08-28",
+    "group-share-ema-chart-reading-20260828": "2026-08-28",
 }
 
 # slug -> vault 中文名（用于重写内部双链，覆盖 vault 已有 + 本轮新增）
