@@ -68,6 +68,10 @@
 | D16 资金费风控框架 | 100011854（已发布 08-22，https://mp.weixin.qq.com/s/AcB7jSyjtj2f8Pjl03rNVA） | 08-22 |
 | D17 跨池价差11天回测 | 100011895（已发布 08-23，https://mp.weixin.qq.com/s/7AHHoFNQ_OkictmqjR8BXA） | 08-23 |
 | D18 牛市来了960币无一合格 | 100011915（已发布 08-24，https://mp.weixin.qq.com/s/JiPQ3AA7-snP9pYq-fTi8A） | 08-24 |
+| D19 四方向对比只有两条能打 | 100011955（重推 08-25 二修，08-25 22:56 发布，https://mp.weixin.qq.com/s/EYEO9FyLgAgu6eqB6cD_rA） | 08-25 |
+| D20 同块排序序资本游戏 | 100011982（已发布 08-26，https://mp.weixin.qq.com/s/cRqsr-unRoLczXm-eMgC7Q） | 08-26 |
+| D21 结营收官全地图只剩两条能打 | 100011994（已发布 08-27，https://mp.weixin.qq.com/s/xftAaHmdrqEdens39W3CbA） | 08-27 |
+| D22 清算雷达30分钟缩到3秒 | 100012020（发布 08-28 13:29，https://mp.weixin.qq.com/s/2Xs89BXN_yeIhcrdK6R1iA；经历3次ship封面事故修复） | 08-28 |
 
 ## 常见坑
 
@@ -78,5 +82,3 @@
 - **二进制过期**（2026-08-09）：`--style geek-black` 静默 fallback 成 literary 封面 → ship 前 `cargo build --release` + OCR 确认 BUILD NOTES
 - **正文主题**：`moonpub.toml theme` 控制（当前 `geek` 浅色，用户定稿）；与 `--style`（封面）独立
 - **已发布文章别重 ship**：查 `.moonpub/status.jsonl`，误推用 `delete-draft <media_id>` 删
-| D20 同块排序序资本游戏 | 100011982（已发布 08-26，https://mp.weixin.qq.com/s/cRqsr-unRoLczXm-eMgC7Q） | 08-26 |
-| D19 四方向对比只有两条能打 | 100011955（重推 08-25 二修，08-25 22:56 发布，https://mp.weixin.qq.com/s/EYEO9FyLgAgu6eqB6cD_rA） | 08-25 |
