@@ -263,6 +263,7 @@ https://intensivecolearn.ing/programs/b43d2e97-ed88-4ca3-b12f-7ef672b01205
 - `notes/yourquantguy-entropy-arb-code-20260828.md` — yourQuantGuy entropy-arb 代码发布核验（预热帖落地，MIT/80★/源码审读：风控骨架 5 件套可抄=persistence arming/库存阶梯/订单预算/故障暂停/链上对账 + record-only→analyzer 参数闭环；判定学习价值高不装不跑，执行层设计模板）
 - `notes/skhynix-funding-arb-mine-closed-20260828.md` — 海力士费率套利复盘（神矿落幕：SKHYNIX 费率 6.5%→0，谁付钱检验案例；IBKR 韩元对冲结构 + 存储周期 RWA 候选）
 - `notes/tingfeng-monitor-verify-20260828.md` — 听风监控台核验（@Jokki 闭源第三方：X/TG/fomo 实时流+追风反查 SOL/EVM+共识异动；情报层工具，追风补取证缺口，空钱包试用一周再定）
+- `notes/hl-gt-funding-event-window-20260828.md` — HL/GT 费率事件窗口复盘（负费率反向建仓吃费率+价差双重收益；Gate 改费率 0.02→0.5→1% = 事件窗口，改后价差收敛 2 点；dual_mode 缺负费率反向分支）
 - `notes/group-share-x-links-batch3-20260826.md` — X 第 3 批：⑦Chosmos110 Entropy↔Lighter SNDK 价差套利工具 V0.1.0（repo 6★无 license 邀请码引流，机制=同币跨 HIP-3 DEX 价差无新意，工具不装；Entropy/Lighter=币股 RWA 生态成员）⑧GitTrend0x Hermes 生态五件套（repo 全部真实：litprog-skill 253★/hermes-life-os 182★/abvx 可审计编码 15★，可挑 1-2 个试用）
 - `notes/tapeout-cross-market-arb-20260827.md` — TapeOut 跨市场套利实操（用户本人两天 1K+）：官方市场 vs Firsto 订单簿不互通（官方挂买单→Firsto 显示，反向不显示），官方竞争小挂价低→低价收→Firsto 高价卖，3 BNB 一次 ~10%；矿机线=做最优首创加价卖（大头）；可执行项=跨市场价差雷达（P0）
 - `notes/yourquantguy-entropy-arb-code-20260828.md` — yourQuantGuy entropy-arb 代码发布核验（预热帖落地，MIT/80★/源码审读：风控骨架 5 件套可抄=persistence arming/库存阶梯/订单预算/故障暂停/链上对账 + record-only→analyzer 参数闭环；判定学习价值高不装不跑，执行层设计模板）
