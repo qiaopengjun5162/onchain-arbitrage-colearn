@@ -223,7 +223,8 @@ def main():
         # 双模式判定：价差输入=真基差（无现货/失败退回费率差近似）；费率差=跨所费率差；波动=费率历史极差近似
         spread_val = round(spread * 10000, 1)
         hist_vol = (max(hist) - min(hist)) * 1e4 if hist else 0
-        d = dual_mode_decision(basis if basis is not None else spread_val, spread_val, hist_vol, stab)
+        d = dual_mode_decision(basis if basis is not None else spread_val, spread_val, hist_vol, stab,
+                                      top_rate_bps=rates[top_ex] * 10_000)
         rows.append({
             "base": base, "rates": {n: round(r, 6) for n, r in rates.items()},
             "spread_bps": spread_val,
@@ -238,7 +239,7 @@ def main():
 
     out("=" * 100)
     # 排序：可执行模式（套费率/套收敛）优先 > 稳定性 > 费率差
-    mode_rank = {"funding": 0, "convergence": 0, "no_entry": 1, "danger": 2}
+    mode_rank = {"funding": 0, "funding_reverse": 0, "convergence": 0, "no_entry": 1, "danger": 2}
     rows.sort(key=lambda r: (mode_rank.get(r["mode"], 1), -r["stability"], -r["spread_bps"]))
     out(f"{'币':<12}{'费率差bps':>10}{'基差bps':>8}{'现货':>6}{'稳定':>6}  {'模式':<8}{'退出线':>8}  历史(近6次)")
     out("-" * 100)
@@ -247,7 +248,7 @@ def main():
         rates_s = " ".join(f"{n}:{r['rates'][n]*100:.2f}" for n in EXCHANGES if n in r["rates"])
         hist_s = " ".join(f"{h*100:+.2f}" for h in r["history"]) if r["history"] else "N/A"
         flag = "✅" if (r["has_spot"] and r["stability"] >= 0.6) else ("👀" if r["has_spot"] else "⚠️无现货")
-        mode_cn = {"funding": "套费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
+        mode_cn = {"funding": "套费率", "funding_reverse": "反开费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
         ext = f"{r['exit_trigger_bps']:.0f}bps" if r.get("exit_trigger_bps") else "-"
         basis_s = f"{r['basis_bps']:.0f}" if r.get("basis_bps") is not None else "n/a"
         out(f"{r['base']:<12}{r['spread_bps']:>10.1f}{basis_s:>8}{'Y' if r['has_spot'] else 'N':>6}"
@@ -257,7 +258,8 @@ def main():
     rec = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "bases_checked": len(all_bases),
-        "rows": rows[:args.top],
+        # 2026-08-28: 全量 rows 落盘（不再只存 top N）——费率档位跳变检测(funding_rate_jump_watch)需要全量跨快照比对
+        "rows": rows,
         "t_scan_s": round(time.time() - t0, 2),
     }
     write_log(rec)
@@ -275,7 +277,7 @@ def main():
         for r in signals[:args.top]:
             rates_s = " ".join(f"{n}:{r['rates'][n]*100:.2f}" for n in EXCHANGES if n in r["rates"])
             hist_s = " ".join(f"{h*100:+.2f}" for h in r["history"]) if r["history"] else "N/A"
-            mode_cn = {"funding": "套费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
+            mode_cn = {"funding": "套费率", "funding_reverse": "反开费率", "convergence": "套收敛", "no_entry": "不进场", "danger": "危险"}.get(r["mode"], r["mode"])
             ext = f"退出线{r['exit_trigger_bps']:.0f}bps" if r.get("exit_trigger_bps") else "无退出线"
             basis_s = f"基差{r['basis_bps']:.0f}bps" if r.get("basis_bps") is not None else "基差n/a"
             print(f"  {r['base']:<10} 费率差 {r['spread_bps']:.1f}bps | {rates_s} | 稳定 {r['stability']:.2f}")

@@ -29,6 +29,7 @@ SPREAD_NORMAL_BPS = 50      # 价差低于此 = 正常（套费率候选）
 SPREAD_EXTREME_BPS = 500    # 价差 ≥5% = 极端（套收敛候选，妖币/单边信号）
 # 费率差门槛：双腿成本 50-60bps（D18），费率差年化须覆盖
 RATE_DIFF_MIN_BPS = 60      # 每小时费率差下限（bps/8h 档），低于此连成本都盖不住
+REVERSE_RATE_MIN_BPS = 30   # 反向建仓阈值：顶所费率 ≤ -30bps/8h（显著负费率=事件窗口，HL/GT 案例 2026-08-28）
 # 波动率：横盘 vs 单边。用 24h 高低差近似（bps）
 VOL_FLAT_BPS = 300          # 24h 波动 <3% = 横盘（套费率安全区）
 VOL_STORM_BPS = 1000        # 24h 波动 >10% = 风暴（两种模式都危险）
@@ -41,7 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCAN_LOG = ROOT / "data" / "funding_spread_scan.jsonl"
 
 
-def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0, hold_periods=HOLD_PERIODS_DEFAULT):
+def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0, hold_periods=HOLD_PERIODS_DEFAULT, top_rate_bps=None):
     """
     纯函数：三输入 → 模式判定。
     返回 dict：{mode, reason, exit_trigger_bps, confidence}
@@ -79,6 +80,22 @@ def decision(spread_bps, rate_diff_bps, vol_bps, stability=1.0, hold_periods=HOL
             "reason": f"价差 {spread_bps}bps 极端且费率差 {rate_diff_bps}bps 可观 → 混合：主套收敛 + 顺带吃费率",
             "confidence": 0.75,
             "exit_trigger_bps": None,
+        }
+
+    # 2.5 反开费率（单腿负费率事件窗口，HL/GT 案例 2026-08-28）：
+    #     顶所费率显著为负 → 反向建仓（做多收负费率）+ 基差收敛，双重收益
+    if (spread_abs <= SPREAD_NORMAL_BPS and vol_bps <= VOL_FLAT_BPS
+            and top_rate_bps is not None and top_rate_bps <= -REVERSE_RATE_MIN_BPS):
+        income_bps = abs(top_rate_bps) * hold_periods
+        exit_trigger_bps = round(income_bps * SPREAD_EXIT_MULT, 1)
+        return {
+            "mode": "funding_reverse",
+            "reason": f"顶所费率 {top_rate_bps:.0f}bps 显著为负（≤-{REVERSE_RATE_MIN_BPS}bps）→ 反向建仓："
+                      f"做多收负费率（{abs(top_rate_bps):.0f}bps/周期 × {hold_periods} 周期 ≈ {income_bps:.0f}bps）"
+                      f"+ 基差收敛双收益；HL/GT 实证：负费率反开吃费率+价差；"
+                      f"退出线 = 价差恶化 ≥{exit_trigger_bps}bps 即平仓",
+            "confidence": 0.8,
+            "exit_trigger_bps": exit_trigger_bps,
         }
 
     # 3. 套费率：价差正常 + 波动小（横盘）+ 费率差覆盖成本 + 费率稳定
