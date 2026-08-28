@@ -76,9 +76,31 @@
 
 ## 八、矿机线（721 电路 NFT）API 探明（2026-08-27 深夜）
 
-**结论：电路市场无 REST 查询端点，数据源 = SSE 实时流**
+**结论（2026-08-28 修正）：电路市场有 REST 查询端点——昨天探 /v1/book、/v1/market 全 400 是因为路径不同，电路走独立端点**
 
-- `stream-api-tapeout.firsto.ai/v1/stream/circuits`（EventSource）——心跳帧含关键合约：
+正确 API 地图（2026-08-28 从前端 bundle 挖出 + 实测）：
+- `GET /v1/circuits?limit=50&page=N` — 电路列表（22,205 条/445 页）：每行带 minAskBuyerCostWei（最便宜签名卖单=买家成本）、maxBidSellerNetWei（最优买单=卖家净得）、bestAsk/bestBid、askCount/bidCount、**directNand/directLatch/directGateCount（元件需求，组装套利核心字段）**、classification（98%=official_mining）、processorName（tapeout/behemoth/genesis cpu）、mining、valuation、owner/creator
+- `GET /v1/circuit/{collection}/{tokenId}` — 详情：orders.asksAndOnchainBids（链上官方卖单）+ signedAsks（签名卖单）+ signedBids（出价池，bidHash/chainId=56/verifyingContract=circuit_exchange）+ activity
+- `GET /v1/circuit-trades?limit=N` — 成交流：priceWei/buyerCostWei/sellerNetWei/feeWei（=1%，与官方市场同费率）
+- `GET /v1/account/{addr}/circuit-orders?kind=offers_made|offers_received|listings` — 账户电路订单/出价池（pools: poolId/remainingBudgetWei/expiresAt/feeBps 0-200/active）
+- `POST /v1/circuit-bids|asks|order-request` — 发布挂单（写操作）
+- SSE `stream-api-tapeout.firsto.ai/v1/stream/circuits` — **只是 generation/健康心跳**（snapshot: sequence/generationId/sourceBlock/sourceFreshness/sourceBlocks/degraded），无订单数据 → 行情库不需要 SSE
+
+关键合约（心跳帧 + bundle 确认，含两个昨天没有的）：
+- `circuit_collections: 0x68224f668083c29e9800be2a646d42d18cedf7e2`（= factoryAddress，兼 discovery/netlist_enrichment）
+- `official_circuit_market: 0x6feebbebc07bcb90bd1ac8b0cf9baa4f0ff2b46f`
+- `circuit_exchange: 0xb17d0f8487123774f430d3b5708c7bb4143b68d8`
+- `official_circuit_mining: 0x7e2e0dc66a3bd9103e69b766afa62d9f7b697b46`（新增）
+- `circuit_signed_ask_exchange: 0x81de876ab97c65f156d896a24a76d48c015e6b6e`（新增）
+
+元件 vs 电路 API 对比（修正版）：
+| | 元件（1155 NAND/LATCH） | 电路（721 NFT） |
+|---|---|---|
+| 行情查询 | REST /v1/book + /v1/market ✓ | REST /v1/circuits + /v1/circuit/{coll}/{tid} ✓ |
+| 订单类型 | venue=official/ours 聚合 | 链上卖单 + signedAsks + signedBids（出价池） |
+| 实时性 | 雷达 15min 轮询 ✓ | SSE 仅健康心跳 → REST 15min 轮询够用 |
+
+**下一步（原计划 SSE 收集器 → 已改为 REST 扫描器，见第九节）**：
   - `circuit_collections: 0x68224f668083c29e9800be2a646d42d18cedf7e2`（= factoryAddress）
   - `official_circuit_market: 0x6feebbebc07bcb90bd1ac8b0cf9baa4f0ff2b46f`
   - `circuit_exchange: 0xb17d0f8487123774f430d3b5708c7bb4143b68d8`
@@ -93,3 +115,24 @@
 | 自动化 | ✅ 雷达已上线 | 需 SSE 长连收集器 |
 
 **下一步（未完成）**：电路 SSE 收集器——后台长连挂 /v1/stream/circuits，收电路集合/出价池/签名卖单存 JSONL，建矿机行情库 → 才能算「矿机价 vs 元件成本（NAND+LATCH+流片费）」的组装套利空间（用户大头线）
+
+## 九、矿机组装套利扫描器已落地（2026-08-28）
+
+**API 修正的直接收益**：昨天以为要写 SSE 长连收集器，今天确认电路有 REST 端点后，直接复用元件雷达模式——**轮询比长连更简单可靠**。
+
+**落地**：`scripts/circuit_assembly_scan.py`（REST 轮询）
+- 逻辑：元件价（TapeOut 市场 NAND/LATCH ask+bid）→ 电路列表分页 → 每条 official_mining 电路算：
+  - 组装成本 = directNand×NAND价 + directLatch×LATCH价 + 流片费（`TAPEOUT_FEE_BNB=0.05`，配置值待链上核验）
+  - 挂价溢价 = (矿机卖价 − 组装成本)/矿机卖价 —— 信息面
+  - **买单套利 = (矿机买单价 − 组装成本)/组装成本 —— 可执行面（真买家）**
+- 报警规则：**买单支撑**的正利差 ≥10% 且买单价 ≥0.1 BNB 才报（防挂价泡沫噪声）
+- 行情库：每次扫描落一行 `data/circuit_market.jsonl`（元件价/电路数/Top 溢价/报警）
+- cron `21731d9cc3af` 每 15 分钟 watchdog（`~/.hermes/scripts/run_circuit_assembly.sh`）
+
+**首跑实测（08-28 12:30，49 条电路）**：
+- 元件价：NAND ask 0.00745 / bid 0.006855；LATCH ask 0.00792 / bid 0.00593（BNB）
+- 挂价溢价 TOP：Behemoth#434 卖 16 BNB vs 元件成本 0.21（+9866bps）、TapeOut#7615 卖 3 BNB vs 0.33（+8890bps）——**挂价溢价普遍 80%+，但全部无买单承接（买卖单 50:8），是流动性陷阱不是套利**
+- **买单支撑的组装套利：0 报警** —— 诚实结论：当前无「现买现组装」的即时套利窗口
+- 含义：矿机线的真实玩法仍是「做矿机 → 挂高价等买家」（信息差/耐心生意），不是高频即时套利；扫描器的价值 = ① 挂价溢价表（告诉你挂多少）② 买单窗口出现瞬间报警（机器盯盘）③ 元件价格变动跟踪（成本端）
+
+**待核验**：流片费真实值（链上 official_circuit_mining 合约，非 0.05 配置值）——影响组装成本端精度
