@@ -24,11 +24,14 @@ import urllib.request
 PROXY = os.environ.get("PROXY", "http://127.0.0.1:7890")
 THRESHOLD_BPS = int(os.environ.get("THRESHOLD_BPS", "150"))
 # bStock 资产 -> yfinance 美股代码（Binance 现货 XXXBUSDT）
+# 2026-08-28 扩充：存储周期三兄弟（AI 算力+DRAM/HBM/NAND 涨价主线，08-28 归档「买在无人问津」提取）
+#   MU=美光($7.5M/24h) SNDK=闪迪($38M/24h) WDC=西数($0.3M/24h, 薄但同周期)
 BSTOCK_MAP = {
     "MSTR": "MSTR", "SPY": "SPY", "QQQ": "QQQ", "NVDA": "NVDA",
     "TSLA": "TSLA", "AAPL": "AAPL", "COIN": "COIN", "AVGO": "AVGO",
     "ALAB": "ALAB", "GME": "GME", "AMZN": "AMZN", "META": "META",
     "MSFT": "MSFT", "NFLX": "NFLX",
+    "MU": "MU", "SNDK": "SNDK", "WDC": "WDC",
 }
 
 
