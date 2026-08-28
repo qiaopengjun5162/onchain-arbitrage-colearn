@@ -39,15 +39,20 @@ OFFICIAL_MARKETS = {
     "Bitcoin Miner": "0x140FDD905849a49064f8d366ABE7b21Ff83DAFB5",
     "RefBench":      "0xB645572D56E81ca2844fA833ad14f146a10e8330",
 }
-# 官方挖矿家族（bundle 里 $I set）
-MINING_FAMILIES = {"tapeout", "behemoth", "genesis cpu"}
-COMPONENT_MARKET = "TapeOut"   # 元件价基准市场（最活跃；v1 用单一市场，后续可按 processor 映射）
+# 处理器名 → 其晶体管(1155)市场（tapeout.net 官方白皮书/合约页核对；缺省回退 TapeOut）
+# Genesis CPU 晶体管合约 = 0x1d23Bf70（官方页明示）；TapeOut = 0xCC42ba5D；Behemoth 晶体管合约未公开 → 回退
+PROCESSOR_MARKET = {
+    "Genesis CPU": "0x1d23Bf70ec6bAAD95f396Ea38f8A8415119dFDE6",
+    "TapeOut":      "0xCC42ba5De07f01B472a5b14cF45aBcCA79Eb8087",
+}
+FALLBACK_MARKET = "0xCC42ba5De07f01B472a5b14cF45aBcCA79Eb8087"  # TapeOut 市场（最活跃）
 
 ALERT_BPS = 1000        # 组装溢价 >= 10% 报警
 MIN_VALUE_BNB = 0.1     # 矿机价下限（BNB，防灰尘级）
 TOP_N = 5               # 输出表格条数
 PAGES = 1               # --once 默认扫 1 页 (50 条)
-TAPEOUT_FEE_BNB = 0.05  # 流片费（链上机制，暂配置值，待核验）
+# 流片费 = 0（官方白皮书 tapeout.net 核实：流片 = 晶体管 Token 真实销毁，仅 gas；创建费当前=0）
+TAPEOUT_FEE_BNB = 0.0
 
 
 def get(path, proxy=True, timeout=25):
@@ -88,13 +93,14 @@ def book_levels(market_addr, token_id):
 
 
 def scan(pages=PAGES):
-    # 1. 元件价格
-    mkt = OFFICIAL_MARKETS[COMPONENT_MARKET]
-    nand_ask, nand_bid, nand_n = book_levels(mkt, 0)
-    latch_ask, latch_bid, latch_n = book_levels(mkt, 1)
+    # 1. 元件价格：基底 = TapeOut 市场（最活跃，各处理器晶体管是不同 1155 合约，只对已知映射单独取价）
+    mkt = FALLBACK_MARKET
+    px_market = "TapeOut"
+    nand_ask, nand_bid, _ = book_levels(mkt, 0)
+    latch_ask, latch_bid, _ = book_levels(mkt, 1)
     if nand_ask is None and nand_bid is None:
-        return [], f"元件行情失败({COMPONENT_MARKET} NAND)"
-    px = f"元件价 {COMPONENT_MARKET}: NAND ask={nand_ask or 0:.6f}/bid={nand_bid or 0:.6f} " \
+        return [], f"元件行情失败({px_market})"
+    px = f"元件价 {px_market}: NAND ask={nand_ask or 0:.6f}/bid={nand_bid or 0:.6f} " \
          f"LATCH ask={latch_ask or 0:.6f}/bid={latch_bid or 0:.6f}"
 
     # 2. 电路列表（分页）
@@ -126,7 +132,16 @@ def scan(pages=PAGES):
             continue  # 递归电路，元件需求不明，跳过
         circ_ask = ask_w / WAD
         circ_bid = int(r.get("maxBidSellerNetWei") or 0) / WAD
-        cost_ask = (dn * (nand_ask or 0) + dl * (latch_ask or 0)) + TAPEOUT_FEE_BNB
+        # 按处理器取元件价（该处理器晶体管市场，未映射回退全局价）
+        pname = r.get("processorName") or ""
+        pm = PROCESSOR_MARKET.get(pname, mkt)
+        na = nand_ask; nb = nand_bid; la = latch_ask; lb = latch_bid
+        if pm != mkt:
+            na, nb, _ = book_levels(pm, 0)
+            la, lb, _ = book_levels(pm, 1)
+            if na is None: na, nb = nand_ask, nand_bid
+            if la is None: la, lb = latch_ask, latch_bid
+        cost_ask = (dn * (na or 0) + dl * (la or 0)) + TAPEOUT_FEE_BNB
         cost_bid = (dn * (nand_bid or 0) + dl * (latch_bid or 0)) + TAPEOUT_FEE_BNB
         margin_bps = (circ_ask - cost_ask) / circ_ask * 10_000 if circ_ask else 0
         # 可执行组装套利：现有买单价 vs 即时组装成本（买元件→组装→卖给当前买单）
