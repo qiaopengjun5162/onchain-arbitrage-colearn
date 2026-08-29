@@ -68,5 +68,13 @@ v1 是 30min cron 全市场扫描（200 市场串行 eth_call + DeFiLlama）。�
 - [x] 挂 cron：`7954368ea467` 每 15 分钟跑 9 分钟窗口（--duration 540 --quiet），19:15 首跑 status ok 无报警（安静期契约正确）
 - [ ] Flashblocks WS 端点（Chainstack 类）→ 真 <200ms 节奏 + 预言机更新逐桶流
 - [x] **EUR 报价预言机交叉汇率处理（2026-08-26 晚完成）**：resolve 加 loan_usd 交叉转换（spot_loan=spot/loan_usd 探测 → oracle_usd=raw/10^s×loan_usd）；实测 cbBTC→EURC 从 scale? → -1.5bps，与 cbBTC→USDC 市场完全一致（交叉正确性验证）→ **12/12 市场全解析**
-- [ ] 联动 `morpho_liquidation_hf.py`：偏离突变 → 自动算 watchlist 持仓 HF + 触发跌幅
+- [x] **联动 `morpho_liquidation_hf.py`（2026-08-29 完成）**：新增 `scripts/prey_hf_trigger.py`——读 v2 jsonl 尾部信号
+      （JUMP/SIGNAL/ORACLE_UPDATE/BROKEN_ORACLE）→ 立即触发持仓级 HF 扫描（import morpho_liquidation_hf.scan 复用）
+      → 输出「信号 + 谁 HF 最低 + 触发跌幅」；独立进程事件驱动零开销；跨进程去重 10min/信号；watchdog 契约（无信号静默）
+      cron `44acb25fa67a` 每 2 分钟（比 30min HF cron 快 15 倍响应）。实测：watchdog 静默 ✅；全量 HF 快照发现
+      USDe→USDC 贴线大仓（HF 1.006 起、触发跌幅 0.57%-1.93%，含 $49.32M 仓）
+- [x] **v1 旧雷达退役（2026-08-29）**：`morpho_prey_radar.py` 符号 bug（偏离用绝对值 → mGLO 型「oracle 低估偏安全」误报 SIGNAL）
+      + 无 EUR 交叉 → 停 cron `6c9d49f28ba7`；v2 `--include-broken` 补位（加「有资金」过滤 + marketId 去重，watch 脚本已更新）。
+      实测 --include-broken：**24 个 HERMES 市场 listed=False 但 supply≈$55M×19+$11M×5+$98M 全 util=100%、
+      oracle 冻结（BROKEN_ORACLE）≈$1.2B+ 借款困在 frozen 市场 = 清算连环弹药库**（24h 去重报一次）
 - [ ] 攒 24h 高频数据后：统计偏离分布基线（正常漂移 vs 突变阈值校准，20bps/tick 是否合理）

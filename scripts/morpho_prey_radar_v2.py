@@ -303,8 +303,13 @@ def main():
                 changed = True
             elif last_ts:
                 try:
-                    last_dt = datetime.fromisoformat(last_ts)
-                    changed = (datetime.now(timezone.utc) - last_dt).total_seconds() >= HEARTBEAT_S
+                    # 恒定 BROKEN_ORACLE（冻结论价机市场）心跳不写日志——首次出现才写，
+                    # 之后静默（否则 24 个 frozen 市场每 60s 写一行 = 3.5 万行/天噪声）
+                    if prev and prev.get("level") == "BROKEN_ORACLE" and level == "BROKEN_ORACLE":
+                        pass
+                    else:
+                        last_dt = datetime.fromisoformat(last_ts)
+                        changed = (datetime.now(timezone.utc) - last_dt).total_seconds() >= HEARTBEAT_S
                 except Exception:
                     pass
             if changed:
