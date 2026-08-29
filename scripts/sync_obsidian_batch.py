@@ -113,6 +113,14 @@ MANIFEST = [
     ("group-share-taoli-deploy-20260826", "04 工具与协议", "Taoli.Tools 部署教程+开源核验", "tool"),
     ("yourquantguy-entropy-arb-code-20260828", "04 工具与协议", "yourQuantGuy entropy-arb 代码核验（风控骨架 5 件套）", "tool"),
     ("group-share-ema-chart-reading-20260828", "07 共学群友", "EMA 读图教学帖（强弱决策信号分层）", "colearners"),
+    ("boros-crossex-funding-arb-20260828", "02 市场地图", "Boros×CrossEx 跨所费率套利核验", "market-map"),
+    ("chainfeeds-daily-20260828", "02 市场地图", "ChainFeeds 投研早报 digest（清算燃料地图）", "market-map"),
+    ("group-share-buy-when-ignored-20260828", "07 共学群友", "群分享：买在无人问津（WiseInvest513）", "colearners"),
+    ("group-share-rl-agent-skfolio-20260828", "07 共学群友", "群分享：RL 交易 Agent + skfolio", "colearners"),
+    ("hl-gt-funding-event-window-20260828", "03 策略假设", "HL/GT 费率事件窗口复盘", "strategy"),
+    ("ipo-convergence-arb-h1-20260828", "03 策略假设", "上市收敛套利三案例（SPCX/CRBS/海力士）", "strategy"),
+    ("skhynix-funding-arb-mine-closed-20260828", "03 策略假设", "海力士费率套利落幕复盘", "strategy"),
+    ("tingfeng-monitor-verify-20260828", "04 工具与协议", "听风监控台核验", "tool"),
 ]
 
 # slug -> 实际日期（覆盖全局 DATE；manifest 里按笔记实际日期登记）
