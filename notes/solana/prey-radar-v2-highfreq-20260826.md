@@ -57,7 +57,12 @@ v1 是 30min cron 全市场扫描（200 市场串行 eth_call + DeFiLlama）。�
 ## 五、下一步（清算事件线）
 
 - [x] 挂 cron：`7954368ea467` 每 15 分钟跑 9 分钟窗口（--duration 540 --quiet），19:15 首跑 status ok 无报警（安静期契约正确）
-- [ ] Flashblocks WS 端点（Chainstack 类）→ 真 <200ms 节奏 + 预言机更新逐桶流
+- [x] **预言机更新逐桶监听（2026-08-29 部分完成：公共端点版）**：新增 `scripts/chainlink_feed_watch.py`——
+      Morpho oracle bytecode PUSH32 提取 feed proxy（MorphoChainlinkOracleV2 feeds 是 immutable 嵌入代码，无公开 getter；
+      USDe 型 46B 最小代理先穿透 implementation）→ `proxy.aggregator()` 拿 aggregator（更新交易 transmit 发往 aggregator）→
+      mainnet.base.org pending 轮询（~1s 滚动）扫 tx.to ∈ aggregator → 命中=预言机刚更新=确定性信号 → 立即 HF 联动（复用 prey_hf_trigger）
+      cron `3791583377a0` 每 2 分钟 100s 窗口。12 市场 → 11 个 aggregator（cbBTC/cbETH 系共享 feed，EURC/USD=0xc91d87e8 等全部验证）
+      ⚠️ 真 <200ms 需 Chainstack 类付费 WS 端点（公共端点 ~1s 已是极限）；监听器端点可换
 - [x] **EUR 报价预言机交叉汇率处理（2026-08-26 晚完成）**：resolve 加 loan_usd 交叉转换（spot_loan=spot/loan_usd 探测 → oracle_usd=raw/10^s×loan_usd）；实测 cbBTC→EURC 从 scale? → -1.5bps，与 cbBTC→USDC 市场完全一致（交叉正确性验证）→ **12/12 市场全解析**
 - [x] **联动 `morpho_liquidation_hf.py`（2026-08-29 完成）**：新增 `scripts/prey_hf_trigger.py`——读 v2 jsonl 尾部信号
       （JUMP/SIGNAL/ORACLE_UPDATE/BROKEN_ORACLE）→ 立即触发持仓级 HF 扫描（import morpho_liquidation_hf.scan 复用）
