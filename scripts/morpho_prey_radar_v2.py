@@ -87,10 +87,20 @@ def gql_markets(chain_id: int, watch: int, include_broken: bool):
     live.sort(key=lambda m: -(m["state"]["supplyAssetsUsd"] or 0))
     picked = live[:watch]
     if include_broken:
-        # 冻结论价机市场（HERMES 型：raw≥1e40 且无缩放吻合）——预言机修正=清算连环
+        # 冻结论价机市场（HERMES 型：raw≥1e40 且无缩放吻合）——预言机修正=清算连环。
+        # 抓所有「不在 live top-N 但有 oracle」的市场（listed 与否都算，覆盖 supply=0 冷冻市场）
+        live_ids = {m["marketId"] for m in picked}
         for m in items:
-            if not m["listed"] and m.get("oracle", {}).get("address"):
+            mid = m["marketId"]
+            st = m.get("state") or {}
+            # 只加有资金的市场（supply 或 borrow >0）——纯零资金冷冻市场报警无意义
+            has_funds = (st.get("borrowAssetsUsd") or 0) > 0 or (st.get("supplyAssetsUsd") or 0) > 0
+            if mid not in live_ids and has_funds and m.get("oracle", {}).get("address"):
                 picked.append(m)
+        # 去重（GraphQL 偶发重复 marketId）
+        seen = set()
+        picked = [m for m in picked
+                  if not (m["marketId"] in seen or seen.add(m["marketId"]))]
     return picked
 
 
