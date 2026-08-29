@@ -353,3 +353,4 @@ ts,amount_sol,sim_price,sim_route,build_ok,exec_price,fill_rate
 2026-08-29T08:30:08+00:00,0.01,103.4881,Byreal→Aquifer→AlphaQ,True,,,0.0,0.2492,NO-GO
 2026-08-29T09:00:06+00:00,0.01,103.4934,Quantum,True,,,0.0,0.2492,NO-GO
 2026-08-29T10:00:20+00:00,0.01,103.3325,Whirlpool→Aquifer,True,,,0.0,0.2488,NO-GO
+2026-08-29T11:00:40+00:00,0.01,103.4719,Byreal→AlphaQ,True,,,0.0,0.2492,NO-GO
