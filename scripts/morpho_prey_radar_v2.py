@@ -300,7 +300,12 @@ def main():
             elif delta is not None and abs(delta) >= DELTA_LOG_BPS:
                 changed = True
             elif prev is None or prev.get("level") != level:
-                changed = True
+                # 非正常态之间的跳变（BROKEN_ORACLE↔no_price↔scale?，网络抖动/冻结市场常见）
+                # 不写日志——只有进出 ok（正常态）才写，避免冻结市场来回抖动刷盘
+                prev_ok = prev.get("level") == "ok" if prev else False
+                cur_ok = level == "ok"
+                if prev_ok or cur_ok:
+                    changed = True
             elif last_ts:
                 try:
                     # 恒定 BROKEN_ORACLE（冻结论价机市场）心跳不写日志——首次出现才写，

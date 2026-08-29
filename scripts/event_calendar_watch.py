@@ -41,12 +41,21 @@ PRE_IPO_WATCH = [
     # 已完成（历史案例，保留供参考）
     {"name": "SpaceX", "ticker": "SPCX", "expected_ipo": dt.date(2026, 6, 12), "note": "已完成：6/12 IPO，HL 当日 $14 亿成交"},
     {"name": "Cerebras", "ticker": "CBRS", "expected_ipo": dt.date(2026, 5, 14), "note": "已完成：5/14 IPO $185→Day1 $311"},
-    # 观察中（预期窗口为粗估/待确认，事件发生时人工更新）
-    {"name": "Stripe", "ticker": None, "expected_ipo": None, "note": "pre-IPO 永续常见标的；IPO 时间未公告"},
-    {"name": "OpenAI", "ticker": None, "expected_ipo": None, "note": "pre-IPO 永续常见标的；IPO 时间未公告"},
-    {"name": "Anthropic", "ticker": None, "expected_ipo": None, "note": "pre-IPO 永续常见标的；IPO 时间未公告"},
-    {"name": "Databricks", "ticker": None, "expected_ipo": None, "note": "pre-IPO 永续常见标的；IPO 时间未公告"},
-    {"name": "Figure", "ticker": None, "expected_ipo": None, "note": "pre-IPO 永续常见标的；IPO 时间未公告"},
+    # 观察中（2026-08-29 核验，预期窗口为粗估/待确认，事件发生时人工更新）
+    {"name": "Anthropic", "ticker": None, "expected_ipo": dt.date(2026, 12, 31),
+     "note": "S-1 已交 2026-06-01（首家 major AI lab），GS/JPM/MS 承销，$965B 估值(5月$65B轮)；Q4 2026 目标"},
+    {"name": "OpenAI", "ticker": None, "expected_ipo": None,
+     "note": "confidential S-1 已交 2026-06-08，$852B 估值(3月)；未定时间，Late 2026 或 2027"},
+    {"name": "Databricks", "ticker": None, "expected_ipo": None,
+     "note": "IPO-ready 无 S-1(截至5月)，预期 S-1 Q3 2026，$134B 估值，年化收入 $5.4B(+65%)；H2 2026 或 early 2027"},
+    {"name": "Stripe", "ticker": None, "expected_ipo": None,
+     "note": "无 S-1，$159B 估值(2026-02 tender)；Collison 不急上市，2027-2028 窗口（低优先）"},
+    {"name": "Figure", "ticker": None, "expected_ipo": None,
+     "note": "无 S-1，$39B 估值(2025-09 Series C)；2027-2028 窗口（低优先）"},
+    {"name": "Kraken", "ticker": None, "expected_ipo": None,
+     "note": "加密交易所，Q3 2026 Filed（用户领域相关，2026-08-29 核验加入）"},
+    {"name": "Discord", "ticker": None, "expected_ipo": None,
+     "note": "H2 2026 Filed（2026-08-29 核验加入）"},
 ]
 
 
