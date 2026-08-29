@@ -1,0 +1,13 @@
+ts,from_chain,to_chain,amount_usdc,to_amount,to_min,loss_bps,fee_usd,gas_usd,duration_s,tool,routes,round
+2026-08-10 03:00:53 UTC,base,arbitrum,1000.0,997.5,997.5,25.0,2.5105,0.0069,7,eco,1925,1
+2026-08-10 03:00:54 UTC,base,arbitrum,10000.0,9975.0,9975.0,25.0,25.1049,0.0069,7,eco,1925,1
+2026-08-10 03:00:56 UTC,base,arbitrum,100000.0,99750.0,99750.0,25.0,251.0492,0.0069,7,eco,1925,1
+2026-08-10 03:02:36 UTC,base,arbitrum,1000.0,997.5,997.5,25.0,2.5105,0.0069,7,eco,best,1,best
+2026-08-10 03:02:38 UTC,base,arbitrum,1000.0,997.39479,997.39479,26.1,2.6161,0.0051,1,across,across,1,across
+2026-08-10 03:02:39 UTC,base,arbitrum,1000.0,997.270575,997.270575,27.3,2.7409,0.0085,10,polymer,polymer,1,polymer
+2026-08-10 03:02:43 UTC,base,arbitrum,10000.0,9975.0,9975.0,25.0,25.1049,0.0069,7,eco,best,1,best
+2026-08-10 03:02:45 UTC,base,arbitrum,10000.0,9973.997041,9973.997041,26.0,26.1121,0.0051,1,across,across,1,across
+2026-08-10 03:02:46 UTC,base,arbitrum,10000.0,9972.70575,9972.70575,27.3,27.4088,0.0085,10,polymer,polymer,1,polymer
+2026-08-10 03:02:48 UTC,base,arbitrum,100000.0,99750.0,99750.0,25.0,251.0492,0.0069,7,eco,best,1,best
+2026-08-10 03:02:49 UTC,base,arbitrum,100000.0,99740.019537,99740.019537,26.0,261.0715,0.0051,900,across,across,1,across
+2026-08-10 03:02:50 UTC,base,arbitrum,100000.0,99727.0575,99727.0575,27.3,274.088,0.0085,10,polymer,polymer,1,polymer

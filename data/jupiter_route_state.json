@@ -1,0 +1,1 @@
+{"labels": ["Quantum"], "out_amount": 103291188, "sig": "45ea3ee3441d", "ts": 1787997620, "context_slot": 442578583, "min_update_slot": null, "time_taken": 0.001395449, "pending": 0, "slot_lag": 0, "stale_hops": false, "drift": 0, "route_flip": 0}

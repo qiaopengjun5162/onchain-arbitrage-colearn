@@ -1,0 +1,9 @@
+ts,size,pool_a,pool_b,price_a,price_b,spread_bps,corridor_bps,exit_bps,fee_a,fee_b
+2026-08-11 22:00:29 UTC,0.1,Raydium,Raydium CLMM,76.061171,76.52206,60.6,35,25.6,30,5,0.0,60.6,False
+2026-08-12 01:30:08 UTC,100,Raydium,Raydium CLMM,75.837596,76.297592,60.7,35,25.7,30,5,0.0,60.7,False
+2026-08-13 02:30:30 UTC,100,Raydium,Whirlpool,75.091144,75.577128,64.7,35,29.7,30,5,0.0,64.7,False
+2026-08-14 03:30:35 UTC,100,Raydium,Whirlpool,75.470966,75.887657,55.2,35,20.2,30,5,0.0,55.2,False
+2026-08-15 04:30:16 UTC,0.1,Raydium,Raydium CLMM,75.143487,75.56229,55.7,35,20.7,30,5,0.0,55.7,False
+2026-08-17 02:30:13 UTC,100,Raydium,Whirlpool,74.648466,75.101623,60.7,35,25.7,30,5,0.0,60.7,False
+2026-08-17 21:30:39 UTC,0.1,Raydium,Whirlpool,75.453845,75.87142,55.3,35,20.3,30,5,0.0,55.3,False
+2026-08-19 17:30:10 UTC,0.1,Raydium,Raydium CLMM,80.829339,81.30093,58.3,35,23.3,30,5,0.0,58.3,False

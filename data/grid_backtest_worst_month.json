@@ -1,0 +1,13 @@
+{
+  "note": "v2 网格回测，详见 stdout/CSV",
+  "params": {
+    "symbol": "BTC/USDT",
+    "levels": 90,
+    "notional_per_level": 100.0,
+    "fee_bps": 8,
+    "widths": {
+      "narrow": 1.05,
+      "wide": 1.3
+    }
+  }
+}

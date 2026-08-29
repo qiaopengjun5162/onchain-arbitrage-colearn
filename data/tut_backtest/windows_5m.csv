@@ -1,0 +1,3 @@
+start_ts,end_ts,dur_min,max_spread,spread_at_start,mean_spread,dir,oi_drop_pct,vol_spike_x,funding_spread,bn_px_change,bg_px_change,both_fell,diverged_further
+1779987900000,1779990900000,50.0,0.0304,0.021,0.0258,bn_premium,-0.3,4.1,,0.92,0.0,0,1
+1786259400000,1786268400000,150.0,0.1616,0.0647,0.0451,bg_premium,23.9,5.8,0.00273,-7.3,-10.85,1,0
